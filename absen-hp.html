@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Web App Absen HP - SD3 Lukluk</title>
+  <title>Portal Absensi Orang Tua - SD3 Lukluk</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,79 +14,42 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
   <main class="max-w-md mx-auto p-4 pb-20 space-y-4">
-    <header class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
-      <h1 class="text-lg font-bold">Web App Absen HP</h1>
-      <p class="text-xs text-slate-500 mt-1">SD No. 3 Lukluk - kamera QR + lokasi GPS.</p>
+    <header class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm text-center">
+      <h1 class="text-lg font-bold">Absensi Siswa SD No. 3 Lukluk</h1>
+      <p class="text-xs text-slate-500 mt-1">Portal untuk orang tua/wali siswa.</p>
       <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1 mt-3">
         Gunakan lewat HTTPS agar kamera & lokasi aktif di HP.
       </p>
     </header>
 
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">1) Pengaturan Webhook</h2>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">URL Webhook</span>
-        <input id="webhookUrlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-      </label>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Key (opsional)</span>
-        <input id="webhookKeyInput" type="text" placeholder="contoh: sd3-absen-2026" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-      </label>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Mode Kirim</span>
-        <select id="webhookModeInput" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <option value="apps_script">Google Apps Script (disarankan)</option>
-          <option value="standard_json">Server JSON biasa</option>
-        </select>
-      </label>
-      <button id="saveSettingsBtn" class="w-full px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-sm">Simpan Pengaturan</button>
-    </section>
+    <div id="lastStudentBar" class="hidden bg-blue-50 border border-blue-100 rounded-2xl p-3 flex items-center justify-between shadow-sm">
+      <div class="text-xs text-blue-800">
+        <span class="block text-blue-500 mb-0.5">Siswa Terakhir:</span>
+        <span class="block font-bold text-sm" id="lastStudentNameDisplay"></span>
+      </div>
+      <button id="restoreStudentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Gunakan</button>
+    </div>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">2) Titik Lokasi Sekolah (Geofence)</h2>
-      <div class="grid grid-cols-1 gap-2">
-        <input id="schoolLatInput" type="number" step="any" placeholder="Latitude sekolah" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        <input id="schoolLngInput" type="number" step="any" placeholder="Longitude sekolah" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        <input id="schoolRadiusInput" type="number" min="10" step="1" placeholder="Radius meter (contoh 120)" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="useCurrentSchoolPointBtn" class="px-2 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-xs">Pakai Lokasi Saat Ini</button>
-        <button id="saveGeofenceBtn" class="px-2 py-2 rounded-xl bg-emerald-600 text-white font-semibold text-xs">Simpan Geofence</button>
-      </div>
-      <p id="geofenceInfoText" class="text-xs text-slate-600">Geofence belum diatur.</p>
-    </section>
-
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">3) Data Absen</h2>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Mode Absen</span>
-        <select id="modeInput" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <option value="masuk">Masuk</option>
-          <option value="pulang">Pulang</option>
-        </select>
-      </label>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Nama Siswa</span>
-        <input id="studentNameInput" type="text" placeholder="Nama siswa" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-      </label>
-      <div class="grid grid-cols-2 gap-2">
-        <label>
-          <span class="text-xs font-semibold text-slate-500">Student ID</span>
-          <input id="studentIdInput" type="text" placeholder="STU-001" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        </label>
-        <label>
-          <span class="text-xs font-semibold text-slate-500">NISN</span>
-          <input id="studentNisnInput" type="text" placeholder="1234567001" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        </label>
+      <h2 class="font-semibold text-sm">1) Data Absen</h2>
+      <div class="bg-slate-100 rounded-xl p-3 text-center">
+        <p class="text-xs font-semibold text-slate-500">Siswa Terpindai</p>
+        <p id="scannedStudentText" class="font-bold text-slate-800 mt-1">Belum ada</p>
       </div>
       <label class="block">
         <span class="text-xs font-semibold text-slate-500">Catatan (opsional)</span>
         <input id="notesInput" type="text" placeholder="Contoh: dijemput ayah" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
       </label>
+      <div id="lateReasonContainer" class="hidden">
+        <label class="block mt-2">
+          <span class="text-xs font-semibold text-red-500">Alasan Terlambat</span>
+          <input id="lateReasonInput" type="text" placeholder="Alasan keterlambatan..." class="mt-1 w-full px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-sm text-red-700 placeholder-red-300">
+        </label>
+      </div>
     </section>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">4) Scan QR (opsional)</h2>
+      <h2 class="font-semibold text-sm">2) Pindai QR Siswa</h2>
       <div class="aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
         <video id="videoEl" autoplay playsinline muted class="w-full h-full object-cover"></video>
       </div>
@@ -104,10 +67,39 @@
     </section>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">5) Lokasi Saat Ini</h2>
-      <button id="getLocationBtn" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Ambil Lokasi Sekarang</button>
-      <p id="locationInfoText" class="text-xs text-slate-600">Lokasi belum diambil.</p>
-      <button id="submitBtn" class="w-full px-3 py-3 rounded-xl bg-emerald-600 text-white font-bold">Kirim Absen</button>
+      <h2 class="font-semibold text-sm">3) Kirim Absensi</h2>
+       <label class="block">
+        <span class="text-xs font-semibold text-slate-500">Mode Absen</span>
+        <select id="modeInput" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          <option value="masuk">Masuk</option>
+          <option value="pulang">Pulang</option>
+        </select>
+      </label>
+      <p id="locationInfoText" class="text-xs text-slate-600">Lokasi akan diambil otomatis saat mengirim.</p>
+      <button id="submitBtn" class="w-full px-3 py-3 rounded-xl bg-emerald-600 text-white font-bold text-base">Kirim Absen</button>
+    </section>
+
+    <section id="studentHistorySection" class="hidden bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
+      <h2 class="font-semibold text-sm">Riwayat Kehadiran (Terbaru)</h2>
+      <div class="grid grid-cols-4 gap-2 text-center">
+        <div class="bg-emerald-50 rounded-xl p-2 border border-emerald-100"><div class="text-[10px] text-emerald-600 uppercase font-bold">Hadir</div><div class="font-bold text-emerald-700 text-lg" id="statHadir">0</div></div>
+        <div class="bg-blue-50 rounded-xl p-2 border border-blue-100"><div class="text-[10px] text-blue-600 uppercase font-bold">Sakit</div><div class="font-bold text-blue-700 text-lg" id="statSakit">0</div></div>
+        <div class="bg-amber-50 rounded-xl p-2 border border-amber-100"><div class="text-[10px] text-amber-600 uppercase font-bold">Izin</div><div class="font-bold text-amber-700 text-lg" id="statIzin">0</div></div>
+        <div class="bg-red-50 rounded-xl p-2 border border-red-100"><div class="text-[10px] text-red-600 uppercase font-bold">Alpha</div><div class="font-bold text-red-700 text-lg" id="statAlpha">0</div></div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-50 text-slate-500 font-semibold">
+            <tr>
+              <th class="px-2 py-1">Tanggal</th>
+              <th class="px-2 py-1">Status</th>
+              <th class="px-2 py-1">Masuk</th>
+              <th class="px-2 py-1">Pulang</th>
+            </tr>
+          </thead>
+          <tbody id="studentHistoryBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
@@ -117,7 +109,59 @@
       </div>
       <ul id="historyList" class="space-y-2 text-xs text-slate-600"></ul>
     </section>
+
+    <details class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm group">
+      <summary class="font-bold text-sm text-slate-800 cursor-pointer list-none flex justify-between items-center">
+        <span>⚙️ Konfigurasi Aplikasi</span>
+        <span class="transition group-open:rotate-180">▼</span>
+      </summary>
+      <div class="mt-4 space-y-4 border-t border-slate-100 pt-4">
+        <div class="space-y-3">
+          <h3 class="font-semibold text-xs text-slate-500 uppercase">Webhook</h3>
+          <input id="webhookUrl" type="url" placeholder="URL Webhook" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          <input id="webhookKey" type="text" placeholder="Key (opsional)" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          <select id="webhookMode" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+            <option value="apps_script">Google Apps Script</option>
+            <option value="standard_json">Standard JSON</option>
+          </select>
+        </div>
+        <div class="space-y-3">
+          <h3 class="font-semibold text-xs text-slate-500 uppercase">Geofence Sekolah</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <input id="schoolLat" type="number" step="any" placeholder="Latitude" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
+            <input id="schoolLng" type="number" step="any" placeholder="Longitude" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          </div>
+          <input id="schoolRadius" type="number" placeholder="Radius (meter)" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          <label class="block mt-2">
+            <span class="text-xs font-semibold text-slate-500 uppercase">Batas Jam Masuk (Terlambat)</span>
+            <input id="lateCutoffInput" type="time" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          </label>
+          <div class="flex gap-2"><button id="btnGetCurLoc" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold">Ambil Lokasi Ini</button><button id="btnSaveSettings" class="flex-1 px-3 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">Simpan</button></div>
+        </div>
+      </div>
+    </details>
   </main>
+
+  <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-100">
+        <h3 class="font-bold text-lg text-slate-800">Konfirmasi Absen</h3>
+      </div>
+      <div class="p-4 space-y-3 text-sm text-slate-600">
+        <div class="flex justify-between"><span>Siswa:</span> <span id="confStudent" class="font-bold text-slate-800 text-right"></span></div>
+        <div class="flex justify-between"><span>Mode:</span> <span id="confMode" class="font-bold text-slate-800"></span></div>
+        <div class="flex justify-between"><span>Waktu:</span> <span id="confTime" class="font-bold text-slate-800"></span></div>
+        <div class="flex justify-between"><span>Lokasi:</span> <span id="confDist" class="font-bold text-slate-800 text-right"></span></div>
+        <div id="confLate" class="hidden p-2 bg-red-50 text-red-700 rounded-lg text-xs border border-red-100">
+          <strong>Terlambat:</strong> <span id="confLateReason"></span>
+        </div>
+      </div>
+      <div class="p-4 bg-slate-50 flex gap-3">
+        <button id="btnCancelConf" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold hover:bg-slate-100">Batal</button>
+        <button id="btnYesConf" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100">Ya, Kirim</button>
+      </div>
+    </div>
+  </div>
 
   <div id="toastEl" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-xl text-sm z-50 shadow-lg"></div>
 
@@ -125,23 +169,15 @@
     const SETTINGS_KEY = "sd3_mobile_absen_settings_v1";
     const HISTORY_KEY = "sd3_mobile_absen_history_v1";
     const PENDING_KEY = "sd3_mobile_absen_pending_v1";
+    const ATT_KEY = "sd3_presensi_v2"; // Shared attendance log
+    const LAST_STUDENT_KEY = "sd3_last_student_v1";
 
     const el = {
-      webhookUrl: document.getElementById("webhookUrlInput"),
-      webhookKey: document.getElementById("webhookKeyInput"),
-      webhookMode: document.getElementById("webhookModeInput"),
-      saveSettingsBtn: document.getElementById("saveSettingsBtn"),
-      schoolLat: document.getElementById("schoolLatInput"),
-      schoolLng: document.getElementById("schoolLngInput"),
-      schoolRadius: document.getElementById("schoolRadiusInput"),
-      useCurrentSchoolPointBtn: document.getElementById("useCurrentSchoolPointBtn"),
-      saveGeofenceBtn: document.getElementById("saveGeofenceBtn"),
-      geofenceInfoText: document.getElementById("geofenceInfoText"),
       mode: document.getElementById("modeInput"),
-      studentName: document.getElementById("studentNameInput"),
-      studentId: document.getElementById("studentIdInput"),
-      studentNisn: document.getElementById("studentNisnInput"),
+      scannedStudentText: document.getElementById("scannedStudentText"),
       notes: document.getElementById("notesInput"),
+      lateReasonContainer: document.getElementById("lateReasonContainer"),
+      lateReasonInput: document.getElementById("lateReasonInput"),
       video: document.getElementById("videoEl"),
       canvas: document.getElementById("canvasEl"),
       startScanBtn: document.getElementById("startScanBtn"),
@@ -149,12 +185,46 @@
       qrManualInput: document.getElementById("qrManualInput"),
       processQrBtn: document.getElementById("processQrBtn"),
       scanInfoText: document.getElementById("scanInfoText"),
-      getLocationBtn: document.getElementById("getLocationBtn"),
       locationInfoText: document.getElementById("locationInfoText"),
       submitBtn: document.getElementById("submitBtn"),
       historyList: document.getElementById("historyList"),
       retryPendingBtn: document.getElementById("retryPendingBtn"),
-      toast: document.getElementById("toastEl")
+      toast: document.getElementById("toastEl"),
+      settings: {
+        url: document.getElementById("webhookUrl"),
+        key: document.getElementById("webhookKey"),
+        mode: document.getElementById("webhookMode"),
+        lat: document.getElementById("schoolLat"),
+        lng: document.getElementById("schoolLng"),
+        radius: document.getElementById("schoolRadius"),
+        lateCutoff: document.getElementById("lateCutoffInput"),
+        btnSave: document.getElementById("btnSaveSettings"),
+        btnLoc: document.getElementById("btnGetCurLoc"),
+        studentHistorySection: document.getElementById("studentHistorySection"),
+        studentHistoryBody: document.getElementById("studentHistoryBody"),
+        stats: {
+          hadir: document.getElementById("statHadir"),
+          sakit: document.getElementById("statSakit"),
+          izin: document.getElementById("statIzin"),
+          alpha: document.getElementById("statAlpha")
+        }
+      },
+      modal: {
+        el: document.getElementById("confirmModal"),
+        student: document.getElementById("confStudent"),
+        mode: document.getElementById("confMode"),
+        time: document.getElementById("confTime"),
+        dist: document.getElementById("confDist"),
+        late: document.getElementById("confLate"),
+        lateReason: document.getElementById("confLateReason"),
+        btnCancel: document.getElementById("btnCancelConf"),
+        btnYes: document.getElementById("btnYesConf")
+      }
+    };
+    const lastStudentEl = {
+      bar: document.getElementById("lastStudentBar"),
+      name: document.getElementById("lastStudentNameDisplay"),
+      btn: document.getElementById("restoreStudentBtn")
     };
 
     const scanState = {
@@ -165,35 +235,44 @@
       lastAt: 0
     };
     const canvasCtx = el.canvas.getContext("2d", { willReadFrequently: true });
+    let scannedStudent = null;
     let locationState = null;
     let toastTimer = null;
+    let pendingPayload = null;
 
     init();
 
     function init() {
-      const settings = loadSettings();
-      el.webhookUrl.value = settings.webhook_url;
-      el.webhookKey.value = settings.webhook_key;
-      el.webhookMode.value = settings.webhook_mode;
-      el.schoolLat.value = settings.school_lat === "" ? "" : String(settings.school_lat);
-      el.schoolLng.value = settings.school_lng === "" ? "" : String(settings.school_lng);
-      el.schoolRadius.value = String(settings.school_radius || 120);
-      refreshGeofenceInfo();
+      // Cek apakah pengaturan penting ada, jika tidak, beri tahu pengguna.
+      checkPrerequisites();
       renderHistory();
+      checkLateStatus();
+      checkLastStudent();
+      setInterval(checkLateStatus, 10000);
 
-      el.saveSettingsBtn.addEventListener("click", saveSettingsFromForm);
-      el.useCurrentSchoolPointBtn.addEventListener("click", setSchoolPointFromCurrentLocation);
-      el.saveGeofenceBtn.addEventListener("click", saveGeofenceFromForm);
       el.startScanBtn.addEventListener("click", startScanner);
       el.stopScanBtn.addEventListener("click", function () {
         stopScanner();
         setScanInfo("Status scan: dihentikan.");
       });
-      el.processQrBtn.addEventListener("click", function () { processQrPayload(el.qrManualInput.value); });
-      el.getLocationBtn.addEventListener("click", captureLocation);
+      el.processQrBtn.addEventListener("click", () => processQrPayload(el.qrManualInput.value));
+      el.mode.addEventListener("change", checkLateStatus);
       el.submitBtn.addEventListener("click", submitAttendance);
       el.retryPendingBtn.addEventListener("click", retryPendingPayloads);
       window.addEventListener("beforeunload", stopScanner);
+      el.settings.btnSave.addEventListener("click", saveSettingsUI);
+      el.settings.btnLoc.addEventListener("click", getSchoolLocUI);
+      el.modal.btnCancel.addEventListener("click", hideConfirmModal);
+      el.modal.btnYes.addEventListener("click", executeSubmission);
+      lastStudentEl.btn.addEventListener("click", restoreLastStudent);
+    }
+
+    function checkPrerequisites() {
+      const settings = loadSettings();
+      if (!settings.webhook_url || !isFiniteNumber(settings.school_lat)) {
+        showToast("Aplikasi belum dikonfigurasi oleh admin.", 5000);
+        el.submitBtn.disabled = true;
+      }
     }
 
     function defaultSettings() {
@@ -203,7 +282,8 @@
         webhook_mode: "apps_script",
         school_lat: "",
         school_lng: "",
-        school_radius: 120
+        school_radius: 120,
+        late_cutoff: "07:30"
       };
     }
 
@@ -212,93 +292,89 @@
         const raw = localStorage.getItem(SETTINGS_KEY);
         if (!raw) return defaultSettings();
         const parsed = JSON.parse(raw) || {};
-        return {
+        const s = {
           webhook_url: String(parsed.webhook_url || "").trim(),
           webhook_key: String(parsed.webhook_key || "").trim(),
           webhook_mode: parsed.webhook_mode === "standard_json" ? "standard_json" : "apps_script",
           school_lat: isFiniteNumber(parsed.school_lat) ? Number(parsed.school_lat) : "",
           school_lng: isFiniteNumber(parsed.school_lng) ? Number(parsed.school_lng) : "",
-          school_radius: isFiniteNumber(parsed.school_radius) ? Math.max(10, Number(parsed.school_radius)) : 120
+          school_radius: isFiniteNumber(parsed.school_radius) ? Math.max(10, Number(parsed.school_radius)) : 120,
+          late_cutoff: String(parsed.late_cutoff || "07:30").trim()
         };
+        // Populate UI
+        if (el.settings.url) el.settings.url.value = s.webhook_url;
+        if (el.settings.key) el.settings.key.value = s.webhook_key;
+        if (el.settings.mode) el.settings.mode.value = s.webhook_mode;
+        if (el.settings.lat) el.settings.lat.value = s.school_lat;
+        if (el.settings.lng) el.settings.lng.value = s.school_lng;
+        if (el.settings.radius) el.settings.radius.value = s.school_radius;
+        if (el.settings.lateCutoff) el.settings.lateCutoff.value = s.late_cutoff;
+        return s;
       } catch (error) {
         return defaultSettings();
       }
     }
 
-    function saveSettings(settings) {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    }
-
-    function saveSettingsFromForm() {
-      const current = loadSettings();
+    function saveSettingsUI() {
       const next = {
-        ...current,
-        webhook_url: String(el.webhookUrl.value || "").trim(),
-        webhook_key: String(el.webhookKey.value || "").trim(),
-        webhook_mode: el.webhookMode.value === "standard_json" ? "standard_json" : "apps_script"
+        webhook_url: el.settings.url.value.trim(),
+        webhook_key: el.settings.key.value.trim(),
+        webhook_mode: el.settings.mode.value,
+        school_lat: Number(el.settings.lat.value),
+        school_lng: Number(el.settings.lng.value),
+        school_radius: Number(el.settings.radius.value),
+        late_cutoff: el.settings.lateCutoff.value
       };
-      saveSettings(next);
-      showToast("Pengaturan webhook tersimpan.");
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+      showToast("Pengaturan tersimpan.");
+      checkLateStatus();
+      el.submitBtn.disabled = false;
     }
 
-    function saveGeofenceFromForm() {
-      const current = loadSettings();
-      const lat = Number(el.schoolLat.value);
-      const lng = Number(el.schoolLng.value);
-      const radius = Number(el.schoolRadius.value || "120");
-      if (!isFiniteNumber(lat) || lat < -90 || lat > 90) {
-        showToast("Latitude tidak valid.");
-        return;
-      }
-      if (!isFiniteNumber(lng) || lng < -180 || lng > 180) {
-        showToast("Longitude tidak valid.");
-        return;
-      }
-      if (!isFiniteNumber(radius) || radius < 10) {
-        showToast("Radius minimal 10 meter.");
-        return;
-      }
-      const next = {
-        ...current,
-        school_lat: lat,
-        school_lng: lng,
-        school_radius: Math.round(radius)
-      };
-      saveSettings(next);
-      refreshGeofenceInfo();
-      showToast("Geofence tersimpan.");
+    function checkLastStudent() {
+      try {
+        const raw = localStorage.getItem(LAST_STUDENT_KEY);
+        if (raw) {
+          const s = JSON.parse(raw);
+          if (s && (s.name || s.nisn)) {
+            lastStudentEl.name.textContent = s.name || s.nisn;
+            lastStudentEl.bar.classList.remove("hidden");
+          }
+        }
+      } catch (e) {}
     }
 
-    async function setSchoolPointFromCurrentLocation() {
+    function restoreLastStudent() {
+      const raw = localStorage.getItem(LAST_STUDENT_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        setScannedStudent(s);
+        showToast("Data siswa dipulihkan.");
+      }
+    }
+
+    function checkLateStatus() {
+      const s = loadSettings();
+      const now = new Date();
+      const curTime = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+      const isLate = curTime > s.late_cutoff;
+      const isMasuk = el.mode.value === "masuk";
+      if (isMasuk && isLate) {
+        el.lateReasonContainer.classList.remove("hidden");
+      } else {
+        el.lateReasonContainer.classList.add("hidden");
+      }
+    }
+
+    async function getSchoolLocUI() {
       try {
         const loc = await getCurrentLocation();
-        const current = loadSettings();
-        const next = {
-          ...current,
-          school_lat: loc.lat,
-          school_lng: loc.lng
-        };
-        saveSettings(next);
-        el.schoolLat.value = String(loc.lat);
-        el.schoolLng.value = String(loc.lng);
-        if (!el.schoolRadius.value) el.schoolRadius.value = "120";
-        refreshGeofenceInfo();
-        showToast("Titik sekolah diambil dari lokasi saat ini.");
-      } catch (error) {
-        showToast(error.message || "Gagal mengambil lokasi.");
+        el.settings.lat.value = loc.lat;
+        el.settings.lng.value = loc.lng;
+        showToast("Lokasi diambil.");
+      } catch (e) {
+        showToast("Gagal ambil lokasi.");
       }
-    }
-
-    function refreshGeofenceInfo() {
-      const s = loadSettings();
-      if (s.school_lat === "" || s.school_lng === "") {
-        el.geofenceInfoText.textContent = "Geofence belum diatur.";
-        return;
-      }
-      el.geofenceInfoText.textContent = "Geofence: " +
-        Number(s.school_lat).toFixed(6) + ", " +
-        Number(s.school_lng).toFixed(6) +
-        " (radius " + Math.round(Number(s.school_radius) || 120) + " m)";
     }
 
     async function startScanner() {
@@ -421,11 +497,26 @@
         else name = text;
       }
 
-      if (studentId) el.studentId.value = studentId;
-      if (nisn) el.studentNisn.value = nisn;
-      if (name) el.studentName.value = name;
+      const student = {
+        id: studentId,
+        nisn: nisn,
+        name: name
+      };
+      setScannedStudent(student);
       setScanInfo("Status scan: QR terbaca.");
-      showToast("Data QR berhasil dipakai.");
+    }
+
+    function setScannedStudent(student) {
+      scannedStudent = student;
+      const displayName = student.name || student.nisn || student.id;
+      el.scannedStudentText.textContent = displayName || 'Data tidak lengkap';
+      
+      if (displayName) {
+        localStorage.setItem(LAST_STUDENT_KEY, JSON.stringify(student));
+        checkLastStudent();
+      }
+      
+      renderStudentHistory();
     }
 
     function getCurrentLocation() {
@@ -503,6 +594,7 @@
         showToast("Lokasi berhasil diambil.");
       } catch (error) {
         showToast(error.message || "Gagal mengambil lokasi.");
+        throw error;
       }
     }
 
@@ -533,12 +625,9 @@
         mode: el.mode.value === "pulang" ? "pulang" : "masuk",
         date: nowDateKey(),
         time: nowTimeKey(),
-        student: {
-          id: String(el.studentId.value || "").trim(),
-          nisn: String(el.studentNisn.value || "").trim(),
-          name: String(el.studentName.value || "").trim()
-        },
+        student: scannedStudent || { id: '', nisn: '', name: '' },
         notes: String(el.notes.value || "").trim(),
+        late_reason: !el.lateReasonContainer.classList.contains("hidden") ? String(el.lateReasonInput.value || "").trim() : "",
         qr_payload: String(el.qrManualInput.value || "").trim(),
         location: locationState,
         device: {
@@ -550,11 +639,11 @@
     }
 
     function validatePayload(payload) {
-      if (!payload.student.id && !payload.student.nisn && !payload.student.name) {
-        return "Isi minimal salah satu: Student ID, NISN, atau Nama.";
+      if (!payload.student || (!payload.student.id && !payload.student.nisn && !payload.student.name)) {
+        return "Pindai QR siswa terlebih dahulu.";
       }
       if (!payload.location) {
-        return "Ambil lokasi terlebih dahulu.";
+        return "Lokasi belum diambil. Proses akan mengambil otomatis.";
       }
       if (payload.location.within_radius === false) {
         return "Lokasi di luar radius sekolah.";
@@ -592,15 +681,75 @@
     }
 
     async function submitAttendance() {
-      const payload = buildPayload();
-      const validationMsg = validatePayload(payload);
-      if (validationMsg) {
-        showToast(validationMsg);
-        return;
+      el.submitBtn.disabled = true;
+      el.submitBtn.textContent = "Memproses...";
+
+      try {
+        // Step 1: Ensure location is available
+        if (!locationState) {
+          el.submitBtn.textContent = "Mengambil lokasi...";
+          await captureLocation();
+        }
+
+        // Step 2: Validate payload
+        const payload = buildPayload();
+        const validationMsg = validatePayload(payload);
+        if (validationMsg) {
+          showToast(validationMsg);
+          el.submitBtn.disabled = false;
+          el.submitBtn.textContent = "Kirim Absen";
+          return;
+        }
+
+        // Step 3: Show confirmation modal
+        pendingPayload = payload;
+        showConfirmModal(payload);
+        
+        // Reset button state (modal is now handling the flow)
+        el.submitBtn.disabled = false;
+        el.submitBtn.textContent = "Kirim Absen";
+
+      } catch (locationError) {
+        // This only catches errors from captureLocation()
+        // The toast is already shown inside captureLocation
+        el.submitBtn.disabled = false;
+        el.submitBtn.textContent = "Kirim Absen";
+      }
+    }
+
+    function showConfirmModal(payload) {
+      const s = payload.student;
+      const loc = payload.location;
+      const dist = loc && loc.distance_m ? Math.round(loc.distance_m) + " m" : "N/A";
+      
+      el.modal.student.textContent = s.name || s.nisn || s.id;
+      el.modal.mode.textContent = payload.mode === "masuk" ? "Masuk" : "Pulang";
+      el.modal.time.textContent = payload.time;
+      el.modal.dist.textContent = dist;
+
+      if (payload.late_reason) {
+        el.modal.lateReason.textContent = payload.late_reason;
+        el.modal.late.classList.remove("hidden");
+      } else {
+        el.modal.late.classList.add("hidden");
       }
 
+      el.modal.el.classList.remove("hidden");
+    }
+
+    function hideConfirmModal() {
+      el.modal.el.classList.add("hidden");
+      pendingPayload = null;
+    }
+
+    async function executeSubmission() {
+      if (!pendingPayload) return;
+      hideConfirmModal();
+      
       el.submitBtn.disabled = true;
       el.submitBtn.textContent = "Mengirim...";
+      const payload = pendingPayload;
+
       try {
         const result = await sendToWebhook(payload);
         appendHistory({
@@ -610,27 +759,81 @@
           student: payload.student,
           no_cors: !!result.no_cors
         });
+        updateSharedAttendanceLog(payload);
         showToast(result.no_cors ? "Absen terkirim (mode Apps Script)." : "Absen berhasil dikirim.");
         clearFormAfterSubmit();
-      } catch (error) {
+      } catch (sendError) {
+        // This is a network/send error, so save to pending
         pushPending(payload);
         appendHistory({
           at: new Date().toISOString(),
           status: "pending",
           mode: payload.mode,
           student: payload.student,
-          error: String(error && error.message ? error.message : "gagal")
+          error: String(sendError && sendError.message ? sendError.message : "gagal")
         });
         showToast("Gagal kirim. Data masuk antrean pending.");
       } finally {
         el.submitBtn.disabled = false;
         el.submitBtn.textContent = "Kirim Absen";
+        pendingPayload = null;
       }
+    }
+
+    function updateSharedAttendanceLog(payload) {
+      try {
+        const attendances = loadArray(ATT_KEY);
+        const student = payload.student;
+        const existingIndex = attendances.findIndex(function (a) {
+          return a.date === payload.date && a.student_id === student.id;
+        });
+
+        let record;
+        if (existingIndex > -1) {
+          record = attendances[existingIndex];
+        } else {
+          record = {
+            id: "ATT-" + Date.now(),
+            date: payload.date,
+            student_id: student.id,
+            student_name: student.name,
+            nisn: student.nisn,
+            status: 'Belum Absen',
+            check_in: '',
+            check_out: '',
+            notes: ''
+          };
+        }
+
+        record.status = 'Hadir';
+        record.updated_at = new Date().toISOString();
+
+        if (payload.mode === 'masuk') {
+          record.check_in = payload.time;
+          record.source_in = 'Mobile App';
+          record.location_in = payload.location;
+          if (payload.notes) record.notes = payload.notes;
+          if (payload.late_reason) {
+            record.notes = (record.notes ? record.notes + " | " : "") + "Terlambat: " + payload.late_reason;
+          }
+        } else { // 'pulang'
+          record.check_out = payload.time;
+          record.source_out = 'Mobile App';
+          record.location_out = payload.location;
+          if (payload.notes) record.notes = (record.notes ? record.notes + ' | ' : '') + `Pulang: ${payload.notes}`;
+        }
+        if (existingIndex > -1) attendances[existingIndex] = record; else attendances.push(record);
+        saveArray(ATT_KEY, attendances);
+      } catch(e) { /* Fails silently, main function is not affected */ }
     }
 
     function clearFormAfterSubmit() {
       el.notes.value = "";
+      el.lateReasonInput.value = "";
       el.qrManualInput.value = "";
+      scannedStudent = null;
+      el.scannedStudentText.textContent = 'Belum ada';
+      el.studentHistorySection.classList.add("hidden");
       setScanInfo("Status scan: siap.");
     }
 
@@ -714,6 +917,43 @@
       el.retryPendingBtn.textContent = "Kirim Ulang Pending (" + pending + ")";
     }
 
+    function renderStudentHistory() {
+      if (!scannedStudent || !scannedStudent.id) {
+        el.studentHistorySection.classList.add("hidden");
+        return;
+      }
+      const all = loadArray(ATT_KEY);
+      const studentRows = all.filter(function(a) { return a.student_id === scannedStudent.id; });
+      
+      // Calculate stats
+      const stats = { Hadir: 0, Sakit: 0, Izin: 0, Alpha: 0 };
+      studentRows.forEach(function(r) {
+        if (stats[r.status] !== undefined) stats[r.status]++;
+      });
+      el.stats.hadir.textContent = stats.Hadir;
+      el.stats.sakit.textContent = stats.Sakit;
+      el.stats.izin.textContent = stats.Izin;
+      el.stats.alpha.textContent = stats.Alpha;
+
+      const history = studentRows
+        .sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); })
+        .slice(0, 5);
+
+      if (history.length === 0) {
+         el.studentHistoryBody.innerHTML = '<tr><td colspan="4" class="px-2 py-2 text-center text-slate-400">Belum ada data.</td></tr>';
+      } else {
+         el.studentHistoryBody.innerHTML = history.map(function(h) {
+           return '<tr>' +
+             '<td class="px-2 py-2">' + esc(h.date) + '</td>' +
+             '<td class="px-2 py-2">' + esc(h.status) + '</td>' +
+             '<td class="px-2 py-2">' + esc(h.check_in || "-") + '</td>' +
+             '<td class="px-2 py-2">' + esc(h.check_out || "-") + '</td>' +
+           '</tr>';
+         }).join("");
+      }
+      el.studentHistorySection.classList.remove("hidden");
+    }
+
     function esc(v) {
       return String(v || "")
         .replace(/&/g, "&amp;")
@@ -727,13 +967,13 @@
       return typeof v === "number" && Number.isFinite(v);
     }
 
-    function showToast(message) {
+    function showToast(message, duration = 2200) {
       el.toast.textContent = String(message || "");
       el.toast.classList.remove("hidden");
       if (toastTimer) clearTimeout(toastTimer);
       toastTimer = setTimeout(function () {
         el.toast.classList.add("hidden");
-      }, 2200);
+      }, duration);
     }
   </script>
 </body>
