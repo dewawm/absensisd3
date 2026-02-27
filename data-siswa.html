@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa - SD No. 3 Lukluk</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -16,6 +17,12 @@
         @keyframes toast-in {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+            @page { size: A4; margin: 10mm; }
         }
     </style>
 </head>
@@ -74,10 +81,16 @@
                     <h1 class="text-2xl font-bold text-gray-800">Kelola Data Siswa</h1>
                     <p class="text-gray-500 text-sm">Manajemen profil siswa kelas 4</p>
                 </div>
-                <button id="openStudentModalBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-100 transition flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Tambah Siswa
-                </button>
+                <div class="flex gap-3">
+                    <button id="printQrBtn" type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-emerald-100 transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Cetak QR
+                    </button>
+                    <button id="openStudentModalBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-100 transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Siswa
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
@@ -183,6 +196,7 @@
     </div>
 
     <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+    <div id="printArea" class="hidden bg-white p-4"></div>
 
     <script>
         const STORAGE_KEY = "sd3_data_siswa_v1";
@@ -199,6 +213,7 @@
         const classFilter = document.getElementById("classFilter");
         const resetFilterBtn = document.getElementById("resetFilterBtn");
 
+        const printQrBtn = document.getElementById("printQrBtn");
         const openStudentModalBtn = document.getElementById("openStudentModalBtn");
         const studentModal = document.getElementById("studentModal");
         const closeStudentModalBtn = document.getElementById("closeStudentModalBtn");
@@ -218,6 +233,7 @@
             renderStudents();
         });
 
+        printQrBtn.addEventListener("click", printQrCodes);
         openStudentModalBtn.addEventListener("click", function () {
             openStudentModal();
         });
@@ -392,6 +408,48 @@
             }).join("");
 
             bindTableActions();
+        }
+
+        async function printQrCodes() {
+            const query = studentSearch.value.trim().toLowerCase();
+            const className = classFilter.value;
+
+            const filtered = students.filter(function (item) {
+                const matchQuery =
+                    item.full_name.toLowerCase().includes(query) ||
+                    String(item.nisn || "").toLowerCase().includes(query);
+                const matchClass = className === "all" || item.class_name === className;
+                return matchQuery && matchClass;
+            }).sort(function (a, b) {
+                return String(a.full_name).localeCompare(String(b.full_name), "id");
+            });
+
+            if (filtered.length === 0) {
+                alert("Tidak ada data siswa untuk dicetak.");
+                return;
+            }
+
+            const printArea = document.getElementById("printArea");
+            printArea.innerHTML = "";
+            const grid = document.createElement("div");
+            grid.className = "grid grid-cols-2 gap-6";
+
+            for (const s of filtered) {
+                const card = document.createElement("div");
+                card.className = "border-2 border-slate-800 rounded-xl p-4 flex items-center gap-4 break-inside-avoid";
+                const canvas = document.createElement("canvas");
+                const info = document.createElement("div");
+                info.innerHTML = `<h3 class="font-bold text-lg leading-tight mb-1">${esc(s.full_name)}</h3><p class="text-sm text-slate-600 font-semibold">NISN: ${esc(s.nisn)}</p><p class="text-sm text-slate-600">Kelas: ${esc(s.class_name)}</p><p class="text-[10px] text-slate-400 mt-2 uppercase tracking-wider font-bold">SD No. 3 Lukluk</p>`;
+                
+                card.appendChild(canvas);
+                card.appendChild(info);
+                grid.appendChild(card);
+
+                const payload = JSON.stringify({ student_id: s.id, nisn: s.nisn, name: s.full_name });
+                await QRCode.toCanvas(canvas, payload, { width: 100, margin: 0 });
+            }
+            printArea.appendChild(grid);
+            window.print();
         }
 
         function bindTableActions() {
