@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SD No. 3 Lukluk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; color: #64748b; border-radius: 0.75rem; transition: all 0.2s; }
+        .sidebar-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .sidebar-active { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background-color: #eff6ff; color: #2563eb; border-radius: 0.75rem; font-weight: 600; border-right: 4px solid #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
+        <div class="flex items-center space-x-3 mb-10">
+            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
+            <a href="dashboard.html" class="sidebar-active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-siswa.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Data Siswa</span>
+            </a>
+            <a href="data-user.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Data User</span>
+            </a>
+            <a href="daftar-nilai.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                <span>Daftar Nilai Harian</span>
+            </a>
+            <a href="daftar-hadir.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Daftar Hadir Harian</span>
+            </a>
+            <a href="jurnal.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Jurnal Mengajar</span>
+            </a>
+            <a href="konseling.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>Buku Konseling</span>
+            </a>
+            <a href="modul.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>Modul Ajar</span>
+            </a>
+            <hr class="my-4 border-gray-100">
+            <a href="index.html" class="flex items-center space-x-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition font-semibold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a2 2 0 013-3h4a2 2 0 013 3v1"/></svg>
+                <span>Keluar Sistem</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-10">
+        <header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Dashboard Sekolah</h1>
+                <p class="text-slate-500 text-sm">Ringkasan operasional kelas 4 SD No. 3 Lukluk</p>
+            </div>
+            <div class="bg-white border border-slate-100 rounded-2xl px-4 py-3 shadow-sm">
+                <p class="text-xs uppercase tracking-wide text-slate-400">Waktu Saat Ini</p>
+                <p id="clockText" class="font-bold text-slate-700">-</p>
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+            <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Total Siswa</p>
+                <p id="metricStudentsTotal" class="mt-2 text-3xl font-bold text-slate-800">0</p>
+            </article>
+            <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Siswa Aktif</p>
+                <p id="metricStudentsActive" class="mt-2 text-3xl font-bold text-emerald-600">0</p>
+            </article>
+            <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">User Aktif</p>
+                <p id="metricUsersActive" class="mt-2 text-3xl font-bold text-indigo-600">0</p>
+            </article>
+            <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Modul Tersedia</p>
+                <p id="metricModulesTotal" class="mt-2 text-3xl font-bold text-blue-600">0</p>
+            </article>
+        </section>
+
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h2 class="font-bold text-slate-800">Siswa Terbaru</h2>
+                    <a href="data-siswa.html" class="text-sm font-semibold text-blue-600 hover:underline">Kelola Siswa</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wide">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Nama</th>
+                                <th class="px-4 py-3 text-left">NISN</th>
+                                <th class="px-4 py-3 text-left">Kelas</th>
+                                <th class="px-4 py-3 text-left">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsPreviewBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+                <div id="studentsPreviewEmpty" class="hidden p-8 text-center text-slate-500">Belum ada data siswa.</div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+                    <h2 class="font-bold text-slate-800 mb-4">Distribusi User</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Admin</span>
+                            <span id="roleAdminCount" class="font-bold text-slate-700">0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-slate-500">Guru</span>
+                            <span id="roleTeacherCount" class="font-bold text-slate-700">0</span>
+                        </div>
+                        <div class="pt-2">
+                            <a href="data-user.html" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:underline">Buka Data User</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+                    <h2 class="font-bold text-slate-800 mb-4">Quick Access</h2>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <a href="daftar-hadir.html" class="px-3 py-2 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition">Presensi</a>
+                        <a href="daftar-nilai.html" class="px-3 py-2 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition">Nilai</a>
+                        <a href="jurnal.html" class="px-3 py-2 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition">Jurnal</a>
+                        <a href="modul.html" class="px-3 py-2 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition">Modul</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const STUDENTS_KEY = "sd3_data_siswa_v1";
+        const USERS_KEY = "sd3_data_user_v1";
+        const MODULES_KEY = "sd3_modul_ajar_v1";
+
+        const defaultStudents = [
+            { id: "STU-001", full_name: "Putu Ayu Lestari", nisn: "1234567001", class_name: "4A", is_active: true, created_at: "2026-01-10T07:00:00.000Z" },
+            { id: "STU-002", full_name: "Kadek Budi Santosa", nisn: "1234567002", class_name: "4A", is_active: true, created_at: "2026-01-10T07:05:00.000Z" }
+        ];
+
+        const defaultUsers = [
+            { id: "USR-ADMIN", username: "admin", full_name: "Administrator", role: "admin", is_active: true },
+            { id: "USR-T001", username: "guru1", full_name: "Guru Kelas 4A", role: "teacher", is_active: true }
+        ];
+
+        const defaultModules = [
+            { id: "MOD-001", title: "Modul Ajar Matematika" },
+            { id: "MOD-002", title: "Modul Ajar Bahasa Indonesia" }
+        ];
+
+        const students = loadArray(STUDENTS_KEY, defaultStudents);
+        const users = loadArray(USERS_KEY, defaultUsers);
+        const modules = loadArray(MODULES_KEY, defaultModules);
+
+        renderClock();
+        setInterval(renderClock, 1000);
+        renderMetrics();
+        renderStudentPreview();
+
+        function loadArray(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback.slice();
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed.filter(Boolean) : fallback.slice();
+            } catch (error) {
+                return fallback.slice();
+            }
+        }
+
+        function renderClock() {
+            const now = new Date();
+            const text = now.toLocaleDateString("id-ID", {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }) + " - " + now.toLocaleTimeString("id-ID");
+            document.getElementById("clockText").textContent = text;
+        }
+
+        function renderMetrics() {
+            const studentsTotal = students.length;
+            const studentsActive = students.filter(function (item) { return item.is_active !== false; }).length;
+            const usersActive = users.filter(function (item) { return item.is_active !== false; }).length;
+            const modulesTotal = modules.length;
+            const adminCount = users.filter(function (item) { return String(item.role || "").toLowerCase() === "admin"; }).length;
+            const teacherCount = users.filter(function (item) { return String(item.role || "").toLowerCase() === "teacher"; }).length;
+
+            document.getElementById("metricStudentsTotal").textContent = String(studentsTotal);
+            document.getElementById("metricStudentsActive").textContent = String(studentsActive);
+            document.getElementById("metricUsersActive").textContent = String(usersActive);
+            document.getElementById("metricModulesTotal").textContent = String(modulesTotal);
+            document.getElementById("roleAdminCount").textContent = String(adminCount);
+            document.getElementById("roleTeacherCount").textContent = String(teacherCount);
+        }
+
+        function renderStudentPreview() {
+            const body = document.getElementById("studentsPreviewBody");
+            const empty = document.getElementById("studentsPreviewEmpty");
+            const latest = students
+                .slice()
+                .sort(function (a, b) {
+                    return String(b.created_at || "").localeCompare(String(a.created_at || ""));
+                })
+                .slice(0, 6);
+
+            if (!latest.length) {
+                body.innerHTML = "";
+                empty.classList.remove("hidden");
+                return;
+            }
+
+            empty.classList.add("hidden");
+            body.innerHTML = latest.map(function (item) {
+                const active = item.is_active !== false;
+                const statusClass = active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500";
+                const statusText = active ? "Aktif" : "Nonaktif";
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 font-semibold text-slate-800">${esc(item.full_name || "-")}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.nisn || "-")}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.class_name || "-")}</td>
+                        <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function esc(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+    </script>
+</body>
+</html>

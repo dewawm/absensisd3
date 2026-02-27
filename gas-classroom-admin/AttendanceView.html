@@ -1,0 +1,91 @@
+<section id="view-attendance" class="page-view hidden">
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>QR Attendance</h3>
+      <div class="field">
+        <label for="attendanceDate">Tanggal</label>
+        <input id="attendanceDate" class="input" type="date" />
+      </div>
+      <div class="field">
+        <label for="scanQrInput">Input QR (manual)</label>
+        <input id="scanQrInput" class="input" placeholder="STU|STU-XXXX|TOKEN" />
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" id="submitQrBtn">Proses Scan</button>
+        <button class="btn btn-secondary" id="openScannerBtn">Buka Kamera</button>
+      </div>
+      <div id="qrReader" style="margin-top: 12px"></div>
+      <p class="note">Notifikasi WhatsApp otomatis dikirim setelah scan berhasil.</p>
+    </div>
+
+    <div class="card">
+      <h3>Edit Presensi Manual</h3>
+      <form id="manualAttendanceForm">
+        <div class="field">
+          <label for="manualStudentSelect">Siswa</label>
+          <select id="manualStudentSelect" class="select"></select>
+        </div>
+        <div class="field">
+          <label for="manualStatusSelect">Status</label>
+          <select id="manualStatusSelect" class="select">
+            <option value="hadir">Hadir</option>
+            <option value="sakit">Sakit</option>
+            <option value="izin">Izin</option>
+            <option value="alfa">Alfa</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="manualCheckInTime">Jam</label>
+          <input id="manualCheckInTime" class="input" type="time" />
+        </div>
+        <div class="field">
+          <label for="manualAttendanceNote">Catatan</label>
+          <input id="manualAttendanceNote" class="input" />
+        </div>
+        <button class="btn btn-soft" type="submit">Simpan Manual</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <div class="row" style="justify-content: space-between">
+      <h3 style="margin: 0">Rekap Harian dan Bulanan</h3>
+      <div class="row">
+        <select id="recapMonth" class="select" style="width: 100px"></select>
+        <select id="recapYear" class="select" style="width: 110px"></select>
+        <button class="btn btn-secondary" id="refreshRecapBtn">Refresh</button>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top: 10px">
+      <div class="kpi"><div class="label">Hadir</div><div class="value" id="recapHadir">0</div></div>
+      <div class="kpi"><div class="label">Sakit + Izin</div><div class="value" id="recapIzinSakit">0</div></div>
+      <div class="kpi"><div class="label">Alfa</div><div class="value" id="recapAlfa">0</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <div class="row" style="justify-content: space-between">
+      <h3 style="margin: 0">Data Presensi</h3>
+      <div class="row">
+        <input id="attendanceSearch" class="input" placeholder="Cari siswa" style="max-width: 220px" />
+        <button class="btn btn-secondary" id="reloadAttendanceBtn">Muat Ulang</button>
+      </div>
+    </div>
+    <div class="table-wrap" style="margin-top: 12px">
+      <table id="attendanceTable">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Siswa</th>
+            <th>Status</th>
+            <th>Jam</th>
+            <th>Terlambat</th>
+            <th>Catatan</th>
+            <th>Guru</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>

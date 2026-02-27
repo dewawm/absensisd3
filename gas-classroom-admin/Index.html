@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Administrasi Kelas SD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <?!= include("Styles"); ?>
+  </head>
+  <body>
+    <?!= include("LoginView"); ?>
+
+    <section id="mainApp" class="app-shell hidden">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-box">
+          <h1>SD - Classroom Admin</h1>
+          <p id="currentUserLabel">-</p>
+        </div>
+
+        <button class="menu-btn active" data-view="dashboard">Dashboard</button>
+        <button class="menu-btn admin-only" data-view="students">Data Siswa</button>
+        <button class="menu-btn" data-view="attendance">QR Attendance</button>
+        <button class="menu-btn" data-view="grades">Nilai</button>
+        <button class="menu-btn" data-view="journal">Jurnal Mengajar</button>
+        <button class="menu-btn" data-view="counseling">Buku Konseling</button>
+        <button class="menu-btn" id="syncQueueBtn">Sync Offline Queue</button>
+        <button class="menu-btn" id="logoutBtn">Keluar</button>
+      </aside>
+
+      <main class="main-area">
+        <div class="mobile-header">
+          <button class="btn btn-secondary" id="mobileMenuBtn">Menu</button>
+          <div id="mobileUserLabel" class="note">-</div>
+        </div>
+
+        <div class="topbar">
+          <div>
+            <h2 id="topbarTitle">Dashboard</h2>
+            <p id="topbarSubTitle">Analitik dan ringkasan operasional kelas.</p>
+          </div>
+          <div class="row">
+            <span class="note">Late Cutoff: <b id="lateTimeBadge">07:30</b></span>
+            <span class="note">Offline Queue: <b id="offlineQueueCount">0</b></span>
+          </div>
+        </div>
+
+        <?!= include("DashboardView"); ?>
+        <?!= include("StudentsView"); ?>
+        <?!= include("AttendanceView"); ?>
+        <?!= include("GradesView"); ?>
+        <?!= include("JournalView"); ?>
+        <?!= include("CounselingView"); ?>
+      </main>
+    </section>
+
+    <div id="toast" class="toast"></div>
+    <?!= include("ClientApp"); ?>
+  </body>
+</html>

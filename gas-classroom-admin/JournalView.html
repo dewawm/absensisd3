@@ -1,0 +1,80 @@
+<section id="view-journal" class="page-view hidden">
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Input Jurnal Mengajar</h3>
+      <form id="journalForm">
+        <div class="field">
+          <label for="journalTanggal">Tanggal</label>
+          <input id="journalTanggal" class="input" type="date" />
+        </div>
+        <div class="field">
+          <label for="journalMapel">Mata Pelajaran</label>
+          <select id="journalMapel" class="select">
+            <option>Matematika</option>
+            <option>IPAS</option>
+            <option>Bahasa Indonesia</option>
+            <option>Bahasa Bali</option>
+            <option>SBdP</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="journalTp">Tujuan Pembelajaran</label>
+          <textarea id="journalTp" class="textarea"></textarea>
+        </div>
+        <div class="field">
+          <label for="journalMateri">Materi</label>
+          <textarea id="journalMateri" class="textarea"></textarea>
+        </div>
+        <div class="field">
+          <label for="journalKendala">Kendala</label>
+          <textarea id="journalKendala" class="textarea"></textarea>
+        </div>
+        <div class="field">
+          <label for="journalJam">Jam / Waktu</label>
+          <input id="journalJam" class="input" placeholder="07:30 - 09:00" />
+        </div>
+        <button class="btn btn-primary" type="submit">Simpan Jurnal</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Filter Jurnal</h3>
+      <div class="field">
+        <label for="journalFilterDate">Tanggal</label>
+        <input id="journalFilterDate" class="input" type="date" />
+      </div>
+      <div class="field">
+        <label for="journalFilterMapel">Mata Pelajaran</label>
+        <select id="journalFilterMapel" class="select">
+          <option value="">Semua</option>
+          <option>Matematika</option>
+          <option>IPAS</option>
+          <option>Bahasa Indonesia</option>
+          <option>Bahasa Bali</option>
+          <option>SBdP</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary" id="loadJournalBtn">Muat Jurnal</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <h3>Riwayat Jurnal</h3>
+    <div class="table-wrap">
+      <table id="journalTable">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Mapel</th>
+            <th>Tujuan Pembelajaran</th>
+            <th>Materi</th>
+            <th>Kendala</th>
+            <th>Jam</th>
+            <th>Guru</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,890 @@
+<script>
+  var APP_STATE = {
+    token: "",
+    user: null,
+    settings: {},
+    students: [],
+    users: [],
+    analytics: null,
+    attendanceRows: [],
+    gradesRows: [],
+    journalRows: [],
+    counselingRows: [],
+    offlineQueue: [],
+    scanner: null
+  };
+
+  var OFFLINE_QUEUE_KEY = "class_admin_offline_queue_v1";
+  var SESSION_KEY = "class_admin_session_v1";
+
+  var VIEW_META = {
+    dashboard: {
+      title: "Dashboard",
+      subtitle: "Analitik dan ringkasan operasional kelas."
+    },
+    students: {
+      title: "Data Siswa",
+      subtitle: "Kelola biodata siswa dan QR attendance."
+    },
+    attendance: {
+      title: "QR Attendance",
+      subtitle: "Scan QR, edit manual, rekap harian dan bulanan."
+    },
+    grades: {
+      title: "Manajemen Nilai",
+      subtitle: "Input nilai per TP dan hitung final otomatis."
+    },
+    journal: {
+      title: "Jurnal Mengajar",
+      subtitle: "Catatan pembelajaran harian per mata pelajaran."
+    },
+    counseling: {
+      title: "Buku Konseling",
+      subtitle: "Log pelanggaran, penanganan, dan notifikasi orang tua."
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    bindCommonEvents();
+    loadOfflineQueueFromStorage();
+    setDefaultDates();
+    restoreSession();
+  });
+
+  function bindCommonEvents() {
+    document.getElementById("loginForm").addEventListener("submit", onSubmitLogin);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+    document.getElementById("mobileMenuBtn").addEventListener("click", function () {
+      document.getElementById("sidebar").classList.toggle("open");
+    });
+    document.getElementById("syncQueueBtn").addEventListener("click", syncOfflineQueue);
+
+    Array.prototype.slice.call(document.querySelectorAll(".menu-btn[data-view]")).forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var view = btn.getAttribute("data-view");
+        switchView(view);
+      });
+    });
+
+    window.addEventListener("online", function () {
+      toast("Koneksi kembali online. Mensinkronkan queue...");
+      syncOfflineQueue();
+    });
+
+    bindStudentEvents();
+    bindAttendanceEvents();
+    bindGradeEvents();
+    bindJournalEvents();
+    bindCounselingEvents();
+  }
+
+  function setDefaultDates() {
+    var today = dateInputToday();
+    setIfExists("attendanceDate", today);
+    setIfExists("journalTanggal", today);
+    setIfExists("journalFilterDate", today);
+    setIfExists("counselingDate", today);
+    setIfExists("counselingFilterDate", today);
+  }
+
+  function restoreSession() {
+    var token = localStorage.getItem(SESSION_KEY);
+    if (!token) return;
+    APP_STATE.token = token;
+    bootstrapApp().catch(function () {
+      localStorage.removeItem(SESSION_KEY);
+      APP_STATE.token = "";
+    });
+  }
+
+  function onSubmitLogin(e) {
+    e.preventDefault();
+    var username = document.getElementById("loginUsername").value.trim();
+    var password = document.getElementById("loginPassword").value.trim();
+    runServer("loginUser", { username: username, password: password })
+      .then(function (res) {
+        APP_STATE.token = res.data.sessionToken;
+        localStorage.setItem(SESSION_KEY, APP_STATE.token);
+        return bootstrapApp();
+      })
+      .then(function () {
+        toast("Login berhasil");
+      })
+      .catch(function (err) {
+        toast(err.message || "Login gagal");
+      });
+  }
+
+  function logout() {
+    if (!APP_STATE.token) return;
+    runServer("logoutUser", { sessionToken: APP_STATE.token }).finally(function () {
+      APP_STATE.token = "";
+      APP_STATE.user = null;
+      localStorage.removeItem(SESSION_KEY);
+      document.getElementById("mainApp").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+    });
+  }
+
+  function bootstrapApp() {
+    return runServer("getAppBootstrap", { sessionToken: APP_STATE.token }).then(function (res) {
+      APP_STATE.user = res.data.user;
+      APP_STATE.settings = res.data.settings || {};
+      APP_STATE.students = res.data.students || [];
+      APP_STATE.users = res.data.users || [];
+      APP_STATE.analytics = res.data.analytics || null;
+      hydrateUiFromState();
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("mainApp").classList.remove("hidden");
+      switchView("dashboard");
+      reloadAllData();
+    });
+  }
+
+  function hydrateUiFromState() {
+    var roleLabel = APP_STATE.user.full_name + " (" + APP_STATE.user.role + ")";
+    document.getElementById("currentUserLabel").textContent = roleLabel;
+    document.getElementById("mobileUserLabel").textContent = roleLabel;
+    document.getElementById("lateTimeBadge").textContent = APP_STATE.settings.LATE_TIME || "07:30";
+
+    var isAdmin = APP_STATE.user.role === "admin";
+    Array.prototype.slice.call(document.querySelectorAll(".admin-only")).forEach(function (el) {
+      if (isAdmin) {
+        el.classList.remove("hidden");
+      } else {
+        el.classList.add("hidden");
+      }
+    });
+    document.getElementById("studentFormCard").classList.toggle("hidden", !isAdmin);
+    renderStudentSelects();
+    renderDashboard();
+    updateOfflineQueueBadge();
+    populateMonthYearFilters();
+  }
+
+  function switchView(view) {
+    Array.prototype.slice.call(document.querySelectorAll(".page-view")).forEach(function (section) {
+      section.classList.add("hidden");
+    });
+    var target = document.getElementById("view-" + view);
+    if (target) target.classList.remove("hidden");
+    Array.prototype.slice.call(document.querySelectorAll(".menu-btn[data-view]")).forEach(function (btn) {
+      btn.classList.toggle("active", btn.getAttribute("data-view") === view);
+    });
+    var meta = VIEW_META[view] || VIEW_META.dashboard;
+    document.getElementById("topbarTitle").textContent = meta.title;
+    document.getElementById("topbarSubTitle").textContent = meta.subtitle;
+    document.getElementById("sidebar").classList.remove("open");
+  }
+
+  function reloadAllData() {
+    Promise.all([
+      loadStudents(),
+      loadAttendance(),
+      refreshAttendanceRecap(),
+      loadGrades(),
+      loadJournal(),
+      loadCounseling(),
+      loadDashboardAnalytics()
+    ]).catch(function (err) {
+      toast(err.message || "Gagal memuat data");
+    });
+  }
+
+  function loadDashboardAnalytics() {
+    return runServer("getDashboardAnalytics", { sessionToken: APP_STATE.token }).then(function (res) {
+      APP_STATE.analytics = res.data;
+      renderDashboard();
+    });
+  }
+
+  function renderDashboard() {
+    var data = APP_STATE.analytics || {};
+    var attendanceToday = data.attendanceToday || {};
+    setText("kpiStudents", data.studentsTotal || 0);
+    setText("kpiPresent", attendanceToday.hadir || 0);
+    setText("kpiPresentRate", (attendanceToday.present_rate || 0) + "%");
+
+    var gradeMap = data.gradeAverageBySubject || {};
+    var subjectHtml = Object.keys(gradeMap)
+      .map(function (k) {
+        return "<div class='row' style='justify-content:space-between'><span>" + escapeHtml(k) + "</span><b>" + gradeMap[k] + "</b></div>";
+      })
+      .join("");
+    document.getElementById("subjectScoreList").innerHTML = subjectHtml || "<span class='note'>Belum ada data.</span>";
+
+    var violationRows = (data.topViolations || [])
+      .map(function (v) {
+        return "<div class='row' style='justify-content:space-between'><span>" + escapeHtml(v.violation_type) + "</span><b>" + v.count + "</b></div>";
+      })
+      .join("");
+    document.getElementById("violationList").innerHTML = violationRows || "<span class='note'>Belum ada data.</span>";
+
+    var monthlyDays = ((data.attendanceMonthly || {}).days || []).slice().sort(function (a, b) {
+      return String(a.date || "").localeCompare(String(b.date || ""));
+    });
+    var tbody = document.querySelector("#monthlyRecapTable tbody");
+    tbody.innerHTML = monthlyDays
+      .map(function (row) {
+        return (
+          "<tr>" +
+          "<td>" + escapeHtml(row.date) + "</td>" +
+          "<td>" + Number(row.hadir || 0) + "</td>" +
+          "<td>" + Number(row.sakit || 0) + "</td>" +
+          "<td>" + Number(row.izin || 0) + "</td>" +
+          "<td>" + Number(row.alfa || 0) + "</td>" +
+          "<td>" + Number(row.late_count || 0) + "</td>" +
+          "</tr>"
+        );
+      })
+      .join("");
+  }
+
+  function bindStudentEvents() {
+    document.getElementById("studentForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var payload = {
+        sessionToken: APP_STATE.token,
+        data: {
+          student_id: val("studentId"),
+          full_name: val("studentName"),
+          nisn: val("studentNisn"),
+          class_name: val("studentClass"),
+          gender: val("studentGender"),
+          parent_name: val("parentName"),
+          parent_wa: val("parentWa"),
+          is_active: true
+        }
+      };
+      runServer("upsertStudent", payload)
+        .then(function () {
+          toast("Data siswa tersimpan");
+          resetStudentForm();
+          return loadStudents();
+        })
+        .catch(function (err) {
+          toast(err.message);
+        });
+    });
+
+    document.getElementById("studentFormResetBtn").addEventListener("click", resetStudentForm);
+    document.getElementById("studentSearch").addEventListener("input", renderStudentsTable);
+
+    document.getElementById("generateQrBtn").addEventListener("click", function () {
+      var studentId = val("studentQrSelect");
+      if (!studentId) return toast("Pilih siswa dulu.");
+      runServer("generateStudentQr", { sessionToken: APP_STATE.token, student_id: studentId })
+        .then(function (res) {
+          var data = res.data;
+          document.getElementById("qrPreviewWrap").classList.remove("hidden");
+          document.getElementById("qrPreviewImg").src = data.qrImageUrl;
+          document.getElementById("qrPreviewText").textContent = data.qrPayload;
+          toast("QR siswa berhasil dibuat");
+          return loadStudents();
+        })
+        .catch(function (err) {
+          toast(err.message);
+        });
+    });
+
+    document.getElementById("bulkQrBtn").addEventListener("click", function () {
+      runServer("getStudentQrBatch", { sessionToken: APP_STATE.token })
+        .then(function (res) {
+          var rows = res.data || [];
+          if (!rows.length) return toast("Belum ada siswa.");
+          document.getElementById("qrPreviewWrap").classList.remove("hidden");
+          document.getElementById("qrPreviewImg").src = rows[0].qrImageUrl;
+          document.getElementById("qrPreviewText").textContent = "Contoh QR: " + rows[0].qrPayload;
+          toast("Batch QR berhasil dibuat (" + rows.length + " siswa)");
+          return loadStudents();
+        })
+        .catch(function (err) {
+          toast(err.message);
+        });
+    });
+  }
+
+  function loadStudents() {
+    return runServer("listStudents", { sessionToken: APP_STATE.token, activeOnly: true }).then(function (res) {
+      APP_STATE.students = res.data || [];
+      renderStudentSelects();
+      renderStudentsTable();
+    });
+  }
+
+  function renderStudentSelects() {
+    var options = "<option value=''>- Pilih Siswa -</option>" + APP_STATE.students
+      .map(function (s) {
+        return "<option value='" + escapeHtml(s.student_id) + "'>" + escapeHtml(s.full_name) + "</option>";
+      })
+      .join("");
+    ["studentQrSelect", "manualStudentSelect", "gradeStudentSelect", "counselingStudentSelect", "counselingFilterStudent"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = id === "counselingFilterStudent" ? "<option value=''>Semua</option>" + options.replace("<option value=''>- Pilih Siswa -</option>", "") : options;
+    });
+  }
+
+  function renderStudentsTable() {
+    var query = val("studentSearch").toLowerCase();
+    var rows = APP_STATE.students.filter(function (s) {
+      return (
+        String(s.full_name || "").toLowerCase().indexOf(query) >= 0 ||
+        String(s.nisn || "").toLowerCase().indexOf(query) >= 0
+      );
+    });
+    var tbody = document.querySelector("#studentsTable tbody");
+    tbody.innerHTML = rows
+      .map(function (s) {
+        return (
+          "<tr>" +
+          "<td>" + escapeHtml(s.student_id) + "</td>" +
+          "<td>" + escapeHtml(s.full_name) + "</td>" +
+          "<td>" + escapeHtml(s.nisn || "-") + "</td>" +
+          "<td>" + escapeHtml(s.class_name || "-") + "</td>" +
+          "<td>" + escapeHtml(s.parent_name || "-") + "</td>" +
+          "<td>" + escapeHtml(s.parent_wa || "-") + "</td>" +
+          "<td><button class='btn btn-secondary' onclick=\"editStudent('" + escapeJs(s.student_id) + "')\">Edit</button></td>" +
+          "</tr>"
+        );
+      })
+      .join("");
+  }
+
+  window.editStudent = function (studentId) {
+    var student = APP_STATE.students.find(function (s) { return s.student_id === studentId; });
+    if (!student) return;
+    setVal("studentId", student.student_id || "");
+    setVal("studentName", student.full_name || "");
+    setVal("studentNisn", student.nisn || "");
+    setVal("studentClass", student.class_name || "");
+    setVal("studentGender", student.gender || "");
+    setVal("parentName", student.parent_name || "");
+    setVal("parentWa", student.parent_wa || "");
+    switchView("students");
+  };
+
+  function resetStudentForm() {
+    ["studentId", "studentName", "studentNisn", "studentClass", "studentGender", "parentName", "parentWa"].forEach(function (id) {
+      setVal(id, "");
+    });
+    setVal("studentClass", "Kelas 4");
+  }
+
+  function bindAttendanceEvents() {
+    document.getElementById("submitQrBtn").addEventListener("click", function () {
+      var qrData = val("scanQrInput");
+      if (!qrData) return toast("Input QR masih kosong.");
+      submitQrAttendance({ qr_data: qrData, source: "qr_scan" });
+    });
+
+    document.getElementById("manualAttendanceForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var payload = {
+        student_id: val("manualStudentSelect"),
+        status: val("manualStatusSelect"),
+        date: val("attendanceDate"),
+        check_in_time: val("manualCheckInTime"),
+        note: val("manualAttendanceNote"),
+        source: "manual"
+      };
+      runServer("upsertAttendanceManual", { sessionToken: APP_STATE.token, data: payload, notifyParent: false })
+        .then(function () {
+          toast("Presensi manual tersimpan");
+          return Promise.all([loadAttendance(), refreshAttendanceRecap()]);
+        })
+        .catch(function (err) {
+          queueOfflineAction("attendance_manual", payload, err);
+        });
+    });
+
+    document.getElementById("openScannerBtn").addEventListener("click", startScanner);
+    document.getElementById("reloadAttendanceBtn").addEventListener("click", function () {
+      loadAttendance();
+      refreshAttendanceRecap();
+    });
+    document.getElementById("attendanceSearch").addEventListener("input", renderAttendanceTable);
+    document.getElementById("refreshRecapBtn").addEventListener("click", refreshAttendanceRecap);
+    document.getElementById("attendanceDate").addEventListener("change", function () {
+      loadAttendance();
+      refreshAttendanceRecap();
+    });
+  }
+
+  function populateMonthYearFilters() {
+    var month = Number(new Date().getMonth() + 1);
+    var year = Number(new Date().getFullYear());
+    var monthOpt = "";
+    for (var m = 1; m <= 12; m++) {
+      monthOpt += "<option value='" + m + "'" + (m === month ? " selected" : "") + ">" + String(m).padStart(2, "0") + "</option>";
+    }
+    var yearOpt = "";
+    for (var y = year - 1; y <= year + 1; y++) {
+      yearOpt += "<option value='" + y + "'" + (y === year ? " selected" : "") + ">" + y + "</option>";
+    }
+    setIfExistsHtml("recapMonth", monthOpt);
+    setIfExistsHtml("recapYear", yearOpt);
+  }
+
+  function submitQrAttendance(data) {
+    data = data || {};
+    data.date = val("attendanceDate") || dateInputToday();
+    runServer("scanAttendance", merge(data, { sessionToken: APP_STATE.token }))
+      .then(function (res) {
+        var waSent = !!(((res || {}).data || {}).waResult || {}).sent;
+        toast("Scan berhasil. WA: " + (waSent ? "terkirim" : "gagal/skip"));
+        setVal("scanQrInput", "");
+        return Promise.all([loadAttendance(), refreshAttendanceRecap(), loadDashboardAnalytics()]);
+      })
+      .catch(function (err) {
+        queueOfflineAction("attendance_scan", data, err);
+      });
+  }
+
+  function loadAttendance() {
+    return runServer("listAttendance", {
+      sessionToken: APP_STATE.token,
+      date: val("attendanceDate")
+    }).then(function (res) {
+      APP_STATE.attendanceRows = res.data || [];
+      renderAttendanceTable();
+    });
+  }
+
+  function refreshAttendanceRecap() {
+    var date = val("attendanceDate") || dateInputToday();
+    var month = val("recapMonth") || String(new Date().getMonth() + 1);
+    var year = val("recapYear") || String(new Date().getFullYear());
+    return runServer("getAttendanceRecap", {
+      sessionToken: APP_STATE.token,
+      date: date,
+      month: Number(month),
+      year: Number(year)
+    }).then(function (res) {
+      var totals = (((res || {}).data || {}).monthly || {}).totals || {};
+      setText("recapHadir", totals.hadir || 0);
+      setText("recapIzinSakit", Number(totals.izin || 0) + Number(totals.sakit || 0));
+      setText("recapAlfa", totals.alfa || 0);
+    });
+  }
+
+  function renderAttendanceTable() {
+    var query = val("attendanceSearch").toLowerCase();
+    var rows = APP_STATE.attendanceRows.filter(function (r) {
+      return String(r.student_name || "").toLowerCase().indexOf(query) >= 0;
+    });
+    var tbody = document.querySelector("#attendanceTable tbody");
+    tbody.innerHTML = rows
+      .map(function (r) {
+        var badgeClass = "st-" + (r.status || "hadir");
+        return (
+          "<tr>" +
+          "<td>" + escapeHtml(r.date || "-") + "</td>" +
+          "<td>" + escapeHtml(r.student_name || "-") + "</td>" +
+          "<td><span class='badge " + badgeClass + "'>" + escapeHtml(r.status || "-") + "</span></td>" +
+          "<td>" + escapeHtml(r.check_in_time || "-") + "</td>" +
+          "<td>" + (r.is_late ? "Ya" : "Tidak") + "</td>" +
+          "<td>" + escapeHtml(r.note || "-") + "</td>" +
+          "<td>" + escapeHtml(r.teacher_name || "-") + "</td>" +
+          "</tr>"
+        );
+      })
+      .join("");
+  }
+
+  function startScanner() {
+    if (!window.Html5Qrcode) {
+      toast("Library scanner tidak tersedia.");
+      return;
+    }
+    if (APP_STATE.scanner) {
+      stopScanner();
+      return;
+    }
+    var qrReaderId = "qrReader";
+    var qr = new Html5Qrcode(qrReaderId);
+    APP_STATE.scanner = qr;
+    qr
+      .start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 220 },
+        function (decodedText) {
+          submitQrAttendance({ qr_data: decodedText, source: "qr_camera" });
+          stopScanner();
+        }
+      )
+      .then(function () {
+        toast("Scanner aktif. Arahkan kamera ke QR siswa.");
+      })
+      .catch(function (err) {
+        APP_STATE.scanner = null;
+        toast("Gagal membuka kamera: " + err);
+      });
+  }
+
+  function stopScanner() {
+    if (!APP_STATE.scanner) return;
+    var scanner = APP_STATE.scanner;
+    APP_STATE.scanner = null;
+    scanner
+      .stop()
+      .then(function () {
+        scanner.clear();
+      })
+      .catch(function () {});
+  }
+
+  function bindGradeEvents() {
+    Array.prototype.slice.call(document.querySelectorAll(".grade-input")).forEach(function (input) {
+      input.addEventListener("input", previewGradeFinalScore);
+    });
+    document.getElementById("gradeForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var payload = {
+        sessionToken: APP_STATE.token,
+        data: {
+          grade_id: val("gradeId"),
+          student_id: val("gradeStudentSelect"),
+          subject: val("gradeSubjectSelect"),
+          objective_code: val("gradeObjectiveCode"),
+          objective_text: val("gradeObjectiveText"),
+          nilai_harian: num("nilaiHarian"),
+          nilai_tugas: num("nilaiTugas"),
+          nilai_pts: num("nilaiPts"),
+          nilai_pas: num("nilaiPas"),
+          nilai_sikap: num("nilaiSikap"),
+          nilai_produk: num("nilaiProduk"),
+          semester: val("gradeSemester"),
+          academic_year: val("gradeAcademicYear") || defaultAcademicYear()
+        }
+      };
+      runServer("saveGrade", payload)
+        .then(function () {
+          toast("Nilai tersimpan");
+          return Promise.all([loadGrades(), loadDashboardAnalytics()]);
+        })
+        .catch(function (err) {
+          queueOfflineAction("grade_save", payload.data, err);
+        });
+    });
+
+    document.getElementById("loadGradesBtn").addEventListener("click", loadGrades);
+    document.getElementById("exportGradesBtn").addEventListener("click", function () {
+      runServer("exportGrades", {
+        sessionToken: APP_STATE.token,
+        subject: val("gradeFilterSubject"),
+        semester: val("gradeFilterSemester"),
+        academic_year: val("gradeAcademicYear")
+      })
+        .then(function (res) {
+          var url = (res.data || {}).sheetUrl || "";
+          toast("Export selesai: " + ((res.data || {}).exportedRows || 0) + " baris");
+          if (url) window.open(url, "_blank");
+        })
+        .catch(function (err) {
+          toast(err.message);
+        });
+    });
+  }
+
+  function previewGradeFinalScore() {
+    var values = [num("nilaiHarian"), num("nilaiTugas"), num("nilaiPts"), num("nilaiPas"), num("nilaiSikap"), num("nilaiProduk")];
+    var weights = [20, 20, 20, 25, 10, 5];
+    var finalScore = 0;
+    for (var i = 0; i < values.length; i++) finalScore += values[i] * weights[i];
+    finalScore = Math.round((finalScore / 100) * 100) / 100;
+    setText("gradeFinalPreview", finalScore || 0);
+  }
+
+  function loadGrades() {
+    return runServer("listGrades", {
+      sessionToken: APP_STATE.token,
+      subject: val("gradeFilterSubject"),
+      semester: val("gradeFilterSemester"),
+      academic_year: val("gradeAcademicYear")
+    }).then(function (res) {
+      APP_STATE.gradesRows = res.data || [];
+      renderGradesTable();
+    });
+  }
+
+  function renderGradesTable() {
+    var tbody = document.querySelector("#gradesTable tbody");
+    tbody.innerHTML = APP_STATE.gradesRows
+      .map(function (r) {
+        return (
+          "<tr>" +
+          "<td>" + escapeHtml(r.student_name || "-") + "</td>" +
+          "<td>" + escapeHtml(r.subject || "-") + "</td>" +
+          "<td>" + escapeHtml((r.objective_code || "-") + " " + (r.objective_text || "")) + "</td>" +
+          "<td>" + r.nilai_harian + "</td>" +
+          "<td>" + r.nilai_tugas + "</td>" +
+          "<td>" + r.nilai_pts + "</td>" +
+          "<td>" + r.nilai_pas + "</td>" +
+          "<td>" + r.nilai_sikap + "</td>" +
+          "<td>" + r.nilai_produk + "</td>" +
+          "<td><b>" + r.final_score + "</b></td>" +
+          "<td><span class='badge'>" + escapeHtml(r.predicate || "-") + "</span></td>" +
+          "</tr>"
+        );
+      })
+      .join("");
+  }
+
+  function bindJournalEvents() {
+    document.getElementById("journalForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var payload = {
+        sessionToken: APP_STATE.token,
+        data: {
+          tanggal: val("journalTanggal"),
+          mata_pelajaran: val("journalMapel"),
+          tujuan_pembelajaran: val("journalTp"),
+          materi: val("journalMateri"),
+          kendala: val("journalKendala"),
+          jam_waktu: val("journalJam")
+        }
+      };
+      runServer("saveJournal", payload)
+        .then(function () {
+          toast("Jurnal tersimpan");
+          return loadJournal();
+        })
+        .catch(function (err) {
+          queueOfflineAction("journal_save", payload.data, err);
+        });
+    });
+    document.getElementById("loadJournalBtn").addEventListener("click", loadJournal);
+  }
+
+  function loadJournal() {
+    return runServer("listJournal", {
+      sessionToken: APP_STATE.token,
+      tanggal: val("journalFilterDate"),
+      mata_pelajaran: val("journalFilterMapel")
+    }).then(function (res) {
+      APP_STATE.journalRows = res.data || [];
+      renderJournalTable();
+    });
+  }
+
+  function renderJournalTable() {
+    var tbody = document.querySelector("#journalTable tbody");
+    tbody.innerHTML = APP_STATE.journalRows
+      .map(function (r) {
+        return (
+          "<tr>" +
+          "<td>" + escapeHtml(r.tanggal || "-") + "</td>" +
+          "<td>" + escapeHtml(r.mata_pelajaran || "-") + "</td>" +
+          "<td>" + escapeHtml(r.tujuan_pembelajaran || "-") + "</td>" +
+          "<td>" + escapeHtml(r.materi || "-") + "</td>" +
+          "<td>" + escapeHtml(r.kendala || "-") + "</td>" +
+          "<td>" + escapeHtml(r.jam_waktu || "-") + "</td>" +
+          "<td>" + escapeHtml(r.teacher_name || "-") + "</td>" +
+          "</tr>"
+        );
+      })
+      .join("");
+  }
+
+  function bindCounselingEvents() {
+    document.getElementById("counselingForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var payload = {
+        sessionToken: APP_STATE.token,
+        data: {
+          tanggal: val("counselingDate"),
+          student_id: val("counselingStudentSelect"),
+          violation_type: val("counselingViolation"),
+          handling: val("counselingHandling"),
+          follow_up: val("counselingFollowUp"),
+          result: val("counselingResult"),
+          notifyParent: !!document.getElementById("counselingNotify").checked
+        }
+      };
+      runServer("saveCounseling", payload)
+        .then(function (res) {
+          var sent = (((res || {}).data || {}).waResult || {}).sent;
+          toast("Konseling tersimpan. WA: " + (sent ? "terkirim" : "gagal/skip"));
+          return Promise.all([loadCounseling(), loadDashboardAnalytics()]);
+        })
+        .catch(function (err) {
+          queueOfflineAction("counseling_save", payload.data, err);
+        });
+    });
+    document.getElementById("loadCounselingBtn").addEventListener("click", loadCounseling);
+  }
+
+  function loadCounseling() {
+    return runServer("listCounseling", {
+      sessionToken: APP_STATE.token,
+      tanggal: val("counselingFilterDate"),
+      student_id: val("counselingFilterStudent")
+    }).then(function (res) {
+      APP_STATE.counselingRows = res.data || [];
+      renderCounselingTable();
+    });
+  }
+
+  function renderCounselingTable() {
+    var tbody = document.querySelector("#counselingTable tbody");
+    tbody.innerHTML = APP_STATE.counselingRows
+      .map(function (r) {
+        return (
+          "<tr>" +
+          "<td>" + escapeHtml(r.tanggal || "-") + "</td>" +
+          "<td>" + escapeHtml(r.student_name || "-") + "</td>" +
+          "<td>" + escapeHtml(r.violation_type || "-") + "</td>" +
+          "<td>" + escapeHtml(r.handling || "-") + "</td>" +
+          "<td>" + escapeHtml(r.follow_up || "-") + "</td>" +
+          "<td>" + escapeHtml(r.result || "-") + "</td>" +
+          "<td>" + (r.parent_notified ? "Terkirim" : "Tidak") + "</td>" +
+          "<td>" + escapeHtml(r.teacher_name || "-") + "</td>" +
+          "</tr>"
+        );
+      })
+      .join("");
+  }
+
+  function queueOfflineAction(type, data, err) {
+    addOfflineAction({ type: type, data: data });
+    toast((err && err.message ? err.message : "Koneksi gagal") + ". Data dimasukkan ke offline queue.");
+  }
+
+  function addOfflineAction(action) {
+    action.actionId = "Q-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+    APP_STATE.offlineQueue.push(action);
+    saveOfflineQueueToStorage();
+  }
+
+  function syncOfflineQueue() {
+    if (!APP_STATE.offlineQueue.length) {
+      return toast("Offline queue kosong.");
+    }
+    var actions = APP_STATE.offlineQueue.slice();
+    runServer("syncOfflineQueue", { sessionToken: APP_STATE.token, actions: actions })
+      .then(function (res) {
+        var resultRows = ((res || {}).data || {}).results || [];
+        var remain = [];
+        resultRows.forEach(function (row) {
+          if (!row.success) {
+            var found = actions.find(function (a) { return a.actionId === row.actionId; });
+            if (found) remain.push(found);
+          }
+        });
+        APP_STATE.offlineQueue = remain;
+        saveOfflineQueueToStorage();
+        toast("Sync queue selesai. Sukses: " + (actions.length - remain.length) + ", Gagal: " + remain.length);
+        reloadAllData();
+      })
+      .catch(function (err) {
+        toast("Sync queue gagal: " + err.message);
+      });
+  }
+
+  function loadOfflineQueueFromStorage() {
+    try {
+      var raw = localStorage.getItem(OFFLINE_QUEUE_KEY) || "[]";
+      APP_STATE.offlineQueue = JSON.parse(raw);
+    } catch (e) {
+      APP_STATE.offlineQueue = [];
+    }
+    updateOfflineQueueBadge();
+  }
+
+  function saveOfflineQueueToStorage() {
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(APP_STATE.offlineQueue));
+    updateOfflineQueueBadge();
+  }
+
+  function updateOfflineQueueBadge() {
+    setText("offlineQueueCount", APP_STATE.offlineQueue.length || 0);
+  }
+
+  function runServer(functionName, payload) {
+    return new Promise(function (resolve, reject) {
+      var runner = google.script.run
+        .withSuccessHandler(function (res) {
+          if (res && res.ok === false) return reject(new Error(res.message || "Server error"));
+          resolve(res);
+        })
+        .withFailureHandler(function (err) {
+          reject(new Error(err && err.message ? err.message : String(err)));
+        });
+      runner[functionName](payload || {});
+    });
+  }
+
+  function toast(message) {
+    var el = document.getElementById("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(function () {
+      el.classList.remove("show");
+    }, 2600);
+  }
+
+  function dateInputToday() {
+    var d = new Date();
+    var mm = String(d.getMonth() + 1).padStart(2, "0");
+    var dd = String(d.getDate()).padStart(2, "0");
+    return d.getFullYear() + "-" + mm + "-" + dd;
+  }
+
+  function defaultAcademicYear() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = d.getMonth() + 1;
+    return m >= 7 ? y + "/" + (y + 1) : y - 1 + "/" + y;
+  }
+
+  function val(id) {
+    var el = document.getElementById(id);
+    return el ? String(el.value || "").trim() : "";
+  }
+
+  function num(id) {
+    var n = Number(val(id));
+    return isNaN(n) ? 0 : n;
+  }
+
+  function setVal(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.value = value;
+  }
+
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function setIfExists(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.value = value;
+  }
+
+  function setIfExistsHtml(id, html) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
+  function merge(a, b) {
+    var out = {};
+    Object.keys(a || {}).forEach(function (k) { out[k] = a[k]; });
+    Object.keys(b || {}).forEach(function (k) { out[k] = b[k]; });
+    return out;
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escapeJs(str) {
+    return String(str || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  }
+</script>

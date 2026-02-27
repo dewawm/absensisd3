@@ -1,0 +1,81 @@
+<section id="view-students" class="page-view hidden">
+  <div class="grid grid-2">
+    <div class="card" id="studentFormCard">
+      <h3>Input Data Siswa</h3>
+      <form id="studentForm">
+        <input type="hidden" id="studentId" />
+        <div class="field">
+          <label for="studentName">Nama Siswa</label>
+          <input id="studentName" class="input" required />
+        </div>
+        <div class="field">
+          <label for="studentNisn">NISN</label>
+          <input id="studentNisn" class="input" />
+        </div>
+        <div class="field">
+          <label for="studentClass">Kelas</label>
+          <input id="studentClass" class="input" value="Kelas 4" />
+        </div>
+        <div class="field">
+          <label for="studentGender">Jenis Kelamin</label>
+          <select id="studentGender" class="select">
+            <option value="">- Pilih -</option>
+            <option value="L">Laki-laki</option>
+            <option value="P">Perempuan</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="parentName">Nama Orang Tua</label>
+          <input id="parentName" class="input" />
+        </div>
+        <div class="field">
+          <label for="parentWa">Nomor WhatsApp Orang Tua</label>
+          <input id="parentWa" class="input" placeholder="08xxxxxxxxxx" />
+        </div>
+        <div class="row">
+          <button type="submit" class="btn btn-primary">Simpan Siswa</button>
+          <button type="button" class="btn btn-secondary" id="studentFormResetBtn">Reset</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>QR Siswa</h3>
+      <div class="field">
+        <label for="studentQrSelect">Pilih Siswa</label>
+        <select id="studentQrSelect" class="select"></select>
+      </div>
+      <div class="row">
+        <button class="btn btn-soft" id="generateQrBtn">Generate QR</button>
+        <button class="btn btn-secondary" id="bulkQrBtn">Batch QR Semua</button>
+      </div>
+      <div id="qrPreviewWrap" style="margin-top: 12px" class="hidden">
+        <img id="qrPreviewImg" alt="QR Siswa" style="width: 220px; border-radius: 10px; border: 1px solid var(--border)" />
+        <div class="note" id="qrPreviewText" style="margin-top: 8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <div class="row" style="justify-content: space-between">
+      <h3 style="margin: 0">Daftar Siswa</h3>
+      <input id="studentSearch" class="input" placeholder="Cari nama / NISN" style="max-width: 280px" />
+    </div>
+    <div class="table-wrap" style="margin-top: 12px">
+      <table id="studentsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nama</th>
+            <th>NISN</th>
+            <th>Kelas</th>
+            <th>Orang Tua</th>
+            <th>WA</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>

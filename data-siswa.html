@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Siswa - SD No. 3 Lukluk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; color: #64748b; border-radius: 0.75rem; transition: all 0.2s; }
+        .sidebar-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .sidebar-active { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background-color: #eff6ff; color: #2563eb; border-radius: 0.75rem; font-weight: 600; border-right: 4px solid #2563eb; }
+        .modal-backdrop { background-color: rgba(15, 23, 42, 0.55); }
+        .toast-enter { animation: toast-in 0.2s ease-out; }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
+        <div class="flex items-center space-x-3 mb-10">
+            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
+            <a href="dashboard.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-siswa.html" class="sidebar-active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Data Siswa</span>
+            </a>
+            <a href="data-user.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Data User</span>
+            </a>
+            <a href="daftar-nilai.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                <span>Daftar Nilai Harian</span>
+            </a>
+            <a href="daftar-hadir.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Daftar Hadir Harian</span>
+            </a>
+            <a href="jurnal.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Jurnal Mengajar</span>
+            </a>
+            <a href="konseling.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>Buku Konseling</span>
+            </a>
+            <a href="modul.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>Modul Ajar</span>
+            </a>
+            <hr class="my-4 border-gray-100">
+            <a href="index.html" class="flex items-center space-x-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition font-semibold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <span>Keluar Sistem</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-10">
+        <header class="mb-8 space-y-5">
+            <div class="flex flex-wrap gap-4 items-start justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Kelola Data Siswa</h1>
+                    <p class="text-gray-500 text-sm">Manajemen profil siswa kelas 4</p>
+                </div>
+                <button id="openStudentModalBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-100 transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Tambah Siswa
+                </button>
+            </div>
+
+            <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label class="md:col-span-2">
+                        <span class="sr-only">Cari siswa</span>
+                        <input id="studentSearch" type="text" placeholder="Cari nama atau NISN..." class="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300">
+                    </label>
+                    <label>
+                        <span class="sr-only">Filter kelas</span>
+                        <select id="classFilter" class="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300">
+                            <option value="all">Semua Kelas</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm">
+                    <p class="text-slate-500">Jumlah siswa: <span id="studentCount" class="font-semibold text-slate-700">0</span></p>
+                    <button id="resetFilterBtn" type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 font-semibold hover:bg-slate-50 transition">Reset Filter</button>
+                </div>
+            </div>
+        </header>
+
+        <section class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wide">
+                        <tr>
+                            <th class="px-4 py-3 text-left">NISN</th>
+                            <th class="px-4 py-3 text-left">Nama Siswa</th>
+                            <th class="px-4 py-3 text-left">Kelas</th>
+                            <th class="px-4 py-3 text-left">JK</th>
+                            <th class="px-4 py-3 text-left">Orang Tua</th>
+                            <th class="px-4 py-3 text-left">WA</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="hidden p-10 text-center text-slate-500">
+                Data siswa belum tersedia.
+            </div>
+        </section>
+    </main>
+
+    <div id="studentModal" class="hidden fixed inset-0 z-50">
+        <div class="absolute inset-0 modal-backdrop"></div>
+        <div class="relative min-h-screen p-4 flex items-center justify-center">
+            <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h2 id="studentModalTitle" class="font-bold text-slate-800 text-lg">Tambah Data Siswa</h2>
+                        <p class="text-sm text-slate-500">Isi biodata siswa dengan lengkap.</p>
+                    </div>
+                    <button id="closeStudentModalBtn" type="button" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+                        <span class="sr-only">Tutup modal</span>
+                        <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form id="studentForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="studentId" name="id" type="hidden">
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">NISN</span>
+                        <input id="studentNisn" name="nisn" type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Contoh: 1234567890">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Nama Siswa</span>
+                        <input id="studentName" name="full_name" required type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Nama lengkap siswa">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Kelas</span>
+                        <input id="studentClass" name="class_name" required type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Contoh: 4A">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Jenis Kelamin</span>
+                        <select id="studentGender" name="gender" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300">
+                            <option value="">Pilih</option>
+                            <option value="L">Laki-laki</option>
+                            <option value="P">Perempuan</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Nama Orang Tua</span>
+                        <input id="parentName" name="parent_name" type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Nama orang tua/wali">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">No. WhatsApp</span>
+                        <input id="parentWa" name="parent_wa" type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="08xxxxxxxxxx">
+                    </label>
+                    <label class="md:col-span-2 flex items-center gap-2">
+                        <input id="studentActive" name="is_active" type="checkbox" class="w-4 h-4 text-blue-600 border-slate-300 rounded" checked>
+                        <span class="text-sm text-slate-700">Siswa aktif</span>
+                    </label>
+                    <div class="md:col-span-2 flex justify-end gap-3 pt-2">
+                        <button id="cancelStudentBtn" type="button" class="px-5 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Batal</button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+
+    <script>
+        const STORAGE_KEY = "sd3_data_siswa_v1";
+        const defaultStudents = [
+            { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", class_name: "4A", gender: "P", parent_name: "I Made Lestari", parent_wa: "081234567001", is_active: true, created_at: "2026-01-10T07:00:00.000Z" },
+            { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", class_name: "4A", gender: "L", parent_name: "Ni Ketut Santosa", parent_wa: "081234567002", is_active: true, created_at: "2026-01-10T07:05:00.000Z" },
+            { id: "STU-003", nisn: "1234567003", full_name: "Komang Raka Pradana", class_name: "4B", gender: "L", parent_name: "Wayan Pradana", parent_wa: "081234567003", is_active: false, created_at: "2026-01-10T07:10:00.000Z" }
+        ];
+
+        const studentsTableBody = document.getElementById("studentsTableBody");
+        const emptyState = document.getElementById("emptyState");
+        const studentCount = document.getElementById("studentCount");
+        const studentSearch = document.getElementById("studentSearch");
+        const classFilter = document.getElementById("classFilter");
+        const resetFilterBtn = document.getElementById("resetFilterBtn");
+
+        const openStudentModalBtn = document.getElementById("openStudentModalBtn");
+        const studentModal = document.getElementById("studentModal");
+        const closeStudentModalBtn = document.getElementById("closeStudentModalBtn");
+        const cancelStudentBtn = document.getElementById("cancelStudentBtn");
+        const studentForm = document.getElementById("studentForm");
+        const studentModalTitle = document.getElementById("studentModalTitle");
+        const toastEl = document.getElementById("toast");
+
+        let students = loadStudents();
+        let toastTimer = null;
+
+        studentSearch.addEventListener("input", renderStudents);
+        classFilter.addEventListener("change", renderStudents);
+        resetFilterBtn.addEventListener("click", function () {
+            studentSearch.value = "";
+            classFilter.value = "all";
+            renderStudents();
+        });
+
+        openStudentModalBtn.addEventListener("click", function () {
+            openStudentModal();
+        });
+        closeStudentModalBtn.addEventListener("click", closeStudentModal);
+        cancelStudentBtn.addEventListener("click", closeStudentModal);
+        studentModal.addEventListener("click", function (event) {
+            if (event.target === studentModal || event.target.classList.contains("modal-backdrop")) {
+                closeStudentModal();
+            }
+        });
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && !studentModal.classList.contains("hidden")) {
+                closeStudentModal();
+            }
+        });
+
+        studentForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const id = String(document.getElementById("studentId").value || "").trim();
+            const nisn = String(document.getElementById("studentNisn").value || "").trim();
+            const fullName = String(document.getElementById("studentName").value || "").trim();
+            const className = String(document.getElementById("studentClass").value || "").trim();
+            const gender = String(document.getElementById("studentGender").value || "").trim();
+            const parentName = String(document.getElementById("parentName").value || "").trim();
+            const parentWa = normalizePhone(document.getElementById("parentWa").value || "");
+            const isActive = !!document.getElementById("studentActive").checked;
+
+            if (!fullName) {
+                alert("Nama siswa wajib diisi.");
+                return;
+            }
+            if (!className) {
+                alert("Kelas wajib diisi.");
+                return;
+            }
+
+            if (nisn) {
+                const dup = students.find(function (item) {
+                    return String(item.nisn || "") === nisn && item.id !== id;
+                });
+                if (dup) {
+                    alert("NISN sudah dipakai siswa lain.");
+                    return;
+                }
+            }
+
+            if (id) {
+                students = students.map(function (item) {
+                    if (item.id !== id) return item;
+                    return {
+                        ...item,
+                        nisn: nisn,
+                        full_name: fullName,
+                        class_name: className,
+                        gender: gender,
+                        parent_name: parentName,
+                        parent_wa: parentWa,
+                        is_active: isActive
+                    };
+                });
+                toast("Data siswa diperbarui.");
+            } else {
+                students.unshift({
+                    id: uid("STU"),
+                    nisn: nisn,
+                    full_name: fullName,
+                    class_name: className,
+                    gender: gender,
+                    parent_name: parentName,
+                    parent_wa: parentWa,
+                    is_active: isActive,
+                    created_at: new Date().toISOString()
+                });
+                toast("Siswa baru ditambahkan.");
+            }
+
+            saveStudents(students);
+            refreshClassFilterOptions();
+            renderStudents();
+            closeStudentModal();
+        });
+
+        refreshClassFilterOptions();
+        renderStudents();
+
+        function loadStudents() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return defaultStudents.slice();
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return defaultStudents.slice();
+                return parsed.filter(Boolean).map(function (item) {
+                    return {
+                        id: String(item.id || uid("STU")),
+                        nisn: String(item.nisn || "").trim(),
+                        full_name: String(item.full_name || "Tanpa Nama").trim(),
+                        class_name: String(item.class_name || "4A").trim(),
+                        gender: String(item.gender || "").trim(),
+                        parent_name: String(item.parent_name || "").trim(),
+                        parent_wa: normalizePhone(item.parent_wa || ""),
+                        is_active: item.is_active !== false,
+                        created_at: String(item.created_at || new Date().toISOString())
+                    };
+                });
+            } catch (error) {
+                return defaultStudents.slice();
+            }
+        }
+
+        function saveStudents(rows) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+        }
+
+        function refreshClassFilterOptions() {
+            const selected = classFilter.value || "all";
+            const classes = Array.from(new Set(students.map(function (item) {
+                return String(item.class_name || "").trim();
+            }).filter(Boolean))).sort(function (a, b) {
+                return a.localeCompare(b, "id");
+            });
+
+            classFilter.innerHTML = '<option value="all">Semua Kelas</option>' + classes.map(function (className) {
+                return '<option value="' + esc(className) + '">' + esc(className) + '</option>';
+            }).join("");
+
+            if (classes.includes(selected)) {
+                classFilter.value = selected;
+            } else {
+                classFilter.value = "all";
+            }
+        }
+
+        function renderStudents() {
+            const query = studentSearch.value.trim().toLowerCase();
+            const className = classFilter.value;
+
+            const filtered = students
+                .filter(function (item) {
+                    const matchQuery =
+                        item.full_name.toLowerCase().includes(query) ||
+                        String(item.nisn || "").toLowerCase().includes(query);
+                    const matchClass = className === "all" || item.class_name === className;
+                    return matchQuery && matchClass;
+                })
+                .sort(function (a, b) {
+                    return String(a.full_name).localeCompare(String(b.full_name), "id");
+                });
+
+            studentCount.textContent = String(filtered.length);
+            emptyState.classList.toggle("hidden", filtered.length > 0);
+            studentsTableBody.innerHTML = filtered.map(function (item) {
+                const statusClass = item.is_active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500";
+                const statusText = item.is_active ? "Aktif" : "Nonaktif";
+                const genderText = item.gender === "L" ? "L" : item.gender === "P" ? "P" : "-";
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 text-slate-700">${esc(item.nisn || "-")}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-800">${esc(item.full_name)}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.class_name)}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(genderText)}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.parent_name || "-")}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.parent_wa || "-")}</td>
+                        <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full ${statusClass}">${statusText}</span></td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="inline-flex items-center gap-3">
+                                <button type="button" data-id="${esc(item.id)}" class="edit-btn text-blue-600 font-semibold text-xs hover:underline">Edit</button>
+                                <button type="button" data-id="${esc(item.id)}" class="delete-btn text-red-500 font-semibold text-xs hover:underline">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            bindTableActions();
+        }
+
+        function bindTableActions() {
+            const editButtons = studentsTableBody.querySelectorAll(".edit-btn");
+            editButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = String(btn.getAttribute("data-id") || "");
+                    const data = students.find(function (item) { return item.id === id; });
+                    if (!data) return;
+                    openStudentModal(data);
+                });
+            });
+
+            const deleteButtons = studentsTableBody.querySelectorAll(".delete-btn");
+            deleteButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = String(btn.getAttribute("data-id") || "");
+                    if (!id) return;
+                    if (!confirm("Hapus data siswa ini?")) return;
+                    students = students.filter(function (item) { return item.id !== id; });
+                    saveStudents(students);
+                    refreshClassFilterOptions();
+                    renderStudents();
+                    toast("Data siswa dihapus.");
+                });
+            });
+        }
+
+        function openStudentModal(data) {
+            studentForm.reset();
+            document.getElementById("studentId").value = "";
+            document.getElementById("studentActive").checked = true;
+            studentModalTitle.textContent = "Tambah Data Siswa";
+
+            if (data) {
+                document.getElementById("studentId").value = data.id;
+                document.getElementById("studentNisn").value = data.nisn || "";
+                document.getElementById("studentName").value = data.full_name || "";
+                document.getElementById("studentClass").value = data.class_name || "";
+                document.getElementById("studentGender").value = data.gender || "";
+                document.getElementById("parentName").value = data.parent_name || "";
+                document.getElementById("parentWa").value = data.parent_wa || "";
+                document.getElementById("studentActive").checked = data.is_active !== false;
+                studentModalTitle.textContent = "Edit Data Siswa";
+            }
+
+            studentModal.classList.remove("hidden");
+            document.body.classList.add("overflow-hidden");
+            document.getElementById("studentName").focus();
+        }
+
+        function closeStudentModal() {
+            studentModal.classList.add("hidden");
+            document.body.classList.remove("overflow-hidden");
+        }
+
+        function uid(prefix) {
+            return prefix + "-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+        }
+
+        function normalizePhone(value) {
+            const digits = String(value || "").replace(/[^\d]/g, "");
+            if (!digits) return "";
+            if (digits.startsWith("0")) return digits;
+            if (digits.startsWith("62")) return "0" + digits.slice(2);
+            return digits;
+        }
+
+        function esc(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function toast(message) {
+            if (!toastEl) return;
+            toastEl.textContent = message;
+            toastEl.classList.remove("hidden");
+            toastEl.classList.add("toast-enter");
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toastEl.classList.add("hidden");
+                toastEl.classList.remove("toast-enter");
+            }, 1800);
+        }
+    </script>
+</body>
+</html>

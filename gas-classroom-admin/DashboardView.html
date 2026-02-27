@@ -1,0 +1,46 @@
+<section id="view-dashboard" class="page-view">
+  <div class="grid grid-3" id="kpiGrid">
+    <div class="kpi">
+      <div class="label">Total Siswa Aktif</div>
+      <div class="value" id="kpiStudents">0</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Hadir Hari Ini</div>
+      <div class="value" id="kpiPresent">0</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Persentase Hadir</div>
+      <div class="value" id="kpiPresentRate">0%</div>
+    </div>
+  </div>
+
+  <div class="grid grid-2" style="margin-top: 14px">
+    <div class="card">
+      <h3>Rata-rata Nilai per Mapel</h3>
+      <div id="subjectScoreList" class="note">Belum ada data.</div>
+    </div>
+    <div class="card">
+      <h3>Pelanggaran Teratas</h3>
+      <div id="violationList" class="note">Belum ada data.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <h3>Rekap Bulan Ini</h3>
+    <div class="table-wrap">
+      <table id="monthlyRecapTable">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Hadir</th>
+            <th>Sakit</th>
+            <th>Izin</th>
+            <th>Alfa</th>
+            <th>Terlambat</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>

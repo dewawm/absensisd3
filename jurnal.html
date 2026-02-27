@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Mengajar - SD No. 3 Lukluk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; color: #64748b; border-radius: 0.75rem; transition: all 0.2s; }
+        .sidebar-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .sidebar-active { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background-color: #eff6ff; color: #2563eb; border-radius: 0.75rem; font-weight: 600; border-right: 4px solid #2563eb; }
+        .toast-enter { animation: toast-in 0.2s ease-out; }
+        @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
+        <div class="flex items-center space-x-3 mb-10">
+            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
+            <a href="dashboard.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Dashboard</span></a>
+            <a href="data-siswa.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span>Data Siswa</span></a>
+            <a href="data-user.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Data User</span></a>
+            <a href="daftar-nilai.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span>Daftar Nilai Harian</span></a>
+            <a href="daftar-hadir.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span>Daftar Hadir Harian</span></a>
+            <a href="jurnal.html" class="sidebar-active"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span>Jurnal Mengajar</span></a>
+            <a href="konseling.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span>Buku Konseling</span></a>
+            <a href="modul.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><span>Modul Ajar</span></a>
+            <hr class="my-4 border-gray-100">
+            <a href="index.html" class="flex items-center space-x-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition font-semibold"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg><span>Keluar Sistem</span></a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-10">
+        <header class="mb-8 flex justify-between items-start gap-4 flex-wrap">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Jurnal Mengajar Harian</h1>
+                <p class="text-gray-500 text-sm">Catat aktivitas pembelajaran kelas 4</p>
+            </div>
+            <button id="exportExcelBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50 transition">Export Excel</button>
+        </header>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <form id="journalForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <label><span class="text-xs font-bold text-gray-400 uppercase">Tanggal</span><input id="journalDate" type="date" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"></label>
+                        <label><span class="text-xs font-bold text-gray-400 uppercase">Mapel</span><select id="journalSubject" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"><option>Matematika</option><option>Bahasa Indonesia</option><option>Bahasa Bali</option><option>IPAS</option><option>Pendidikan Pancasila</option><option>Seni Budaya</option></select></label>
+                        <label class="md:col-span-2"><span class="text-xs font-bold text-gray-400 uppercase">Tujuan Pembelajaran</span><select id="journalTpSelect" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"></select></label>
+                        <label class="md:col-span-2"><span class="text-xs font-bold text-gray-400 uppercase">Tambah Tujuan Pembelajaran Manual</span><div class="mt-1 flex gap-2"><input id="journalTpInput" type="text" placeholder="Contoh: TP 3 - Menganalisis..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"><button id="addJournalTpBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50">Tambah</button></div></label>
+                    </div>
+                    <label><span class="text-xs font-bold text-gray-400 uppercase">Materi</span><input id="journalMateri" required type="text" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm" placeholder="Materi pembelajaran"></label>
+                    <label><span class="text-xs font-bold text-gray-400 uppercase">Kegiatan Pembelajaran</span><textarea id="journalKegiatan" rows="5" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm" placeholder="Langkah kegiatan mengajar"></textarea></label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <label><span class="text-xs font-bold text-gray-400 uppercase">Jam</span><input id="journalJam" type="text" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm" placeholder="08:00 - 09:30"></label>
+                        <label><span class="text-xs font-bold text-gray-400 uppercase">Kendala</span><input id="journalKendala" type="text" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm" placeholder="Jika ada kendala"></label>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-indigo-100 transition">Simpan Jurnal</button>
+                    </div>
+                </form>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-slate-800 mb-3">Filter</h3>
+                <label class="block"><span class="text-xs font-bold text-gray-400 uppercase">Tanggal</span><input id="filterDate" type="date" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"></label>
+                <label class="block mt-3"><span class="text-xs font-bold text-gray-400 uppercase">Mapel</span><select id="filterSubject" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"><option value="all">Semua Mapel</option><option>Matematika</option><option>Bahasa Indonesia</option><option>Bahasa Bali</option><option>IPAS</option><option>Pendidikan Pancasila</option><option>Seni Budaya</option></select></label>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wide">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Tanggal</th>
+                            <th class="px-4 py-3 text-left">Mapel</th>
+                            <th class="px-4 py-3 text-left">Tujuan Pembelajaran</th>
+                            <th class="px-4 py-3 text-left">Materi</th>
+                            <th class="px-4 py-3 text-left">Kegiatan</th>
+                            <th class="px-4 py-3 text-left">Jam</th>
+                            <th class="px-4 py-3 text-left">Kendala</th>
+                            <th class="px-4 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journalTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="hidden p-10 text-center text-slate-500">Belum ada jurnal tersimpan.</div>
+        </section>
+    </main>
+
+    <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+
+    <script>
+        const JOURNAL_KEY = "sd3_jurnal_mengajar_v1";
+        const TP_KEY = "sd3_tp_master_v1";
+        const journalForm = document.getElementById("journalForm");
+        const journalDate = document.getElementById("journalDate");
+        const journalSubject = document.getElementById("journalSubject");
+        const journalTpSelect = document.getElementById("journalTpSelect");
+        const journalTpInput = document.getElementById("journalTpInput");
+        const addJournalTpBtn = document.getElementById("addJournalTpBtn");
+        const journalMateri = document.getElementById("journalMateri");
+        const journalKegiatan = document.getElementById("journalKegiatan");
+        const journalJam = document.getElementById("journalJam");
+        const journalKendala = document.getElementById("journalKendala");
+        const filterDate = document.getElementById("filterDate");
+        const filterSubject = document.getElementById("filterSubject");
+        const exportExcelBtn = document.getElementById("exportExcelBtn");
+        const journalTableBody = document.getElementById("journalTableBody");
+        const emptyState = document.getElementById("emptyState");
+        const toastEl = document.getElementById("toast");
+
+        const defaultTpBySubject = {
+            "Matematika": ["TP 1 - Menyelesaikan operasi bilangan cacah"],
+            "Bahasa Indonesia": ["TP 1 - Menyusun paragraf sederhana"],
+            "Bahasa Bali": ["TP 1 - Menulis kalimat sederhana berbahasa Bali"],
+            "IPAS": ["TP 1 - Mengamati perubahan wujud benda"],
+            "Pendidikan Pancasila": ["TP 1 - Menjelaskan penerapan nilai Pancasila"],
+            "Seni Budaya": ["TP 1 - Mengekspresikan karya sederhana"]
+        };
+
+        let journals = loadArray(JOURNAL_KEY, []);
+        let tpBySubject = loadTpMap();
+        let toastTimer = null;
+        journalDate.value = dateKey(new Date());
+        fillTpOptions();
+
+        journalForm.addEventListener("submit", saveJournal);
+        journalSubject.addEventListener("change", fillTpOptions);
+        addJournalTpBtn.addEventListener("click", addTpManual);
+        filterDate.addEventListener("change", renderJournals);
+        filterSubject.addEventListener("change", renderJournals);
+        exportExcelBtn.addEventListener("click", exportExcel);
+
+        renderJournals();
+
+        function saveJournal(event) {
+            event.preventDefault();
+            const row = {
+                id: uid("JRN"),
+                tanggal: journalDate.value,
+                mata_pelajaran: journalSubject.value,
+                tujuan_pembelajaran: journalTpSelect.value,
+                materi: journalMateri.value.trim(),
+                kegiatan: journalKegiatan.value.trim(),
+                jam_waktu: journalJam.value.trim(),
+                kendala: journalKendala.value.trim(),
+                created_at: new Date().toISOString()
+            };
+            if (!row.tanggal || !row.materi || !row.kegiatan) {
+                alert("Tanggal, materi, dan kegiatan wajib diisi.");
+                return;
+            }
+            if (!row.tujuan_pembelajaran) {
+                alert("Pilih tujuan pembelajaran terlebih dahulu.");
+                return;
+            }
+            journals.unshift(row);
+            persist();
+            journalForm.reset();
+            journalDate.value = dateKey(new Date());
+            fillTpOptions();
+            renderJournals();
+            toast("Jurnal tersimpan.");
+        }
+
+        function renderJournals() {
+            const date = filterDate.value;
+            const subject = filterSubject.value;
+            const filtered = journals
+                .filter(function (j) {
+                    const dateOk = !date || j.tanggal === date;
+                    const subjectOk = subject === "all" || j.mata_pelajaran === subject;
+                    return dateOk && subjectOk;
+                })
+                .sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); });
+
+            emptyState.classList.toggle("hidden", filtered.length > 0);
+            journalTableBody.innerHTML = filtered.map(function (j) {
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3">${esc(j.tanggal)}</td>
+                        <td class="px-4 py-3">${esc(j.mata_pelajaran)}</td>
+                        <td class="px-4 py-3">${esc(j.tujuan_pembelajaran || "-")}</td>
+                        <td class="px-4 py-3">${esc(j.materi)}</td>
+                        <td class="px-4 py-3">${esc(j.kegiatan)}</td>
+                        <td class="px-4 py-3">${esc(j.jam_waktu || "-")}</td>
+                        <td class="px-4 py-3">${esc(j.kendala || "-")}</td>
+                        <td class="px-4 py-3 text-right"><button data-id="${esc(j.id)}" class="delete-btn text-xs font-semibold text-red-500 hover:underline">Hapus</button></td>
+                    </tr>
+                `;
+            }).join("");
+
+            bindDeleteButtons();
+        }
+
+        function bindDeleteButtons() {
+            journalTableBody.querySelectorAll(".delete-btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = btn.getAttribute("data-id");
+                    if (!confirm("Hapus jurnal ini?")) return;
+                    journals = journals.filter(function (j) { return j.id !== id; });
+                    persist();
+                    renderJournals();
+                    toast("Jurnal dihapus.");
+                });
+            });
+        }
+
+        function fillTpOptions() {
+            const subject = journalSubject.value;
+            if (!tpBySubject[subject]) tpBySubject[subject] = [];
+            const list = tpBySubject[subject];
+            const current = journalTpSelect.value;
+            journalTpSelect.innerHTML = '<option value="">Pilih Tujuan Pembelajaran</option>' + list.map(function (item) {
+                return '<option value="' + esc(item) + '">' + esc(item) + '</option>';
+            }).join("");
+            if (list.includes(current)) {
+                journalTpSelect.value = current;
+            } else if (list.length > 0) {
+                journalTpSelect.value = list[0];
+            }
+        }
+
+        function addTpManual() {
+            const subject = journalSubject.value;
+            const value = journalTpInput.value.trim();
+            if (!value) {
+                alert("Isi tujuan pembelajaran terlebih dahulu.");
+                return;
+            }
+            if (!tpBySubject[subject]) tpBySubject[subject] = [];
+            const exists = tpBySubject[subject].some(function (item) {
+                return item.toLowerCase() === value.toLowerCase();
+            });
+            if (exists) {
+                alert("Tujuan pembelajaran sudah ada.");
+                return;
+            }
+            tpBySubject[subject].push(value);
+            persistTpMap();
+            fillTpOptions();
+            journalTpSelect.value = value;
+            journalTpInput.value = "";
+            toast("Tujuan pembelajaran ditambahkan.");
+        }
+
+        function exportExcel() {
+            if (!journals.length) {
+                alert("Belum ada data jurnal.");
+                return;
+            }
+            const rows = journals.map(function (j) {
+                return {
+                    Tanggal: j.tanggal,
+                    Mapel: j.mata_pelajaran,
+                    "Tujuan Pembelajaran": j.tujuan_pembelajaran || "",
+                    Materi: j.materi,
+                    Kegiatan: j.kegiatan,
+                    Jam: j.jam_waktu || "",
+                    Kendala: j.kendala || ""
+                };
+            });
+            exportRowsToExcel(rows, "jurnal-mengajar.xlsx", "Jurnal");
+        }
+
+        function loadArray(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback.slice();
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed.filter(Boolean) : fallback.slice();
+            } catch (error) {
+                return fallback.slice();
+            }
+        }
+
+        function loadTpMap() {
+            try {
+                const raw = localStorage.getItem(TP_KEY);
+                if (!raw) return clone(defaultTpBySubject);
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return clone(defaultTpBySubject);
+                const merged = clone(defaultTpBySubject);
+                Object.keys(parsed).forEach(function (subject) {
+                    if (Array.isArray(parsed[subject])) {
+                        merged[subject] = parsed[subject].map(function (item) { return String(item || "").trim(); }).filter(Boolean);
+                    }
+                });
+                return merged;
+            } catch (error) {
+                return clone(defaultTpBySubject);
+            }
+        }
+
+        function persistTpMap() {
+            localStorage.setItem(TP_KEY, JSON.stringify(tpBySubject));
+        }
+
+        function persist() {
+            localStorage.setItem(JOURNAL_KEY, JSON.stringify(journals));
+        }
+
+        function exportRowsToExcel(rows, filename, sheetName) {
+            if (window.XLSX && typeof window.XLSX.utils !== "undefined") {
+                const ws = window.XLSX.utils.json_to_sheet(rows);
+                const wb = window.XLSX.utils.book_new();
+                window.XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                window.XLSX.writeFile(wb, filename);
+                return;
+            }
+            const headers = Object.keys(rows[0]);
+            const csv = [headers.join(",")].concat(rows.map(function (row) {
+                return headers.map(function (h) { return '"' + String(row[h] || "").replace(/"/g, '""') + '"'; }).join(",");
+            })).join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename.replace(/\.xlsx$/i, ".csv");
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clone(value) {
+            return JSON.parse(JSON.stringify(value));
+        }
+
+        function dateKey(dateObj) {
+            const dt = new Date(dateObj);
+            const yyyy = dt.getFullYear();
+            const mm = String(dt.getMonth() + 1).padStart(2, "0");
+            const dd = String(dt.getDate()).padStart(2, "0");
+            return yyyy + "-" + mm + "-" + dd;
+        }
+
+        function uid(prefix) {
+            return prefix + "-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+        }
+
+        function esc(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function toast(message) {
+            toastEl.textContent = message;
+            toastEl.classList.remove("hidden");
+            toastEl.classList.add("toast-enter");
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toastEl.classList.add("hidden");
+                toastEl.classList.remove("toast-enter");
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

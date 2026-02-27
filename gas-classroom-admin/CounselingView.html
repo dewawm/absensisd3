@@ -1,0 +1,71 @@
+<section id="view-counseling" class="page-view hidden">
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Input Buku Konseling</h3>
+      <form id="counselingForm">
+        <div class="field">
+          <label for="counselingDate">Tanggal</label>
+          <input id="counselingDate" class="input" type="date" />
+        </div>
+        <div class="field">
+          <label for="counselingStudentSelect">Siswa</label>
+          <select id="counselingStudentSelect" class="select"></select>
+        </div>
+        <div class="field">
+          <label for="counselingViolation">Jenis Pelanggaran / Kasus</label>
+          <input id="counselingViolation" class="input" placeholder="Input bebas" />
+        </div>
+        <div class="field">
+          <label for="counselingHandling">Penanganan</label>
+          <textarea id="counselingHandling" class="textarea"></textarea>
+        </div>
+        <div class="field">
+          <label for="counselingFollowUp">Follow Up</label>
+          <textarea id="counselingFollowUp" class="textarea"></textarea>
+        </div>
+        <div class="field">
+          <label for="counselingResult">Hasil</label>
+          <textarea id="counselingResult" class="textarea"></textarea>
+        </div>
+        <div class="row">
+          <label class="note"><input type="checkbox" id="counselingNotify" checked /> Kirim WhatsApp ke orang tua</label>
+        </div>
+        <button class="btn btn-danger" type="submit">Simpan Konseling</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Filter Konseling</h3>
+      <div class="field">
+        <label for="counselingFilterDate">Tanggal</label>
+        <input id="counselingFilterDate" class="input" type="date" />
+      </div>
+      <div class="field">
+        <label for="counselingFilterStudent">Siswa</label>
+        <select id="counselingFilterStudent" class="select"></select>
+      </div>
+      <button class="btn btn-secondary" id="loadCounselingBtn">Muat Data</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <h3>Riwayat Konseling</h3>
+    <div class="table-wrap">
+      <table id="counselingTable">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Siswa</th>
+            <th>Pelanggaran</th>
+            <th>Penanganan</th>
+            <th>Follow Up</th>
+            <th>Hasil</th>
+            <th>Notifikasi</th>
+            <th>Guru</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>

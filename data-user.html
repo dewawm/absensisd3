@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data User - SD No. 3 Lukluk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; color: #64748b; border-radius: 0.75rem; transition: all 0.2s; }
+        .sidebar-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .sidebar-active { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background-color: #eff6ff; color: #2563eb; border-radius: 0.75rem; font-weight: 600; border-right: 4px solid #2563eb; }
+        .modal-backdrop { background-color: rgba(15, 23, 42, 0.55); }
+        .toast-enter { animation: toast-in 0.2s ease-out; }
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
+        <div class="flex items-center space-x-3 mb-10">
+            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
+            <a href="dashboard.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-siswa.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Data Siswa</span>
+            </a>
+            <a href="data-user.html" class="sidebar-active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Data User</span>
+            </a>
+            <a href="daftar-nilai.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                <span>Daftar Nilai Harian</span>
+            </a>
+            <a href="daftar-hadir.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span>Daftar Hadir Harian</span>
+            </a>
+            <a href="jurnal.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Jurnal Mengajar</span>
+            </a>
+            <a href="konseling.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>Buku Konseling</span>
+            </a>
+            <a href="modul.html" class="sidebar-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>Modul Ajar</span>
+            </a>
+            <hr class="my-4 border-gray-100">
+            <a href="index.html" class="flex items-center space-x-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition font-semibold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a2 2 0 013-3h4a2 2 0 013 3v1"/></svg>
+                <span>Keluar Sistem</span>
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-10">
+        <header class="mb-8 space-y-5">
+            <div class="flex flex-wrap gap-4 items-start justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Kelola Data User</h1>
+                    <p class="text-gray-500 text-sm">Manajemen akun admin dan guru</p>
+                </div>
+                <button id="openUserModalBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-100 transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Tambah User
+                </button>
+            </div>
+
+            <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label class="md:col-span-2">
+                        <span class="sr-only">Cari user</span>
+                        <input id="userSearch" type="text" placeholder="Cari nama, username, atau email..." class="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300">
+                    </label>
+                    <label>
+                        <span class="sr-only">Filter role</span>
+                        <select id="roleFilter" class="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300">
+                            <option value="all">Semua Role</option>
+                            <option value="admin">Admin</option>
+                            <option value="teacher">Guru</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mt-4 flex items-center justify-between text-sm">
+                    <p class="text-slate-500">Jumlah user: <span id="userCount" class="font-semibold text-slate-700">0</span></p>
+                    <button id="resetUserFilterBtn" type="button" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 font-semibold hover:bg-slate-50 transition">Reset Filter</button>
+                </div>
+            </div>
+        </header>
+
+        <section class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wide">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Nama</th>
+                            <th class="px-4 py-3 text-left">Username</th>
+                            <th class="px-4 py-3 text-left">Email</th>
+                            <th class="px-4 py-3 text-left">Role</th>
+                            <th class="px-4 py-3 text-left">WA</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="hidden p-10 text-center text-slate-500">
+                Data user belum tersedia.
+            </div>
+        </section>
+    </main>
+
+    <div id="userModal" class="hidden fixed inset-0 z-50">
+        <div class="absolute inset-0 modal-backdrop"></div>
+        <div class="relative min-h-screen p-4 flex items-center justify-center">
+            <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100">
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h2 id="userModalTitle" class="font-bold text-slate-800 text-lg">Tambah Data User</h2>
+                        <p class="text-sm text-slate-500">Isi data akun yang akan digunakan.</p>
+                    </div>
+                    <button id="closeUserModalBtn" type="button" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+                        <span class="sr-only">Tutup modal</span>
+                        <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form id="userForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="userId" type="hidden">
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Nama Lengkap</span>
+                        <input id="userFullName" required type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Contoh: Guru Kelas 4A">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Username</span>
+                        <input id="userUsername" required type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Contoh: guru4a">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Email</span>
+                        <input id="userEmail" type="email" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="nama@sekolah.id">
+                    </label>
+                    <label>
+                        <span class="text-sm font-semibold text-slate-700">Role</span>
+                        <select id="userRole" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300">
+                            <option value="teacher">Guru</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </label>
+                    <label class="md:col-span-2">
+                        <span class="text-sm font-semibold text-slate-700">No. WhatsApp</span>
+                        <input id="userWa" type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="08xxxxxxxxxx">
+                    </label>
+                    <label class="md:col-span-2 flex items-center gap-2">
+                        <input id="userActive" type="checkbox" class="w-4 h-4 text-blue-600 border-slate-300 rounded" checked>
+                        <span class="text-sm text-slate-700">User aktif</span>
+                    </label>
+                    <div class="md:col-span-2 flex justify-end gap-3 pt-2">
+                        <button id="cancelUserBtn" type="button" class="px-5 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Batal</button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+
+    <script>
+        const STORAGE_KEY = "sd3_data_user_v1";
+        const defaultUsers = [
+            { id: "USR-ADMIN", full_name: "Administrator Sekolah", username: "admin", email: "admin@local.school", role: "admin", wa_number: "081111111111", is_active: true, created_at: "2026-01-10T06:00:00.000Z" },
+            { id: "USR-T001", full_name: "Guru Kelas 4A", username: "guru4a", email: "guru4a@local.school", role: "teacher", wa_number: "082222222222", is_active: true, created_at: "2026-01-10T06:05:00.000Z" }
+        ];
+
+        const usersTableBody = document.getElementById("usersTableBody");
+        const emptyState = document.getElementById("emptyState");
+        const userCount = document.getElementById("userCount");
+        const userSearch = document.getElementById("userSearch");
+        const roleFilter = document.getElementById("roleFilter");
+        const resetUserFilterBtn = document.getElementById("resetUserFilterBtn");
+
+        const openUserModalBtn = document.getElementById("openUserModalBtn");
+        const userModal = document.getElementById("userModal");
+        const closeUserModalBtn = document.getElementById("closeUserModalBtn");
+        const cancelUserBtn = document.getElementById("cancelUserBtn");
+        const userForm = document.getElementById("userForm");
+        const userModalTitle = document.getElementById("userModalTitle");
+        const toastEl = document.getElementById("toast");
+
+        let users = loadUsers();
+        let toastTimer = null;
+
+        userSearch.addEventListener("input", renderUsers);
+        roleFilter.addEventListener("change", renderUsers);
+        resetUserFilterBtn.addEventListener("click", function () {
+            userSearch.value = "";
+            roleFilter.value = "all";
+            renderUsers();
+        });
+
+        openUserModalBtn.addEventListener("click", function () {
+            openUserModal();
+        });
+        closeUserModalBtn.addEventListener("click", closeUserModal);
+        cancelUserBtn.addEventListener("click", closeUserModal);
+        userModal.addEventListener("click", function (event) {
+            if (event.target === userModal || event.target.classList.contains("modal-backdrop")) {
+                closeUserModal();
+            }
+        });
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && !userModal.classList.contains("hidden")) {
+                closeUserModal();
+            }
+        });
+
+        userForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const id = String(document.getElementById("userId").value || "").trim();
+            const fullName = String(document.getElementById("userFullName").value || "").trim();
+            const username = String(document.getElementById("userUsername").value || "").trim().toLowerCase();
+            const email = String(document.getElementById("userEmail").value || "").trim().toLowerCase();
+            const role = String(document.getElementById("userRole").value || "teacher").trim();
+            const waNumber = normalizePhone(document.getElementById("userWa").value || "");
+            const isActive = !!document.getElementById("userActive").checked;
+
+            if (!fullName || !username) {
+                alert("Nama lengkap dan username wajib diisi.");
+                return;
+            }
+            if (users.some(function (item) { return item.username === username && item.id !== id; })) {
+                alert("Username sudah dipakai.");
+                return;
+            }
+            if (email && users.some(function (item) { return item.email === email && item.id !== id; })) {
+                alert("Email sudah dipakai.");
+                return;
+            }
+
+            if (id) {
+                users = users.map(function (item) {
+                    if (item.id !== id) return item;
+                    return {
+                        ...item,
+                        full_name: fullName,
+                        username: username,
+                        email: email,
+                        role: role === "admin" ? "admin" : "teacher",
+                        wa_number: waNumber,
+                        is_active: isActive
+                    };
+                });
+                toast("Data user diperbarui.");
+            } else {
+                users.unshift({
+                    id: uid("USR"),
+                    full_name: fullName,
+                    username: username,
+                    email: email,
+                    role: role === "admin" ? "admin" : "teacher",
+                    wa_number: waNumber,
+                    is_active: isActive,
+                    created_at: new Date().toISOString()
+                });
+                toast("User baru ditambahkan.");
+            }
+
+            saveUsers(users);
+            renderUsers();
+            closeUserModal();
+        });
+
+        renderUsers();
+
+        function loadUsers() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return defaultUsers.slice();
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return defaultUsers.slice();
+                return parsed.filter(Boolean).map(function (item) {
+                    return {
+                        id: String(item.id || uid("USR")),
+                        full_name: String(item.full_name || "Tanpa Nama").trim(),
+                        username: String(item.username || "").trim().toLowerCase(),
+                        email: String(item.email || "").trim().toLowerCase(),
+                        role: String(item.role || "teacher").trim().toLowerCase() === "admin" ? "admin" : "teacher",
+                        wa_number: normalizePhone(item.wa_number || ""),
+                        is_active: item.is_active !== false,
+                        created_at: String(item.created_at || new Date().toISOString())
+                    };
+                });
+            } catch (error) {
+                return defaultUsers.slice();
+            }
+        }
+
+        function saveUsers(rows) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+        }
+
+        function renderUsers() {
+            const query = userSearch.value.trim().toLowerCase();
+            const role = roleFilter.value;
+            const filtered = users
+                .filter(function (item) {
+                    const matchQuery =
+                        item.full_name.toLowerCase().includes(query) ||
+                        item.username.toLowerCase().includes(query) ||
+                        String(item.email || "").toLowerCase().includes(query);
+                    const matchRole = role === "all" || item.role === role;
+                    return matchQuery && matchRole;
+                })
+                .sort(function (a, b) {
+                    return String(a.full_name).localeCompare(String(b.full_name), "id");
+                });
+
+            userCount.textContent = String(filtered.length);
+            emptyState.classList.toggle("hidden", filtered.length > 0);
+            usersTableBody.innerHTML = filtered.map(function (item) {
+                const roleText = item.role === "admin" ? "Admin" : "Guru";
+                const roleClass = item.role === "admin" ? "bg-indigo-50 text-indigo-700" : "bg-blue-50 text-blue-700";
+                const statusClass = item.is_active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500";
+                const statusText = item.is_active ? "Aktif" : "Nonaktif";
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 font-semibold text-slate-800">${esc(item.full_name)}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.username)}</td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.email || "-")}</td>
+                        <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full ${roleClass}">${roleText}</span></td>
+                        <td class="px-4 py-3 text-slate-700">${esc(item.wa_number || "-")}</td>
+                        <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full ${statusClass}">${statusText}</span></td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="inline-flex items-center gap-3">
+                                <button type="button" data-id="${esc(item.id)}" class="edit-btn text-blue-600 font-semibold text-xs hover:underline">Edit</button>
+                                <button type="button" data-id="${esc(item.id)}" class="delete-btn text-red-500 font-semibold text-xs hover:underline">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            bindTableActions();
+        }
+
+        function bindTableActions() {
+            const editButtons = usersTableBody.querySelectorAll(".edit-btn");
+            editButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = String(btn.getAttribute("data-id") || "");
+                    const data = users.find(function (item) { return item.id === id; });
+                    if (!data) return;
+                    openUserModal(data);
+                });
+            });
+
+            const deleteButtons = usersTableBody.querySelectorAll(".delete-btn");
+            deleteButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = String(btn.getAttribute("data-id") || "");
+                    if (!id) return;
+                    if (!confirm("Hapus data user ini?")) return;
+                    users = users.filter(function (item) { return item.id !== id; });
+                    saveUsers(users);
+                    renderUsers();
+                    toast("Data user dihapus.");
+                });
+            });
+        }
+
+        function openUserModal(data) {
+            userForm.reset();
+            document.getElementById("userId").value = "";
+            document.getElementById("userActive").checked = true;
+            userModalTitle.textContent = "Tambah Data User";
+
+            if (data) {
+                document.getElementById("userId").value = data.id;
+                document.getElementById("userFullName").value = data.full_name || "";
+                document.getElementById("userUsername").value = data.username || "";
+                document.getElementById("userEmail").value = data.email || "";
+                document.getElementById("userRole").value = data.role || "teacher";
+                document.getElementById("userWa").value = data.wa_number || "";
+                document.getElementById("userActive").checked = data.is_active !== false;
+                userModalTitle.textContent = "Edit Data User";
+            }
+
+            userModal.classList.remove("hidden");
+            document.body.classList.add("overflow-hidden");
+            document.getElementById("userFullName").focus();
+        }
+
+        function closeUserModal() {
+            userModal.classList.add("hidden");
+            document.body.classList.remove("overflow-hidden");
+        }
+
+        function uid(prefix) {
+            return prefix + "-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+        }
+
+        function normalizePhone(value) {
+            const digits = String(value || "").replace(/[^\d]/g, "");
+            if (!digits) return "";
+            if (digits.startsWith("0")) return digits;
+            if (digits.startsWith("62")) return "0" + digits.slice(2);
+            return digits;
+        }
+
+        function esc(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function toast(message) {
+            if (!toastEl) return;
+            toastEl.textContent = message;
+            toastEl.classList.remove("hidden");
+            toastEl.classList.add("toast-enter");
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toastEl.classList.add("hidden");
+                toastEl.classList.remove("toast-enter");
+            }, 1800);
+        }
+    </script>
+</body>
+</html>

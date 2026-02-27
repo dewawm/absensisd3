@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classroom Admin Localhost</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://unpkg.com/html5-qrcode"></script>
+  </head>
+  <body>
+    <section id="loginScreen" class="login-screen">
+      <div class="card login-card">
+        <h1>Classroom Admin</h1>
+        <p>Versi localhost (Node.js + SQLite)</p>
+        <form id="loginForm">
+          <label>Username / Email</label>
+          <input id="loginUsername" class="input" required />
+          <label>Password</label>
+          <input id="loginPassword" class="input" type="password" required />
+          <button class="btn primary" type="submit">Masuk</button>
+          <small>Default: admin/admin123 atau guru1/guru123</small>
+        </form>
+      </div>
+    </section>
+
+    <section id="appShell" class="hidden">
+      <aside id="sidebar" class="sidebar">
+        <div class="brand">
+          <h2>SD Admin</h2>
+          <p id="userLabel">-</p>
+        </div>
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn admin-only" data-view="students">Data Siswa</button>
+        <button class="nav-btn" data-view="attendance">QR Attendance</button>
+        <button class="nav-btn" data-view="grades">Nilai</button>
+        <button class="nav-btn" data-view="journals">Jurnal</button>
+        <button class="nav-btn" data-view="counseling">Konseling</button>
+        <button class="nav-btn" id="syncQueueBtn">Sync Offline Queue</button>
+        <button class="nav-btn danger" id="logoutBtn">Logout</button>
+      </aside>
+
+      <main class="main">
+        <div class="mobile-head">
+          <button class="btn" id="openMenuBtn">Menu</button>
+          <span id="mobileUserLabel"></span>
+        </div>
+        <div class="topbar">
+          <div>
+            <h3 id="pageTitle">Dashboard</h3>
+            <p id="pageSub">Ringkasan data kelas.</p>
+          </div>
+          <div class="meta">
+            <span>Cutoff: <b id="lateCutoffBadge">07:30</b></span>
+            <span>Queue: <b id="queueCount">0</b></span>
+          </div>
+        </div>
+
+        <section id="view-dashboard" class="view">
+          <div class="grid three">
+            <div class="kpi"><span>Total Siswa</span><b id="kpiStudents">0</b></div>
+            <div class="kpi"><span>Hadir Hari Ini</span><b id="kpiPresent">0</b></div>
+            <div class="kpi"><span>Persentase Hadir</span><b id="kpiRate">0%</b></div>
+          </div>
+          <div class="grid two mt">
+            <div class="card"><h4>Rata-rata per Mapel</h4><div id="subjectStats"></div></div>
+            <div class="card"><h4>Pelanggaran Teratas</h4><div id="violationStats"></div></div>
+          </div>
+          <div class="card mt">
+            <h4>Rekap Bulanan</h4>
+            <table>
+              <thead><tr><th>Tanggal</th><th>Hadir</th><th>Sakit</th><th>Izin</th><th>Alfa</th><th>Terlambat</th></tr></thead>
+              <tbody id="monthlyRecapBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-students" class="view hidden">
+          <div class="grid two">
+            <div class="card admin-only" id="studentFormCard">
+              <h4>Input Siswa</h4>
+              <form id="studentForm">
+                <input id="studentId" type="hidden" />
+                <label>Nama</label><input id="studentName" class="input" />
+                <label>NISN</label><input id="studentNisn" class="input" />
+                <label>Kelas</label><input id="studentClass" class="input" value="Kelas 4" />
+                <label>Gender</label><select id="studentGender" class="input"><option value="">-</option><option value="L">L</option><option value="P">P</option></select>
+                <label>Nama Orang Tua</label><input id="parentName" class="input" />
+                <label>WA Orang Tua</label><input id="parentWa" class="input" />
+                <div class="row">
+                  <button class="btn primary" type="submit">Simpan</button>
+                  <button class="btn" type="button" id="studentResetBtn">Reset</button>
+                </div>
+              </form>
+            </div>
+            <div class="card">
+              <h4>QR Generator</h4>
+              <label>Pilih siswa</label>
+              <select id="qrStudentSelect" class="input"></select>
+              <div class="row mt-sm">
+                <button class="btn primary" id="genQrBtn">Generate</button>
+                <button class="btn" id="batchQrBtn">Batch</button>
+              </div>
+              <div id="qrBox" class="hidden mt-sm">
+                <img id="qrImage" alt="QR" />
+                <p id="qrText"></p>
+              </div>
+            </div>
+          </div>
+          <div class="card mt">
+            <div class="row between"><h4>Daftar Siswa</h4><input id="studentSearch" class="input" placeholder="Cari nama/NISN" /></div>
+            <table>
+              <thead><tr><th>ID</th><th>Nama</th><th>NISN</th><th>Kelas</th><th>Orang Tua</th><th>WA</th><th>Aksi</th></tr></thead>
+              <tbody id="studentsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-attendance" class="view hidden">
+          <div class="grid two">
+            <div class="card">
+              <h4>Scan QR Attendance</h4>
+              <label>Tanggal</label><input id="attendanceDate" type="date" class="input" />
+              <label>QR Data</label><input id="qrDataInput" class="input" placeholder="STU|STU-XXXX|TOKEN" />
+              <div class="row mt-sm">
+                <button class="btn primary" id="submitScanBtn">Submit Scan</button>
+                <button class="btn" id="toggleCameraBtn">Kamera</button>
+              </div>
+              <div id="qrReader" class="mt-sm"></div>
+            </div>
+            <div class="card">
+              <h4>Edit Manual</h4>
+              <form id="manualAttendanceForm">
+                <label>Siswa</label><select id="manualStudent" class="input"></select>
+                <label>Status</label><select id="manualStatus" class="input"><option>hadir</option><option>sakit</option><option>izin</option><option>alfa</option></select>
+                <label>Jam</label><input id="manualTime" type="time" class="input" />
+                <label>Catatan</label><input id="manualNote" class="input" />
+                <button class="btn primary mt-sm" type="submit">Simpan Manual</button>
+              </form>
+            </div>
+          </div>
+          <div class="card mt">
+            <div class="row between">
+              <h4>Rekap</h4>
+              <div class="row">
+                <select id="recapMonth" class="input small"></select>
+                <select id="recapYear" class="input small"></select>
+                <button class="btn" id="refreshRecapBtn">Refresh</button>
+              </div>
+            </div>
+            <div class="grid three mt-sm">
+              <div class="kpi"><span>Hadir</span><b id="rHadir">0</b></div>
+              <div class="kpi"><span>Sakit + Izin</span><b id="rSakitIzin">0</b></div>
+              <div class="kpi"><span>Alfa</span><b id="rAlfa">0</b></div>
+            </div>
+          </div>
+          <div class="card mt">
+            <div class="row between"><h4>Data Attendance</h4><input id="attendanceSearch" class="input" placeholder="Cari siswa" /></div>
+            <table>
+              <thead><tr><th>Tanggal</th><th>Siswa</th><th>Status</th><th>Jam</th><th>Terlambat</th><th>Catatan</th><th>Guru</th></tr></thead>
+              <tbody id="attendanceBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-grades" class="view hidden">
+          <div class="grid two">
+            <div class="card">
+              <h4>Input Nilai</h4>
+              <form id="gradeForm">
+                <label>Siswa</label><select id="gradeStudent" class="input"></select>
+                <label>Mapel</label><select id="gradeSubject" class="input"><option>Matematika</option><option>IPAS</option><option>Bahasa Indonesia</option><option>Bahasa Bali</option><option>SBdP</option></select>
+                <label>Kode TP</label><input id="gradeTpCode" class="input" placeholder="TP-01" />
+                <label>Tujuan Pembelajaran</label><textarea id="gradeTpText" class="input"></textarea>
+                <div class="grid three">
+                  <input id="nh" class="input grade-num" type="number" placeholder="Harian" />
+                  <input id="nt" class="input grade-num" type="number" placeholder="Tugas" />
+                  <input id="npts" class="input grade-num" type="number" placeholder="PTS" />
+                  <input id="npas" class="input grade-num" type="number" placeholder="PAS" />
+                  <input id="nsikap" class="input grade-num" type="number" placeholder="Sikap" />
+                  <input id="nproduk" class="input grade-num" type="number" placeholder="Produk" />
+                </div>
+                <div class="row between mt-sm">
+                  <span>Final preview: <b id="gradePreview">0</b></span>
+                  <button class="btn primary" type="submit">Simpan</button>
+                </div>
+              </form>
+            </div>
+            <div class="card">
+              <h4>Filter</h4>
+              <label>Mapel</label><select id="gradeFilterSubject" class="input"><option value="">Semua</option><option>Matematika</option><option>IPAS</option><option>Bahasa Indonesia</option><option>Bahasa Bali</option><option>SBdP</option></select>
+              <label>Semester</label><select id="gradeFilterSemester" class="input"><option value="">Semua</option><option>Ganjil</option><option>Genap</option></select>
+              <label>Tahun Ajaran</label><input id="gradeAcademicYear" class="input" placeholder="2025/2026" />
+              <div class="row mt-sm">
+                <button class="btn" id="loadGradesBtn">Muat</button>
+                <button class="btn primary" id="exportGradesBtn">Export CSV</button>
+              </div>
+            </div>
+          </div>
+          <div class="card mt">
+            <h4>Daftar Nilai</h4>
+            <table>
+              <thead><tr><th>Siswa</th><th>Mapel</th><th>TP</th><th>Harian</th><th>Tugas</th><th>PTS</th><th>PAS</th><th>Sikap</th><th>Produk</th><th>Final</th><th>Predikat</th></tr></thead>
+              <tbody id="gradesBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-journals" class="view hidden">
+          <div class="grid two">
+            <div class="card">
+              <h4>Input Jurnal</h4>
+              <form id="journalForm">
+                <label>Tanggal</label><input id="journalDate" class="input" type="date" />
+                <label>Mata Pelajaran</label><select id="journalSubject" class="input"><option>Matematika</option><option>IPAS</option><option>Bahasa Indonesia</option><option>Bahasa Bali</option><option>SBdP</option></select>
+                <label>Tujuan Pembelajaran</label><textarea id="journalTp" class="input"></textarea>
+                <label>Materi</label><textarea id="journalMateri" class="input"></textarea>
+                <label>Kendala</label><textarea id="journalKendala" class="input"></textarea>
+                <label>Jam/Waktu</label><input id="journalJam" class="input" />
+                <button class="btn primary mt-sm" type="submit">Simpan</button>
+              </form>
+            </div>
+            <div class="card">
+              <h4>Filter Jurnal</h4>
+              <label>Tanggal</label><input id="journalFilterDate" class="input" type="date" />
+              <label>Mapel</label><select id="journalFilterSubject" class="input"><option value="">Semua</option><option>Matematika</option><option>IPAS</option><option>Bahasa Indonesia</option><option>Bahasa Bali</option><option>SBdP</option></select>
+              <button class="btn mt-sm" id="loadJournalBtn">Muat</button>
+            </div>
+          </div>
+          <div class="card mt">
+            <h4>Riwayat Jurnal</h4>
+            <table>
+              <thead><tr><th>Tanggal</th><th>Mapel</th><th>TP</th><th>Materi</th><th>Kendala</th><th>Jam</th><th>Guru</th></tr></thead>
+              <tbody id="journalsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="view-counseling" class="view hidden">
+          <div class="grid two">
+            <div class="card">
+              <h4>Input Konseling</h4>
+              <form id="counselingForm">
+                <label>Tanggal</label><input id="counselingDate" class="input" type="date" />
+                <label>Siswa</label><select id="counselingStudent" class="input"></select>
+                <label>Jenis Pelanggaran</label><input id="counselingViolation" class="input" />
+                <label>Penanganan</label><textarea id="counselingHandling" class="input"></textarea>
+                <label>Follow Up</label><textarea id="counselingFollow" class="input"></textarea>
+                <label>Hasil</label><textarea id="counselingResult" class="input"></textarea>
+                <label><input type="checkbox" id="counselingNotify" checked /> Kirim WA orang tua</label>
+                <button class="btn primary mt-sm" type="submit">Simpan</button>
+              </form>
+            </div>
+            <div class="card">
+              <h4>Filter Konseling</h4>
+              <label>Tanggal</label><input id="counselingFilterDate" class="input" type="date" />
+              <label>Siswa</label><select id="counselingFilterStudent" class="input"></select>
+              <button class="btn mt-sm" id="loadCounselingBtn">Muat</button>
+            </div>
+          </div>
+          <div class="card mt">
+            <h4>Riwayat Konseling</h4>
+            <table>
+              <thead><tr><th>Tanggal</th><th>Siswa</th><th>Pelanggaran</th><th>Penanganan</th><th>Follow Up</th><th>Hasil</th><th>Notifikasi</th><th>Guru</th></tr></thead>
+              <tbody id="counselingBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <div id="toast" class="toast"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>

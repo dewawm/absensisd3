@@ -1,0 +1,108 @@
+<section id="view-grades" class="page-view hidden">
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>Input Nilai Siswa</h3>
+      <form id="gradeForm">
+        <input type="hidden" id="gradeId" />
+        <div class="field">
+          <label for="gradeStudentSelect">Siswa</label>
+          <select id="gradeStudentSelect" class="select"></select>
+        </div>
+        <div class="field">
+          <label for="gradeSubjectSelect">Mata Pelajaran</label>
+          <select id="gradeSubjectSelect" class="select">
+            <option>Matematika</option>
+            <option>IPAS</option>
+            <option>Bahasa Indonesia</option>
+            <option>Bahasa Bali</option>
+            <option>SBdP</option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="field" style="flex: 1">
+            <label for="gradeObjectiveCode">Kode TP</label>
+            <input id="gradeObjectiveCode" class="input" placeholder="TP-01" />
+          </div>
+          <div class="field" style="flex: 1">
+            <label for="gradeSemester">Semester</label>
+            <select id="gradeSemester" class="select">
+              <option>Ganjil</option>
+              <option selected>Genap</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="gradeObjectiveText">Tujuan Pembelajaran</label>
+          <textarea id="gradeObjectiveText" class="textarea" placeholder="Deskripsi tujuan pembelajaran"></textarea>
+        </div>
+        <div class="grid grid-3">
+          <div class="field"><label>Nilai Harian</label><input id="nilaiHarian" class="input grade-input" type="number" min="0" max="100" /></div>
+          <div class="field"><label>Nilai Tugas</label><input id="nilaiTugas" class="input grade-input" type="number" min="0" max="100" /></div>
+          <div class="field"><label>Nilai PTS</label><input id="nilaiPts" class="input grade-input" type="number" min="0" max="100" /></div>
+          <div class="field"><label>Nilai PAS</label><input id="nilaiPas" class="input grade-input" type="number" min="0" max="100" /></div>
+          <div class="field"><label>Nilai Sikap</label><input id="nilaiSikap" class="input grade-input" type="number" min="0" max="100" /></div>
+          <div class="field"><label>Nilai Produk</label><input id="nilaiProduk" class="input grade-input" type="number" min="0" max="100" /></div>
+        </div>
+        <div class="row" style="justify-content: space-between">
+          <div class="note">Final otomatis: <b id="gradeFinalPreview">0</b></div>
+          <button class="btn btn-primary" type="submit">Simpan Nilai</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Filter Nilai</h3>
+      <div class="field">
+        <label for="gradeFilterSubject">Mapel</label>
+        <select id="gradeFilterSubject" class="select">
+          <option value="">Semua</option>
+          <option>Matematika</option>
+          <option>IPAS</option>
+          <option>Bahasa Indonesia</option>
+          <option>Bahasa Bali</option>
+          <option>SBdP</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gradeFilterSemester">Semester</label>
+        <select id="gradeFilterSemester" class="select">
+          <option value="">Semua</option>
+          <option>Ganjil</option>
+          <option>Genap</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gradeAcademicYear">Tahun Ajaran</label>
+        <input id="gradeAcademicYear" class="input" placeholder="2025/2026" />
+      </div>
+      <div class="row">
+        <button class="btn btn-secondary" id="loadGradesBtn">Muat Data</button>
+        <button class="btn btn-soft" id="exportGradesBtn">Export Spreadsheet</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 14px">
+    <h3>Daftar Nilai</h3>
+    <div class="table-wrap">
+      <table id="gradesTable">
+        <thead>
+          <tr>
+            <th>Siswa</th>
+            <th>Mapel</th>
+            <th>TP</th>
+            <th>Harian</th>
+            <th>Tugas</th>
+            <th>PTS</th>
+            <th>PAS</th>
+            <th>Sikap</th>
+            <th>Produk</th>
+            <th>Final</th>
+            <th>Predikat</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>

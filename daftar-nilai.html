@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Nilai - SD No. 3 Lukluk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; color: #64748b; border-radius: 0.75rem; transition: all 0.2s; }
+        .sidebar-item:hover { background-color: #f1f5f9; color: #2563eb; }
+        .sidebar-active { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background-color: #eff6ff; color: #2563eb; border-radius: 0.75rem; font-weight: 600; border-right: 4px solid #2563eb; }
+        .toast-enter { animation: toast-in 0.2s ease-out; }
+        @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex">
+    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
+        <div class="flex items-center space-x-3 mb-10">
+            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
+            <a href="dashboard.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Dashboard</span></a>
+            <a href="data-siswa.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span>Data Siswa</span></a>
+            <a href="data-user.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Data User</span></a>
+            <a href="daftar-nilai.html" class="sidebar-active"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span>Daftar Nilai Harian</span></a>
+            <a href="daftar-hadir.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span>Daftar Hadir Harian</span></a>
+            <a href="jurnal.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span>Jurnal Mengajar</span></a>
+            <a href="konseling.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span>Buku Konseling</span></a>
+            <a href="modul.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><span>Modul Ajar</span></a>
+            <hr class="my-4 border-gray-100">
+            <a href="index.html" class="flex items-center space-x-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition font-semibold"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg><span>Keluar Sistem</span></a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-10">
+        <header class="mb-8 space-y-4">
+            <div class="flex justify-between items-start gap-4 flex-wrap">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Input Nilai Harian</h1>
+                    <p class="text-gray-500 text-sm">Kelas 4 - Semester Genap</p>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button id="exportExcelBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50 transition">Export Excel</button>
+                    <button id="saveGradeBtn" type="button" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-green-100">Simpan Nilai</button>
+                </div>
+            </div>
+            <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
+                <label>
+                    <span class="text-xs font-bold text-gray-400 uppercase">Tanggal</span>
+                    <input id="gradeDate" type="date" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm">
+                </label>
+                <label class="md:col-span-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase">Mata Pelajaran</span>
+                    <select id="subjectSelect" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm">
+                        <option>Matematika</option>
+                        <option>Bahasa Indonesia</option>
+                        <option>Bahasa Bali</option>
+                        <option>IPAS</option>
+                        <option>Pendidikan Pancasila</option>
+                        <option>Seni Budaya</option>
+                    </select>
+                </label>
+                <label>
+                    <span class="text-xs font-bold text-gray-400 uppercase">Cari Siswa</span>
+                    <input id="searchInput" type="text" placeholder="Nama / NISN..." class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm">
+                </label>
+                <label class="md:col-span-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase">Tujuan Pembelajaran</span>
+                    <select id="tpSelect" class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-xl text-sm"></select>
+                </label>
+                <label class="md:col-span-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase">Tambah Tujuan Pembelajaran Manual</span>
+                    <div class="mt-1 flex gap-2">
+                        <input id="tpInput" type="text" placeholder="Contoh: TP 3 - Menganalisis..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm">
+                        <button id="addTpBtn" type="button" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50">Tambah</button>
+                    </div>
+                </label>
+            </div>
+        </header>
+
+        <section class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50">
+                        <tr class="text-gray-400 text-[11px] uppercase tracking-wider font-bold">
+                            <th class="px-5 py-3">Nama Siswa</th>
+                            <th class="px-5 py-3">NISN</th>
+                            <th class="px-5 py-3 text-center">Nilai Harian</th>
+                            <th class="px-5 py-3 text-center">Nilai Tugas</th>
+                            <th class="px-5 py-3 text-center">Nilai Produk</th>
+                            <th class="px-5 py-3 text-center">Nilai Sikap</th>
+                            <th class="px-5 py-3 text-center">Nilai PTS</th>
+                            <th class="px-5 py-3 text-center">Nilai PAS</th>
+                            <th class="px-5 py-3 text-center">Rata-rata</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradeTableBody" class="divide-y divide-gray-50"></tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="hidden p-10 text-center text-slate-500">Data siswa belum tersedia.</div>
+        </section>
+    </main>
+
+    <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+
+    <script>
+        const STUDENT_KEY = "sd3_data_siswa_v1";
+        const GRADE_KEY = "sd3_nilai_harian_v1";
+        const TP_KEY = "sd3_tp_master_v1";
+
+        const defaultStudents = [
+            { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", is_active: true },
+            { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", is_active: true }
+        ];
+
+        const defaultTpBySubject = {
+            "Matematika": ["TP 1 - Menyelesaikan operasi bilangan cacah"],
+            "Bahasa Indonesia": ["TP 1 - Menyusun paragraf sederhana"],
+            "Bahasa Bali": ["TP 1 - Menulis kalimat sederhana berbahasa Bali"],
+            "IPAS": ["TP 1 - Mengamati perubahan wujud benda"],
+            "Pendidikan Pancasila": ["TP 1 - Menjelaskan penerapan nilai Pancasila"],
+            "Seni Budaya": ["TP 1 - Mengekspresikan karya sederhana"]
+        };
+
+        const gradeDate = document.getElementById("gradeDate");
+        const subjectSelect = document.getElementById("subjectSelect");
+        const searchInput = document.getElementById("searchInput");
+        const tpSelect = document.getElementById("tpSelect");
+        const tpInput = document.getElementById("tpInput");
+        const addTpBtn = document.getElementById("addTpBtn");
+        const gradeTableBody = document.getElementById("gradeTableBody");
+        const emptyState = document.getElementById("emptyState");
+        const saveGradeBtn = document.getElementById("saveGradeBtn");
+        const exportExcelBtn = document.getElementById("exportExcelBtn");
+        const toastEl = document.getElementById("toast");
+
+        let toastTimer = null;
+        let students = loadArray(STUDENT_KEY, defaultStudents).filter(function (s) { return s.is_active !== false; });
+        let grades = loadArray(GRADE_KEY, []);
+        let tpBySubject = loadTpMap();
+
+        gradeDate.value = dateKey(new Date());
+        fillTpOptions();
+        renderTable();
+
+        gradeDate.addEventListener("change", renderTable);
+        subjectSelect.addEventListener("change", function () {
+            fillTpOptions();
+            renderTable();
+        });
+        searchInput.addEventListener("input", renderTable);
+        tpSelect.addEventListener("change", renderTable);
+        addTpBtn.addEventListener("click", addTpManual);
+        saveGradeBtn.addEventListener("click", saveGrades);
+        exportExcelBtn.addEventListener("click", exportGradesExcel);
+
+        function loadArray(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback.slice();
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed.filter(Boolean) : fallback.slice();
+            } catch (error) {
+                return fallback.slice();
+            }
+        }
+
+        function loadTpMap() {
+            try {
+                const raw = localStorage.getItem(TP_KEY);
+                if (!raw) return clone(defaultTpBySubject);
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return clone(defaultTpBySubject);
+                const merged = clone(defaultTpBySubject);
+                Object.keys(parsed).forEach(function (subject) {
+                    if (Array.isArray(parsed[subject])) {
+                        merged[subject] = parsed[subject].map(function (item) { return String(item || "").trim(); }).filter(Boolean);
+                    }
+                });
+                return merged;
+            } catch (error) {
+                return clone(defaultTpBySubject);
+            }
+        }
+
+        function persistTpMap() {
+            localStorage.setItem(TP_KEY, JSON.stringify(tpBySubject));
+        }
+
+        function persistGrades() {
+            localStorage.setItem(GRADE_KEY, JSON.stringify(grades));
+        }
+
+        function fillTpOptions() {
+            const subject = subjectSelect.value;
+            if (!tpBySubject[subject]) tpBySubject[subject] = [];
+            const list = tpBySubject[subject];
+            const current = tpSelect.value;
+            tpSelect.innerHTML = '<option value="">Pilih Tujuan Pembelajaran</option>' + list.map(function (item) {
+                return '<option value="' + esc(item) + '">' + esc(item) + '</option>';
+            }).join("");
+            if (list.includes(current)) {
+                tpSelect.value = current;
+            } else if (list.length > 0) {
+                tpSelect.value = list[0];
+            }
+        }
+
+        function addTpManual() {
+            const subject = subjectSelect.value;
+            const value = tpInput.value.trim();
+            if (!value) {
+                alert("Isi tujuan pembelajaran terlebih dahulu.");
+                return;
+            }
+            if (!tpBySubject[subject]) tpBySubject[subject] = [];
+            const exists = tpBySubject[subject].some(function (item) {
+                return item.toLowerCase() === value.toLowerCase();
+            });
+            if (exists) {
+                alert("Tujuan pembelajaran sudah ada.");
+                return;
+            }
+            tpBySubject[subject].push(value);
+            persistTpMap();
+            fillTpOptions();
+            tpSelect.value = value;
+            tpInput.value = "";
+            renderTable();
+            toast("Tujuan pembelajaran ditambahkan.");
+        }
+
+        function dateKey(dateObj) {
+            const dt = new Date(dateObj);
+            const yyyy = dt.getFullYear();
+            const mm = String(dt.getMonth() + 1).padStart(2, "0");
+            const dd = String(dt.getDate()).padStart(2, "0");
+            return yyyy + "-" + mm + "-" + dd;
+        }
+
+        function renderTable() {
+            const query = searchInput.value.trim().toLowerCase();
+            const date = gradeDate.value;
+            const subject = subjectSelect.value;
+            const tp = tpSelect.value;
+            const rows = students
+                .filter(function (s) {
+                    return String(s.full_name || "").toLowerCase().includes(query) || String(s.nisn || "").toLowerCase().includes(query);
+                })
+                .sort(function (a, b) { return String(a.full_name).localeCompare(String(b.full_name), "id"); });
+
+            emptyState.classList.toggle("hidden", rows.length > 0);
+            gradeTableBody.innerHTML = rows.map(function (s) {
+                const existing = grades.find(function (g) {
+                    return g.date === date && g.subject === subject && g.tujuan_pembelajaran === tp && g.student_id === s.id;
+                });
+
+                const nilai_harian = existing ? existing.nilai_harian : 0;
+                const nilai_tugas = existing ? existing.nilai_tugas : 0;
+                const nilai_produk = existing ? existing.nilai_produk : 0;
+                const nilai_sikap = existing ? existing.nilai_sikap : 0;
+                const nilai_pts = existing ? existing.nilai_pts : 0;
+                const nilai_pas = existing ? existing.nilai_pas : 0;
+                const avg = calcAvg(nilai_harian, nilai_tugas, nilai_produk, nilai_sikap, nilai_pts, nilai_pas);
+                const avgClass = avg < 75 ? "text-red-500" : "text-blue-600";
+
+                return `
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-5 py-4 font-semibold text-slate-800">${esc(s.full_name)}</td>
+                        <td class="px-5 py-4 text-slate-600">${esc(s.nisn || "-")}</td>
+                        <td class="px-5 py-4 text-center"><input data-id="${esc(s.id)}" data-field="nilai_harian" type="number" min="0" max="100" value="${esc(nilai_harian)}" class="grade-input w-20 border rounded-lg p-1 text-center"></td>
+                        <td class="px-5 py-4 text-center"><input data-id="${esc(s.id)}" data-field="nilai_tugas" type="number" min="0" max="100" value="${esc(nilai_tugas)}" class="grade-input w-20 border rounded-lg p-1 text-center"></td>
+                        <td class="px-5 py-4 text-center"><input data-id="${esc(s.id)}" data-field="nilai_produk" type="number" min="0" max="100" value="${esc(nilai_produk)}" class="grade-input w-20 border rounded-lg p-1 text-center"></td>
+                        <td class="px-5 py-4 text-center"><input data-id="${esc(s.id)}" data-field="nilai_sikap" type="number" min="0" max="100" value="${esc(nilai_sikap)}" class="grade-input w-20 border rounded-lg p-1 text-center"></td>
+                        <td class="px-5 py-4 text-center"><input data-id="${esc(s.id)}" data-field="nilai_pts" type="number" min="0" max="100" value="${esc(nilai_pts)}" class="grade-input w-20 border rounded-lg p-1 text-center"></td>
+                        <td class="px-5 py-4 text-center"><input data-id="${esc(s.id)}" data-field="nilai_pas" type="number" min="0" max="100" value="${esc(nilai_pas)}" class="grade-input w-20 border rounded-lg p-1 text-center"></td>
+                        <td class="px-5 py-4 text-center font-bold ${avgClass}" data-id="${esc(s.id)}" data-col="avg">${avg.toFixed(1)}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            bindGradeInputs();
+        }
+
+        function bindGradeInputs() {
+            const inputs = gradeTableBody.querySelectorAll(".grade-input");
+            inputs.forEach(function (input) {
+                input.addEventListener("input", function () {
+                    const id = input.getAttribute("data-id");
+                    const nilai_harian = num("nilai_harian", id);
+                    const nilai_tugas = num("nilai_tugas", id);
+                    const nilai_produk = num("nilai_produk", id);
+                    const nilai_sikap = num("nilai_sikap", id);
+                    const nilai_pts = num("nilai_pts", id);
+                    const nilai_pas = num("nilai_pas", id);
+                    const avg = calcAvg(nilai_harian, nilai_tugas, nilai_produk, nilai_sikap, nilai_pts, nilai_pas);
+                    const target = gradeTableBody.querySelector("td[data-id='" + cssEscape(id) + "'][data-col='avg']");
+                    if (!target) return;
+                    target.textContent = avg.toFixed(1);
+                    target.className = "px-5 py-4 text-center font-bold " + (avg < 75 ? "text-red-500" : "text-blue-600");
+                });
+            });
+        }
+
+        function num(field, id) {
+            const el = gradeTableBody.querySelector("input[data-id='" + cssEscape(id) + "'][data-field='" + field + "']");
+            return Math.max(0, Math.min(100, Number(el ? el.value : 0) || 0));
+        }
+
+        function calcAvg(a, b, c, d, e, f) {
+            return (a + b + c + d + e + f) / 6;
+        }
+
+        function saveGrades() {
+            const date = gradeDate.value;
+            const subject = subjectSelect.value;
+            const tp = tpSelect.value;
+
+            if (!date || !subject) {
+                alert("Tanggal dan mapel wajib diisi.");
+                return;
+            }
+            if (!tp) {
+                alert("Pilih tujuan pembelajaran terlebih dahulu.");
+                return;
+            }
+
+            students.forEach(function (s) {
+                const nilai_harian = num("nilai_harian", s.id);
+                const nilai_tugas = num("nilai_tugas", s.id);
+                const nilai_produk = num("nilai_produk", s.id);
+                const nilai_sikap = num("nilai_sikap", s.id);
+                const nilai_pts = num("nilai_pts", s.id);
+                const nilai_pas = num("nilai_pas", s.id);
+                const avg = calcAvg(nilai_harian, nilai_tugas, nilai_produk, nilai_sikap, nilai_pts, nilai_pas);
+
+                const index = grades.findIndex(function (g) {
+                    return g.date === date && g.subject === subject && g.tujuan_pembelajaran === tp && g.student_id === s.id;
+                });
+
+                const row = {
+                    id: index >= 0 ? grades[index].id : uid("GRD"),
+                    date: date,
+                    subject: subject,
+                    tujuan_pembelajaran: tp,
+                    student_id: s.id,
+                    student_name: s.full_name,
+                    nisn: s.nisn || "",
+                    nilai_harian: nilai_harian,
+                    nilai_tugas: nilai_tugas,
+                    nilai_produk: nilai_produk,
+                    nilai_sikap: nilai_sikap,
+                    nilai_pts: nilai_pts,
+                    nilai_pas: nilai_pas,
+                    avg: Number(avg.toFixed(1)),
+                    updated_at: new Date().toISOString()
+                };
+
+                if (index >= 0) grades[index] = row;
+                else grades.push(row);
+            });
+
+            persistGrades();
+            toast("Nilai berhasil disimpan.");
+        }
+
+        function exportGradesExcel() {
+            const date = gradeDate.value;
+            const subject = subjectSelect.value;
+            const tp = tpSelect.value;
+
+            const rows = grades
+                .filter(function (g) {
+                    const sameDate = g.date === date;
+                    const sameSubject = g.subject === subject;
+                    const sameTp = tp ? g.tujuan_pembelajaran === tp : true;
+                    return sameDate && sameSubject && sameTp;
+                })
+                .map(function (g) {
+                    return {
+                        Tanggal: g.date,
+                        Mapel: g.subject,
+                        "Tujuan Pembelajaran": g.tujuan_pembelajaran || "",
+                        NISN: g.nisn,
+                        Nama: g.student_name,
+                        "Nilai Harian": g.nilai_harian,
+                        "Nilai Tugas": g.nilai_tugas,
+                        "Nilai Produk": g.nilai_produk,
+                        "Nilai Sikap": g.nilai_sikap,
+                        "Nilai PTS": g.nilai_pts,
+                        "Nilai PAS": g.nilai_pas,
+                        "Rata-rata": g.avg
+                    };
+                });
+
+            if (!rows.length) {
+                alert("Belum ada data nilai untuk filter ini.");
+                return;
+            }
+
+            exportRowsToExcel(rows, "nilai-" + subject.replace(/\s+/g, "-").toLowerCase() + "-" + date + ".xlsx", "Nilai");
+        }
+
+        function exportRowsToExcel(rows, filename, sheetName) {
+            if (window.XLSX && typeof window.XLSX.utils !== "undefined") {
+                const ws = window.XLSX.utils.json_to_sheet(rows);
+                const wb = window.XLSX.utils.book_new();
+                window.XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                window.XLSX.writeFile(wb, filename);
+                return;
+            }
+            const headers = Object.keys(rows[0]);
+            const csv = [headers.join(",")].concat(rows.map(function (row) {
+                return headers.map(function (h) { return '"' + String(row[h] || "").replace(/"/g, '""') + '"'; }).join(",");
+            })).join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename.replace(/\.xlsx$/i, ".csv");
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clone(value) {
+            return JSON.parse(JSON.stringify(value));
+        }
+
+        function uid(prefix) {
+            return prefix + "-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+        }
+
+        function esc(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function cssEscape(value) {
+            return String(value || "").replace(/'/g, "\\'");
+        }
+
+        function toast(message) {
+            toastEl.textContent = message;
+            toastEl.classList.remove("hidden");
+            toastEl.classList.add("toast-enter");
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                toastEl.classList.add("hidden");
+                toastEl.classList.remove("toast-enter");
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
