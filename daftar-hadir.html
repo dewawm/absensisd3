@@ -23,19 +23,27 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex">
-  <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6">
-    <div class="mb-8 font-bold text-gray-800 uppercase">SISTEM ADMINISTRASI KELAS SD3</div>
-    <nav class="space-y-1 text-sm">
-      <a href="dashboard.html" class="sidebar-item">Dashboard</a>
-      <a href="data-siswa.html" class="sidebar-item">Data Siswa</a>
-      <a href="data-user.html" class="sidebar-item">Data User</a>
-      <a href="daftar-nilai.html" class="sidebar-item">Daftar Nilai Harian</a>
-      <a href="daftar-hadir.html" class="sidebar-item sidebar-active">Daftar Hadir Harian</a>
-      <a href="jurnal.html" class="sidebar-item">Jurnal Mengajar</a>
-      <a href="konseling.html" class="sidebar-item">Buku Konseling</a>
-      <a href="modul.html" class="sidebar-item">Modul Ajar</a>
-      <a href="index.html" class="sidebar-item text-red-500">Keluar Sistem</a>
+<body class="bg-slate-50 min-h-screen flex flex-col md:flex-row">
+  <aside class="w-full md:w-72 bg-white h-auto md:min-h-screen shadow-xl relative md:sticky top-0 p-4 md:p-6 flex flex-col z-10">
+    <div class="flex items-center justify-between mb-4 md:mb-10">
+        <div class="flex items-center space-x-3">
+            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 rounded-lg hover:bg-slate-100 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    </div>
+    <nav id="sidebarNav" class="hidden md:block flex-1 px-4 space-y-1">
+        <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
+        <a href="dashboard.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg><span>Dashboard</span></a>
+        <a href="data-siswa.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span>Data Siswa</span></a>
+        <a href="data-user.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span>Data User</span></a>
+        <a href="daftar-nilai.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span>Daftar Nilai Harian</span></a>
+        <a href="daftar-hadir.html" class="sidebar-active"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span>Daftar Hadir Harian</span></a>
+        <a href="jurnal.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg><span>Jurnal Mengajar</span></a>
+        <a href="konseling.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><span>Buku Konseling</span></a>
+        <a href="modul.html" class="sidebar-item"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg><span>Modul Ajar</span></a>
+        <hr class="my-4 border-gray-100">
+        <a href="index.html" class="flex items-center space-x-3 p-3 text-red-500 hover:bg-red-50 rounded-xl transition font-semibold"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg><span>Keluar Sistem</span></a>
     </nav>
   </aside>
 
@@ -45,98 +53,45 @@
         <h1 class="text-2xl font-bold text-slate-800">Presensi Masuk/Pulang</h1>
         <p id="dateText" class="text-sm text-slate-500"></p>
       </div>
-      <div class="flex gap-2">
+      <div id="dailyActions" class="flex gap-2">
+        <button id="bulkWaBtn" class="px-4 py-2 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold hover:bg-emerald-100 transition">WA Belum Absen</button>
+        <button id="openBackupBtn" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Backup Data</button>
+        <button id="scanQrBtn" class="px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>Scan QR</button>
+        <button id="holidayBtn" class="px-4 py-2 rounded-xl border border-purple-200 bg-purple-50 text-purple-700 font-semibold hover:bg-purple-100 transition">Atur Libur</button>
+        <button id="printFormBtn" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Cetak Form</button>
         <button id="exportBtn" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold">Export Excel</button>
       </div>
     </header>
 
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm mb-5 grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div class="flex space-x-1 rounded-xl bg-slate-200 p-1 mb-6 w-fit">
+      <button id="tabDaily" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm transition">Harian</button>
+      <button id="tabMonthly" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition">Rekap Bulanan</button>
+    </div>
+
+    <div id="dailyView">
+      <div id="holidayBanner" class="hidden bg-purple-50 border border-purple-100 text-purple-700 px-4 py-3 rounded-2xl mb-4 flex items-center gap-2 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span class="font-bold">Hari Libur: <span id="holidayText"></span></span>
+      </div>
+      <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm mb-5 grid grid-cols-1 md:grid-cols-4 gap-3">
+      <label><span class="text-xs font-bold text-slate-400 uppercase">Tanggal</span><input id="attendanceDate" type="date" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"></label>
       <label>
-        <span class="text-xs font-bold text-slate-400 uppercase">Tanggal</span>
-        <input id="attendanceDate" type="date" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+        <span class="text-xs font-bold text-slate-400 uppercase">Kelas</span>
+        <select id="classFilter" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"><option value="all">Semua Kelas</option></select>
       </label>
-      <label class="md:col-span-2">
-        <span class="text-xs font-bold text-slate-400 uppercase">Cari Siswa</span>
-        <input id="searchInput" type="text" placeholder="Nama / NISN..." class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+      <label>
+        <span class="text-xs font-bold text-slate-400 uppercase">Status</span>
+        <select id="statusFilter" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+          <option value="all">Semua</option>
+          <option value="Hadir">Hadir</option>
+          <option value="Sakit">Sakit</option>
+          <option value="Izin">Izin</option>
+          <option value="Alpha">Alpha</option>
+          <option value="Belum Absen">Belum Absen</option>
+          <option value="Libur">Libur</option>
+        </select>
       </label>
-    </section>
-
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm mb-5 space-y-3">
-      <div class="font-bold text-slate-800">Integrasi Presensi</div>
-      <label class="block">
-        <span class="text-xs font-bold text-slate-400 uppercase">Webhook Integrasi Aplikasi (opsional)</span>
-        <div class="mt-1 flex gap-2">
-          <input id="webhookInput" type="url" placeholder="https://contoh-app.com/webhook/absensi" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <button id="saveWebhookBtn" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold">Simpan</button>
-        </div>
-      </label>
-    </section>
-
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm mb-5 space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="font-bold text-slate-800">Aplikasi Scan QR + Absen Lokasi</div>
-        <label class="inline-flex items-center gap-2 text-sm text-slate-600">
-          <input id="autoWaOnScan" type="checkbox" class="rounded border-slate-300">
-          Kirim WA otomatis saat scan
-        </label>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-        <label>
-          <span class="text-xs font-bold text-slate-400 uppercase">Mode Absen</span>
-          <select id="scanMode" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-            <option value="masuk">Masuk</option>
-            <option value="pulang">Pulang</option>
-          </select>
-        </label>
-        <label>
-          <span class="text-xs font-bold text-slate-400 uppercase">Latitude Sekolah</span>
-          <input id="schoolLatInput" type="number" step="any" placeholder="-8.000000" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        </label>
-        <label>
-          <span class="text-xs font-bold text-slate-400 uppercase">Longitude Sekolah</span>
-          <input id="schoolLngInput" type="number" step="any" placeholder="115.000000" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        </label>
-        <label>
-          <span class="text-xs font-bold text-slate-400 uppercase">Radius (meter)</span>
-          <input id="schoolRadiusInput" type="number" min="10" step="1" placeholder="120" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-        </label>
-        <div class="flex items-end">
-          <button id="saveGeoBtn" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold">Simpan Titik</button>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap gap-2">
-        <button id="useCurrentPointBtn" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Gunakan Lokasi Saat Ini untuk Titik Sekolah</button>
-        <button id="checkLocationBtn" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Cek Posisi Saya</button>
-      </div>
-
-      <div class="text-sm text-slate-600 space-y-1">
-        <p id="geoInfoText">Titik sekolah belum diatur.</p>
-        <p id="locationInfoText">Status lokasi: belum dicek.</p>
-        <p id="qrStatusText">Status scan: siap.</p>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <div class="space-y-2">
-          <div class="aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
-            <video id="qrVideo" class="w-full h-full object-cover" autoplay playsinline muted></video>
-          </div>
-          <canvas id="qrCanvas" class="hidden"></canvas>
-          <div class="flex gap-2">
-            <button id="startScanBtn" class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-sm">Mulai Scan Kamera</button>
-            <button id="stopScanBtn" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Stop Scan</button>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <label class="block">
-            <span class="text-xs font-bold text-slate-400 uppercase">Input QR Manual</span>
-            <textarea id="qrManualInput" rows="6" placeholder="Tempel isi QR di sini jika kamera tidak tersedia." class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"></textarea>
-          </label>
-          <button id="processQrBtn" class="px-3 py-2 rounded-xl bg-emerald-600 text-white font-semibold text-sm">Proses QR Manual</button>
-          <p class="text-xs text-slate-500">Format QR didukung: id, nisn, atau JSON seperti {"student_id":"STU-001"} / {"nisn":"1234567001"}.</p>
-        </div>
-      </div>
+      <label><span class="text-xs font-bold text-slate-400 uppercase">Cari Siswa</span><input id="searchInput" type="text" placeholder="Nama / NISN..." class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"></label>
     </section>
     <section class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
@@ -194,11 +149,134 @@
   </main>
 
   <div id="toast" class="hidden fixed bottom-5 right-5 bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl z-50"></div>
+  <div id="printArea" class="hidden bg-white p-8 text-black"></div>
+
+  <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Edit Presensi</h3>
+        <button id="closeEditModalBtn" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <form id="editForm" class="p-4 space-y-4">
+        <input type="hidden" id="editStudentId">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nama Siswa</label>
+          <input type="text" id="editStudentName" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-semibold" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Status</label>
+          <select id="editStatus" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white">
+            <option value="Hadir">Hadir</option>
+            <option value="Izin">Izin</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Alpha">Alpha</option>
+            <option value="Belum Absen">Belum Absen</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Jam Masuk</label><input type="time" step="1" id="editCheckIn" class="w-full px-3 py-2 rounded-xl border border-slate-200"></div>
+          <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Jam Pulang</label><input type="time" step="1" id="editCheckOut" class="w-full px-3 py-2 rounded-xl border border-slate-200"></div>
+        </div>
+        <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Catatan</label><textarea id="editNotes" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-200"></textarea></div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="cancelEditBtn" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">Batal</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-100">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="bulkWaModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Kirim WA - Belum Absen</h3>
+        <button id="closeBulkWaModalBtn" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1">
+        <p class="text-sm text-slate-500 mb-4">Daftar siswa yang belum melakukan presensi pada tanggal <span id="bulkWaDate" class="font-bold text-slate-700"></span>.</p>
+        <table class="w-full text-sm text-left">
+          <thead class="bg-slate-50 text-slate-500 font-semibold">
+            <tr>
+              <th class="px-3 py-2">Nama Siswa</th>
+              <th class="px-3 py-2">Orang Tua</th>
+              <th class="px-3 py-2 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="bulkWaRows" class="divide-y divide-slate-100"></tbody>
+        </table>
+        <div id="bulkWaEmpty" class="hidden text-center py-8 text-slate-500">Semua siswa sudah absen atau tidak ada data.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="holidayModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Pengaturan Hari Libur</h3>
+        <button id="closeHolidayModalBtn" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-4 space-y-4">
+        <form id="holidayForm" class="flex gap-2">
+            <input type="date" id="holidayInputDate" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-sm" required>
+            <input type="text" id="holidayInputDesc" placeholder="Keterangan" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-sm" required>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-sm hover:bg-purple-700">Tambah</button>
+        </form>
+        <div class="overflow-y-auto max-h-60 border border-slate-100 rounded-xl">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-slate-50 text-slate-500 font-semibold"><tr><th class="px-3 py-2">Tanggal</th><th class="px-3 py-2">Keterangan</th><th class="px-3 py-2 text-right">Aksi</th></tr></thead>
+                <tbody id="holidayRows" class="divide-y divide-slate-100"></tbody>
+            </table>
+            <div id="holidayEmpty" class="hidden text-center py-4 text-slate-500 text-xs">Belum ada data libur.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="scanQrModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative flex flex-col">
+      <div class="absolute top-4 right-4 z-10">
+        <button id="closeScanQrModalBtn" class="bg-black/20 text-white hover:bg-black/40 rounded-full p-2 backdrop-blur-md transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="relative bg-black aspect-[3/4] w-full">
+        <video id="qrVideo" class="w-full h-full object-cover"></video>
+        <div class="absolute inset-0 border-2 border-white/30 m-12 rounded-xl pointer-events-none">
+          <div class="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-emerald-500 -mt-1 -ml-1 rounded-tl-xl"></div>
+          <div class="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-emerald-500 -mt-1 -mr-1 rounded-tr-xl"></div>
+          <div class="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-emerald-500 -mb-1 -ml-1 rounded-bl-xl"></div>
+          <div class="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-emerald-500 -mb-1 -mr-1 rounded-br-xl"></div>
+        </div>
+        <p class="absolute bottom-8 left-0 right-0 text-center text-white/80 text-sm font-medium drop-shadow-md">Arahkan kamera ke QR Code Siswa</p>
+      </div>
+      <div class="p-4 bg-white text-center border-t border-slate-100">
+        <p id="scanResultText" class="text-slate-500 text-sm font-medium">Menunggu scan...</p>
+      </div>
+      <canvas id="qrCanvas" class="hidden"></canvas>
+    </div>
+  </div>
+
+  <div id="backupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Backup & Restore Data</h3>
+        <button id="closeBackupBtn" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <p class="text-sm text-slate-500">Kelola data aplikasi (Siswa, Presensi, Nilai, dll).</p>
+        <div class="grid grid-cols-1 gap-3">
+          <button id="localBackupBtn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition">Download Backup (JSON)</button>
+          <button id="localRestoreBtn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">Restore dari File</button>
+        </div>
+        <input type="file" id="restoreInput" accept=".json" class="hidden">
+      </div>
+    </div>
+  </div>
 
   <script>
     const STUDENT_KEY = "sd3_data_siswa_v1";
     const ATT_KEY = "sd3_presensi_v2";
-    const WEBHOOK_KEY = "sd3_attendance_webhook";
+    const HOLIDAY_KEY = "sd3_hari_libur_v1";
     const defaultStudents = [
       { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", parent_wa: "081234567001", is_active: true },
       { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", parent_wa: "081234567002", is_active: true }
@@ -206,14 +284,57 @@
 
     const el = {
       date: document.getElementById("attendanceDate"),
+      statusFilter: document.getElementById("statusFilter"),
+      classFilter: document.getElementById("classFilter"),
       dateText: document.getElementById("dateText"),
       search: document.getElementById("searchInput"),
       exportBtn: document.getElementById("exportBtn"),
+      scanQrBtn: document.getElementById("scanQrBtn"),
+      holidayBtn: document.getElementById("holidayBtn"),
+      printFormBtn: document.getElementById("printFormBtn"),
+      bulkWaBtn: document.getElementById("bulkWaBtn"),
       rows: document.getElementById("rows"),
       empty: document.getElementById("emptyState"),
       toast: document.getElementById("toast"),
-      webhook: document.getElementById("webhookInput"),
-      saveWebhookBtn: document.getElementById("saveWebhookBtn")
+      editModal: document.getElementById("editModal"),
+      editForm: document.getElementById("editForm"),
+      closeEditModalBtn: document.getElementById("closeEditModalBtn"),
+      cancelEditBtn: document.getElementById("cancelEditBtn"),
+      editStudentId: document.getElementById("editStudentId"),
+      editStudentName: document.getElementById("editStudentName"),
+      editStatus: document.getElementById("editStatus"),
+      editCheckIn: document.getElementById("editCheckIn"),
+      editCheckOut: document.getElementById("editCheckOut"),
+      editNotes: document.getElementById("editNotes"),
+      bulkWaModal: document.getElementById("bulkWaModal"),
+      closeBulkWaModalBtn: document.getElementById("closeBulkWaModalBtn"),
+      bulkWaRows: document.getElementById("bulkWaRows"),
+      bulkWaDate: document.getElementById("bulkWaDate"),
+      bulkWaEmpty: document.getElementById("bulkWaEmpty"),
+      dailyActions: document.getElementById("dailyActions"),
+      dailyView: document.getElementById("dailyView"),
+      monthlyView: document.getElementById("monthlyView"),
+      tabDaily: document.getElementById("tabDaily"),
+      tabMonthly: document.getElementById("tabMonthly"),
+      recapMonth: document.getElementById("recapMonth"),
+      recapYear: document.getElementById("recapYear"),
+      monthlyRows: document.getElementById("monthlyRows"),
+      monthlyEmpty: document.getElementById("monthlyEmpty"),
+      exportMonthlyBtn: document.getElementById("exportMonthlyBtn"),
+      holidayModal: document.getElementById("holidayModal"),
+      closeHolidayModalBtn: document.getElementById("closeHolidayModalBtn"),
+      holidayForm: document.getElementById("holidayForm"),
+      holidayInputDate: document.getElementById("holidayInputDate"),
+      holidayInputDesc: document.getElementById("holidayInputDesc"),
+      holidayRows: document.getElementById("holidayRows"),
+      holidayEmpty: document.getElementById("holidayEmpty"),
+      holidayBanner: document.getElementById("holidayBanner"),
+      holidayText: document.getElementById("holidayText"),
+      scanQrModal: document.getElementById("scanQrModal"),
+      closeScanQrModalBtn: document.getElementById("closeScanQrModalBtn"),
+      qrVideo: document.getElementById("qrVideo"),
+      qrCanvas: document.getElementById("qrCanvas"),
+      scanResultText: document.getElementById("scanResultText")
     };
 
     let toastTimer = null;
@@ -224,17 +345,75 @@
     let holidays = loadArray(HOLIDAY_KEY, []);
 
     el.date.value = dateKey(new Date());
-    el.webhook.value = localStorage.getItem(WEBHOOK_KEY) || "";
+    refreshClassOptions();
+    initTabs();
     refreshDateText();
     render();
 
     el.date.addEventListener("change", function () { refreshDateText(); render(); });
+    el.classFilter.addEventListener("change", render);
+    el.statusFilter.addEventListener("change", render);
     el.search.addEventListener("input", render);
     el.exportBtn.addEventListener("click", exportExcel);
-    el.saveWebhookBtn.addEventListener("click", function () {
-      localStorage.setItem(WEBHOOK_KEY, el.webhook.value.trim());
-      toast("Webhook tersimpan.");
+    el.scanQrBtn.addEventListener("click", startScanner);
+    el.holidayBtn.addEventListener("click", openHolidayModal);
+    el.printFormBtn.addEventListener("click", printManualForm);
+    el.bulkWaBtn.addEventListener("click", openBulkWaModal);
+    el.closeEditModalBtn.addEventListener("click", closeEditModal);
+    el.cancelEditBtn.addEventListener("click", closeEditModal);
+    el.editForm.addEventListener("submit", saveEdit);
+    el.closeBulkWaModalBtn.addEventListener("click", closeBulkWaModal);
+    el.recapMonth.addEventListener("change", renderMonthly);
+    el.recapYear.addEventListener("change", renderMonthly);
+    el.exportMonthlyBtn.addEventListener("click", exportMonthlyExcel);
+    el.closeHolidayModalBtn.addEventListener("click", closeHolidayModal);
+    el.holidayForm.addEventListener("submit", addHoliday);
+    el.closeScanQrModalBtn.addEventListener("click", stopScanner);
+
+    // Backup Events
+    document.getElementById("openBackupBtn").addEventListener("click", () => document.getElementById("backupModal").classList.remove("hidden"));
+    document.getElementById("closeBackupBtn").addEventListener("click", () => document.getElementById("backupModal").classList.add("hidden"));
+    document.getElementById("localBackupBtn").addEventListener("click", downloadBackup);
+    document.getElementById("localRestoreBtn").addEventListener("click", () => document.getElementById("restoreInput").click());
+    document.getElementById("restoreInput").addEventListener("change", restoreBackup);
+    document.getElementById("mobileMenuBtn").addEventListener("click", function() {
+        document.getElementById("sidebarNav").classList.toggle("hidden");
     });
+
+    function initTabs() {
+      const now = new Date();
+      const m = now.getMonth() + 1;
+      const y = now.getFullYear();
+      
+      el.recapMonth.innerHTML = Array.from({length: 12}, (_, i) => i + 1).map(i => 
+        `<option value="${i}" ${i === m ? "selected" : ""}>${new Date(2000, i-1, 1).toLocaleDateString("id-ID", {month:"long"})}</option>`
+      ).join("");
+      
+      el.recapYear.innerHTML = [y-1, y, y+1].map(i => 
+        `<option value="${i}" ${i === y ? "selected" : ""}>${i}</option>`
+      ).join("");
+
+      el.tabDaily.addEventListener("click", function() { switchTab("daily"); });
+      el.tabMonthly.addEventListener("click", function() { switchTab("monthly"); });
+    }
+
+    function switchTab(mode) {
+      if (mode === "daily") {
+        el.dailyView.classList.remove("hidden");
+        el.monthlyView.classList.add("hidden");
+        el.dailyActions.classList.remove("hidden");
+        el.tabDaily.className = "px-4 py-2 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm transition";
+        el.tabMonthly.className = "px-4 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition";
+        render();
+      } else {
+        el.dailyView.classList.add("hidden");
+        el.monthlyView.classList.remove("hidden");
+        el.dailyActions.classList.add("hidden");
+        el.tabDaily.className = "px-4 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition";
+        el.tabMonthly.className = "px-4 py-2 rounded-lg text-sm font-bold bg-white text-slate-800 shadow-sm transition";
+        renderMonthly();
+      }
+    }
 
     function loadArray(key, fallback) {
       try {
@@ -281,19 +460,37 @@
         .sort(function (a, b) { return studentName(a).localeCompare(studentName(b), "id"); });
     }
 
-
-    function statusOptions(selected) {
-      const list = ["Belum Absen", "Hadir", "Izin", "Sakit", "Alpha"];
-      return list.map(function (x) {
-        return '<option value="' + esc(x) + '"' + (x === selected ? " selected" : "") + ">" + esc(x) + "</option>";
-      }).join("");
-    }
-
     function render() {
       const date = el.date.value || dateKey(new Date());
-      const list = getFilteredStudents();
+      const statusFilter = el.statusFilter.value;
+      
+      const holiday = holidays.find(h => h.date === date);
+      if (holiday) {
+        el.holidayBanner.classList.remove("hidden");
+        el.holidayText.textContent = holiday.desc;
+        if (el.bulkWaBtn) {
+          el.bulkWaBtn.disabled = true;
+          el.bulkWaBtn.classList.add("opacity-50", "cursor-not-allowed");
+        }
+      } else {
+        el.holidayBanner.classList.add("hidden");
+        if (el.bulkWaBtn) {
+          el.bulkWaBtn.disabled = false;
+          el.bulkWaBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        }
+      }
+
+      let list = getFilteredStudents();
       const byDate = attendances.filter(function (a) { return a.date === date; });
       const map = new Map(byDate.map(function (a) { return [a.student_id, a]; }));
+
+      if (statusFilter !== "all") {
+        list = list.filter(function (s) {
+          const row = map.get(s.id) || {};
+          const status = row.status || (holiday ? "Libur" : "Belum Absen");
+          return status === statusFilter;
+        });
+      }
 
       if (!students.length) {
         el.rows.innerHTML = "";
@@ -312,7 +509,14 @@
       el.empty.classList.add("hidden");
       el.rows.innerHTML = list.map(function (s) {
         const row = map.get(s.id) || {};
-        const status = row.status || "Belum Absen";
+        const status = row.status || (holiday ? "Libur" : "Belum Absen");
+        let statusClass = "bg-slate-100 text-slate-500";
+        if (status === "Hadir") statusClass = "bg-emerald-100 text-emerald-700";
+        else if (status === "Sakit") statusClass = "bg-blue-100 text-blue-700";
+        else if (status === "Izin") statusClass = "bg-yellow-100 text-yellow-700";
+        else if (status === "Alpha") statusClass = "bg-red-100 text-red-700";
+        else if (status === "Libur") statusClass = "bg-purple-100 text-purple-700";
+
         return `
           <tr class="hover:bg-slate-50">
             <td class="px-4 py-3 font-semibold text-slate-800">${esc(studentName(s))}</td>
@@ -333,107 +537,123 @@
 
       el.rows.querySelectorAll(".edit-btn").forEach(function (btn) {
         btn.addEventListener("click", function () {
-          const sid = String(btn.getAttribute("data-sid") || "");
-          const s = students.find(function (x) { return x.id === sid; });
-          if (!s) return;
-          const row = findRow(date, sid) || {
-            date: date,
-            student_id: s.id,
-            student_name: studentName(s),
-            nisn: studentNisn(s),
-            parent_wa: studentWa(s),
-            status: "Belum Absen",
-            check_in: "",
-            check_out: "",
-            notes: ""
-          };
-          openWhatsApp(s, row, "manual");
+          openEditModal(btn.getAttribute("data-sid"));
+        });
+      });
+
+      el.rows.querySelectorAll(".wa-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          sendWa(btn.getAttribute("data-sid"));
         });
       });
     }
 
-    function saveManual() {
-      const date = el.date.value || dateKey(new Date());
-      const list = getFilteredStudents();
-      if (!list.length) {
-        toast("Tidak ada data untuk disimpan.");
+    function renderMonthly() {
+      const m = parseInt(el.recapMonth.value);
+      const y = parseInt(el.recapYear.value);
+      
+      const filteredAtt = attendances.filter(function(a) {
+        const d = new Date(a.date);
+        return d.getMonth() + 1 === m && d.getFullYear() === y;
+      });
+
+      if (!filteredAtt.length) {
+        el.monthlyRows.innerHTML = "";
+        el.monthlyEmpty.classList.remove("hidden");
         return;
       }
-      let changed = 0;
-      list.forEach(function (s) {
-        const sid = cssEsc(s.id);
-        const statusEl = el.rows.querySelector(".status-input[data-sid='" + sid + "']");
-        const noteEl = el.rows.querySelector(".note-input[data-sid='" + sid + "']");
-        if (!statusEl || !noteEl) return;
+      el.monthlyEmpty.classList.add("hidden");
 
-        const prev = findRow(date, s.id);
-        const row = prev || {
-          id: uid("ATT"),
-          date: date,
-          student_id: s.id,
-          student_name: studentName(s),
-          nisn: studentNisn(s),
-          parent_wa: studentWa(s),
-          status: "Belum Absen",
-          check_in: "",
-          check_out: "",
-          notes: ""
-        };
+      const stats = students.map(function(s) {
+        const recs = filteredAtt.filter(function(a) { return a.student_id === s.id; });
+        const h = recs.filter(function(a) { return a.status === "Hadir"; }).length;
+        const sk = recs.filter(function(a) { return a.status === "Sakit"; }).length;
+        const i = recs.filter(function(a) { return a.status === "Izin"; }).length;
+        const a = recs.filter(function(a) { return a.status === "Alpha"; }).length;
+        const total = h + sk + i + a;
+        const pct = total > 0 ? Math.round((h / total) * 100) : 0;
+        return { id: s.id, name: studentName(s), h, sk, i, a, pct };
+      }).sort(function(a, b) { return a.name.localeCompare(b.name); });
 
-        const status = String(statusEl.value || "Belum Absen");
-        const notes = String(noteEl.value || "").trim();
-        if (row.status !== status || row.notes !== notes || !prev) changed += 1;
-        row.status = status;
-        row.notes = notes;
-        row.updated_at = new Date().toISOString();
-        upsertRow(row);
+      el.monthlyRows.innerHTML = stats.map(function(row) {
+        let pctClass = "text-slate-700";
+        if (row.pct < 50) pctClass = "text-red-600 font-bold";
+        else if (row.pct < 80) pctClass = "text-yellow-600 font-bold";
+        else pctClass = "text-emerald-600 font-bold";
+
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-medium text-slate-800">${esc(row.name)}</td>
+            <td class="px-4 py-3 text-center text-emerald-600 font-semibold">${row.h}</td>
+            <td class="px-4 py-3 text-center text-blue-600">${row.sk}</td>
+            <td class="px-4 py-3 text-center text-yellow-600">${row.i}</td>
+            <td class="px-4 py-3 text-center text-red-600">${row.a}</td>
+            <td class="px-4 py-3 text-center ${pctClass}">${row.pct}%</td>
+            <td class="px-4 py-3 text-right">
+              <button class="monthly-wa-btn text-emerald-600 hover:text-emerald-800 font-semibold text-xs bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition" data-sid="${esc(row.id)}" title="Kirim Rekap WA">
+                <svg class="w-4 h-4 inline-block" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.536 0 1.52 1.115 2.988 1.264 3.186.149.198 2.19 3.349 5.273 4.695 2.678 1.171 3.224.938 3.819.879.595-.059 1.905-.783 2.173-1.538.268-.756.268-1.398.188-1.538-.08-.149-.297-.223-.594-.372zM12 2.163c5.421 0 9.828 4.409 9.828 9.828 0 1.734-.451 3.359-1.244 4.784l.828 3.076-3.158-.816c-1.366.743-2.912 1.17-4.554 1.17-5.421 0-9.828-4.409-9.828-9.828 0-5.418 4.407-9.828 9.828-9.828zm0-2.163C5.373 0 0 5.373 0 12c0 2.123.55 4.109 1.514 5.856l-1.514 5.528 5.654-1.482C7.396 23.195 9.616 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      el.monthlyRows.querySelectorAll(".monthly-wa-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          sendMonthlyWa(btn.getAttribute("data-sid"));
+        });
       });
-      persistAtt();
-      render();
-      toast(changed ? (changed + " data manual disimpan.") : "Tidak ada perubahan.");
     }
 
-    function normalizeWaPhone(value) {
-      const digits = String(value || "").replace(/[^\d]/g, "");
-      if (!digits) return "";
-      if (digits.startsWith("0")) return "62" + digits.slice(1);
-      if (digits.startsWith("62")) return digits;
-      return digits;
+    function openHolidayModal() {
+      renderHolidays();
+      el.holidayModal.classList.remove("hidden");
     }
 
-    function makeWaMessage(student, row, mode) {
-      const labelMode = mode === "pulang" ? "kepulangan" : mode === "masuk" ? "kehadiran masuk" : "presensi";
-      const jam = mode === "pulang" ? (row.check_out || "-") : mode === "masuk" ? (row.check_in || "-") : "-";
-      const status = row.status || "Belum Absen";
-      return "Yth. Orang Tua/Wali " + studentName(student) + ", " +
-        "pencatatan " + labelMode + " pada " + row.date + " jam " + jam +
-        ". Status: " + status + ". Catatan: " + (row.notes || "-") + ".";
+    function closeHolidayModal() {
+      el.holidayModal.classList.add("hidden");
+      render(); // Refresh view in case date was affected
     }
 
-    function openWhatsApp(student, row, mode) {
-      const phone = normalizeWaPhone(studentWa(student) || row.parent_wa);
-      if (!phone) {
-        toast("Nomor WA orang tua belum diisi.");
+    function addHoliday(e) {
+      e.preventDefault();
+      const date = el.holidayInputDate.value;
+      const desc = el.holidayInputDesc.value.trim();
+      if(!date || !desc) return;
+      
+      const exists = holidays.find(h => h.date === date);
+      if(exists) {
+        if(!confirm("Tanggal ini sudah ada. Update keterangan?")) return;
+        exists.desc = desc;
+      } else {
+        holidays.push({ date, desc });
+      }
+      holidays.sort((a,b) => a.date.localeCompare(b.date));
+      localStorage.setItem(HOLIDAY_KEY, JSON.stringify(holidays));
+      el.holidayInputDate.value = "";
+      el.holidayInputDesc.value = "";
+      renderHolidays();
+      toast("Hari libur disimpan.");
+    }
+
+    function renderHolidays() {
+      if(holidays.length === 0) {
+        el.holidayRows.innerHTML = "";
+        el.holidayEmpty.classList.remove("hidden");
         return;
       }
-      const msg = makeWaMessage(student, row, mode);
-      const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(msg);
-      const win = window.open(url, "_blank");
-      if (!win) toast("Popup diblokir browser.");
-    }
-
-    function pushToWebhook(payload) {
-      const url = String(el.webhook.value || "").trim();
-      if (!url) return;
-      fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).then(function (res) {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-      }).catch(function () {
-        toast("Webhook gagal. Data lokal tetap tersimpan.");
-      });
+      el.holidayEmpty.classList.add("hidden");
+      el.holidayRows.innerHTML = holidays.map(h => `
+        <tr><td class="px-3 py-2">${h.date}</td><td class="px-3 py-2">${esc(h.desc)}</td><td class="px-3 py-2 text-right"><button class="del-holiday-btn text-red-500 hover:text-red-700 font-bold text-xs" data-date="${h.date}">&times;</button></td></tr>
+      `).join("");
+      el.holidayRows.querySelectorAll(".del-holiday-btn").forEach(btn => btn.addEventListener("click", () => {
+        if(confirm("Hapus hari libur ini?")) {
+          holidays = holidays.filter(h => h.date !== btn.dataset.date);
+          localStorage.setItem(HOLIDAY_KEY, JSON.stringify(holidays));
+          renderHolidays();
+          toast("Hari libur dihapus.");
+        }
+      }));
     }
 
     function exportExcel() {
@@ -463,11 +683,396 @@
         };
       });
 
+      if (window.XLSX && typeof window.XLSX.utils !== "undefined") {
+        const ws = window.XLSX.utils.json_to_sheet(rows);
+        const wb = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(wb, ws, "Presensi");
+        window.XLSX.writeFile(wb, "presensi-" + date + ".xlsx");
+        toast("Export Excel berhasil.");
+      } else {
+        // Fallback to CSV if XLSX library is not loaded
+        const headers = Object.keys(rows[0]);
+        const csv = [headers.join(",")].concat(rows.map(r => headers.map(h => `"${String(r[h] || "").replace(/"/g, '""')}"`).join(","))).join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "presensi-" + date + ".csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        toast("Library Excel gagal, export ke CSV.");
+      }
+    }
+
+    function exportMonthlyExcel() {
+      if (typeof XLSX === "undefined") {
+        toast("Library Excel tidak tersedia.");
+        return;
+      }
+      const m = parseInt(el.recapMonth.value);
+      const y = parseInt(el.recapYear.value);
+      const filteredAtt = attendances.filter(function(a) {
+        const d = new Date(a.date);
+        return d.getMonth() + 1 === m && d.getFullYear() === y;
+      });
+
+      if (!filteredAtt.length) {
+        toast("Tidak ada data bulan ini.");
+        return;
+      }
+
+      const rows = students.map(function(s) {
+        const recs = filteredAtt.filter(function(a) { return a.student_id === s.id; });
+        const h = recs.filter(function(a) { return a.status === "Hadir"; }).length;
+        const sk = recs.filter(function(a) { return a.status === "Sakit"; }).length;
+        const i = recs.filter(function(a) { return a.status === "Izin"; }).length;
+        const a = recs.filter(function(a) { return a.status === "Alpha"; }).length;
+        const total = h + sk + i + a;
+        const pct = total > 0 ? Math.round((h / total) * 100) : 0;
+        return {
+          Nama: studentName(s),
+          Hadir: h,
+          Sakit: sk,
+          Izin: i,
+          Alpha: a,
+          Persentase: pct + "%"
+        };
+      });
+
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Presensi");
-      XLSX.writeFile(wb, "presensi-" + date + ".xlsx");
-      toast("Export Excel berhasil.");
+      XLSX.utils.book_append_sheet(wb, ws, "Rekap Bulanan");
+      XLSX.writeFile(wb, `rekap-presensi-${y}-${m}.xlsx`);
+      toast("Export Rekap berhasil.");
+    }
+
+    function printManualForm() {
+      const printArea = document.getElementById("printArea");
+      const cls = el.classFilter.value;
+      const sortedStudents = students
+        .filter(s => cls === "all" || (s.class_name || "Lainnya") === cls)
+        .sort((a, b) => studentName(a).localeCompare(studentName(b)));
+      
+      const classDisplay = cls === "all" ? "__________________________" : cls;
+      
+      let html = `
+        <div class="font-sans text-black">
+          <div class="text-center mb-6 border-b-2 border-black pb-4">
+            <h1 class="text-2xl font-bold uppercase tracking-wide">Daftar Hadir Siswa</h1>
+            <h2 class="text-xl font-semibold">SD No. 3 Lukluk</h2>
+            <div class="flex justify-between mt-4 text-sm font-medium">
+              <p>Tanggal: __________________________</p>
+              <p>Kelas: ${esc(classDisplay)}</p>
+            </div>
+          </div>
+          <table class="w-full border-collapse border border-black text-sm">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border border-black px-2 py-2 w-10 text-center">No</th>
+                <th class="border border-black px-3 py-2 text-left">Nama Siswa</th>
+                <th class="border border-black px-2 py-2 w-24 text-center">NISN</th>
+                <th class="border border-black px-2 py-2 w-12 text-center">H</th>
+                <th class="border border-black px-2 py-2 w-12 text-center">S</th>
+                <th class="border border-black px-2 py-2 w-12 text-center">I</th>
+                <th class="border border-black px-2 py-2 w-12 text-center">A</th>
+                <th class="border border-black px-2 py-2 w-32 text-center">Ket</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      html += sortedStudents.map((s, i) => `
+        <tr>
+          <td class="border border-black px-2 py-3 text-center">${i + 1}</td>
+          <td class="border border-black px-3 py-3 font-medium">${esc(studentName(s))}</td>
+          <td class="border border-black px-2 py-3 text-center">${esc(studentNisn(s))}</td>
+          <td class="border border-black px-2 py-3"></td>
+          <td class="border border-black px-2 py-3"></td>
+          <td class="border border-black px-2 py-3"></td>
+          <td class="border border-black px-2 py-3"></td>
+          <td class="border border-black px-2 py-3"></td>
+        </tr>
+      `).join("");
+
+      html += `</tbody></table><div class="mt-12 flex justify-end"><div class="text-center w-48"><p>Guru Kelas,</p><br><br><br><p class="border-b border-black border-dashed"></p></div></div></div>`;
+
+      printArea.innerHTML = html;
+      printArea.classList.remove("hidden");
+      setTimeout(() => { window.print(); }, 300);
+      window.onafterprint = () => { printArea.classList.add("hidden"); printArea.innerHTML = ""; };
+    }
+
+    // --- QR Scanner Logic ---
+    function startScanner() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Browser ini tidak mendukung akses kamera.");
+        return;
+      }
+      
+      el.scanQrModal.classList.remove("hidden");
+      el.scanResultText.textContent = "Menunggu scan...";
+      el.scanResultText.className = "text-slate-500 text-sm font-medium";
+      isScanning = true;
+      
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function(stream) {
+          videoStream = stream;
+          el.qrVideo.srcObject = stream;
+          el.qrVideo.setAttribute("playsinline", true);
+          el.qrVideo.play();
+          requestAnimationFrame(tickScanner);
+        })
+        .catch(function(err) {
+          alert("Gagal membuka kamera: " + err.message);
+          stopScanner();
+        });
+    }
+
+    function stopScanner() {
+      isScanning = false;
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+      }
+      el.scanQrModal.classList.add("hidden");
+    }
+
+    function tickScanner() {
+      if (!isScanning) return;
+      
+      if (el.qrVideo.readyState === el.qrVideo.HAVE_ENOUGH_DATA) {
+        el.qrCanvas.height = el.qrVideo.videoHeight;
+        el.qrCanvas.width = el.qrVideo.videoWidth;
+        const ctx = el.qrCanvas.getContext("2d");
+        ctx.drawImage(el.qrVideo, 0, 0, el.qrCanvas.width, el.qrCanvas.height);
+        
+        const imageData = ctx.getImageData(0, 0, el.qrCanvas.width, el.qrCanvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+
+        if (code) handleScanResult(code.data);
+      }
+      requestAnimationFrame(tickScanner);
+    }
+    
+    let lastScanData = "";
+    let lastScanTime = 0;
+
+    function handleScanResult(data) {
+      const now = Date.now();
+      if (data === lastScanData && now - lastScanTime < 3000) return; // Cooldown 3s
+      
+      lastScanData = data;
+      lastScanTime = now;
+
+      try {
+        const parsed = JSON.parse(data);
+        const sid = parsed.id;
+        const student = students.find(s => s.id === sid);
+        
+        if (student) {
+          const date = el.date.value || dateKey(new Date());
+          const nowTime = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
+          let row = findRow(date, sid);
+          
+          if (row && row.status === "Hadir") {
+             el.scanResultText.textContent = `${studentName(student)} sudah absen.`;
+             el.scanResultText.className = "text-yellow-600 font-bold text-lg";
+          } else {
+             if(!row) row = { id: uid("ATT"), date: date, student_id: sid, student_name: studentName(student), nisn: studentNisn(student), parent_wa: studentWa(student), created_at: new Date().toISOString() };
+             row.status = "Hadir";
+             row.check_in = nowTime;
+             row.updated_at = new Date().toISOString();
+             upsertRow(row);
+             persistAtt();
+             render();
+             el.scanResultText.textContent = `Berhasil: ${studentName(student)}`;
+             el.scanResultText.className = "text-emerald-600 font-bold text-lg";
+             toast(`Presensi ${studentName(student)} tercatat.`);
+          }
+        } else {
+          el.scanResultText.textContent = "QR Code tidak dikenali.";
+          el.scanResultText.className = "text-red-500 font-bold";
+        }
+      } catch (e) {
+        // Ignore invalid JSON
+      }
+    }
+
+    function openEditModal(sid) {
+      const s = students.find(function (x) { return x.id === sid; });
+      if (!s) return;
+      const date = el.date.value || dateKey(new Date());
+      const holiday = holidays.find(h => h.date === date);
+      const row = findRow(date, sid) || { status: (holiday ? "Libur" : "Belum Absen"), check_in: "", check_out: "", notes: "" };
+
+      el.editStudentId.value = sid;
+      el.editStudentName.value = studentName(s);
+      el.editStatus.value = row.status || "Belum Absen";
+      el.editCheckIn.value = row.check_in || "";
+      el.editCheckOut.value = row.check_out || "";
+      el.editNotes.value = row.notes || "";
+
+      el.editModal.classList.remove("hidden");
+    }
+
+    function closeBulkWaModal() {
+      el.bulkWaModal.classList.add("hidden");
+    }
+
+    function openBulkWaModal() {
+      const date = el.date.value || dateKey(new Date());
+      el.bulkWaDate.textContent = date;
+      const holiday = holidays.find(h => h.date === date);
+      
+      const list = students.filter(function(s) {
+        const row = findRow(date, s.id);
+        const status = row ? row.status : (holiday ? "Libur" : "Belum Absen");
+        return status === "Belum Absen";
+      }).sort(function(a, b) { return studentName(a).localeCompare(studentName(b)); });
+
+      if (list.length === 0) {
+        el.bulkWaRows.innerHTML = "";
+        el.bulkWaEmpty.classList.remove("hidden");
+      } else {
+        el.bulkWaEmpty.classList.add("hidden");
+        el.bulkWaRows.innerHTML = list.map(function(s) {
+          return `
+            <tr class="hover:bg-slate-50">
+              <td class="px-3 py-2 font-medium text-slate-800">${esc(studentName(s))}</td>
+              <td class="px-3 py-2 text-slate-600">${esc(s.parent_name || "-")} <span class="text-xs text-slate-400">(${esc(studentWa(s))})</span></td>
+              <td class="px-3 py-2 text-right">
+                <button class="bulk-send-btn px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition shadow-sm" data-sid="${esc(s.id)}">
+                  Kirim WA
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+        el.bulkWaRows.querySelectorAll(".bulk-send-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            sendWa(btn.getAttribute("data-sid"));
+          });
+        });
+      }
+      el.bulkWaModal.classList.remove("hidden");
+    }
+
+    function closeEditModal() {
+      el.editModal.classList.add("hidden");
+    }
+
+    function saveEdit(e) {
+      e.preventDefault();
+      const sid = el.editStudentId.value;
+      const date = el.date.value || dateKey(new Date());
+      const s = students.find(function (x) { return x.id === sid; });
+      if (!s) return;
+
+      let row = findRow(date, sid);
+      if (!row) {
+        row = {
+          id: uid("ATT"),
+          date: date,
+          student_id: sid,
+          student_name: studentName(s),
+          nisn: studentNisn(s),
+          parent_wa: studentWa(s),
+          created_at: new Date().toISOString()
+        };
+      }
+
+      row.status = el.editStatus.value;
+      row.check_in = el.editCheckIn.value;
+      row.check_out = el.editCheckOut.value;
+      row.notes = el.editNotes.value;
+      row.updated_at = new Date().toISOString();
+
+      upsertRow(row);
+      persistAtt();
+      render();
+      closeEditModal();
+      toast("Data presensi diperbarui.");
+    }
+
+    function sendWa(sid) {
+      const s = students.find(function (x) { return x.id === sid; });
+      if (!s) return;
+      
+      const date = el.date.value || dateKey(new Date());
+      const holiday = holidays.find(h => h.date === date);
+      const row = findRow(date, sid) || {};
+      const status = row.status || (holiday ? "Libur" : "Belum Absen");
+      const checkIn = row.check_in || "-";
+      const checkOut = row.check_out || "-";
+      const notes = row.notes || "-";
+      
+      let phone = String(s.parent_wa || "").replace(/\D/g, "");
+      if (!phone) {
+        toast("Nomor WA orang tua tidak tersedia.");
+        return;
+      }
+      if (phone.startsWith("0")) phone = "62" + phone.slice(1);
+      
+      const msg = `Yth. Orang Tua/Wali ${s.full_name || ""},\n\nBerikut status kehadiran siswa pada tanggal ${date}:\nStatus: ${status}\nJam Masuk: ${checkIn}\nJam Pulang: ${checkOut}\nCatatan: ${notes}\n\nTerima kasih.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    function sendMonthlyWa(sid) {
+      const s = students.find(function (x) { return x.id === sid; });
+      if (!s) return;
+
+      const m = parseInt(el.recapMonth.value);
+      const y = parseInt(el.recapYear.value);
+      const monthName = el.recapMonth.options[el.recapMonth.selectedIndex].text;
+
+      const filteredAtt = attendances.filter(function(a) {
+        const d = new Date(a.date);
+        return d.getMonth() + 1 === m && d.getFullYear() === y && a.student_id === sid;
+      });
+      
+      const h = filteredAtt.filter(function(a) { return a.status === "Hadir"; }).length;
+      const sk = filteredAtt.filter(function(a) { return a.status === "Sakit"; }).length;
+      const i = filteredAtt.filter(function(a) { return a.status === "Izin"; }).length;
+      const a = filteredAtt.filter(function(a) { return a.status === "Alpha"; }).length;
+      const total = h + sk + i + a;
+      const pct = total > 0 ? Math.round((h / total) * 100) : 0;
+
+      let phone = String(s.parent_wa || "").replace(/\D/g, "");
+      if (!phone) return toast("Nomor WA orang tua tidak tersedia.");
+      if (phone.startsWith("0")) phone = "62" + phone.slice(1);
+
+      const msg = `Yth. Orang Tua/Wali ${s.full_name || ""},\n\nBerikut rekap kehadiran bulan ${monthName} ${y}:\n\nHadir: ${h}\nSakit: ${sk}\nIzin: ${i}\nAlpha: ${a}\nPersentase Kehadiran: ${pct}%\n\nTerima kasih.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    // --- Backup Logic ---
+    const BACKUP_KEYS = ["sd3_data_siswa_v1", "sd3_data_user_v1", "sd3_modul_ajar_v1", "sd3_presensi_v2", "sd3_nilai_harian_v1", "sd3_jurnal_mengajar_v1", "sd3_buku_konseling_v1", "sd3_tp_master_v1", "sd3_backup_settings_v1", "sd3_last_backup_v1", "sd3_hari_libur_v1"];
+
+    function getBackupData() {
+      const data = {};
+      BACKUP_KEYS.forEach(key => { const val = localStorage.getItem(key); if(val) data[key] = JSON.parse(val); });
+      return { timestamp: new Date().toISOString(), app: "SD3_ADMIN", version: "1.0", data };
+    }
+    function downloadBackup() {
+      const blob = new Blob([JSON.stringify(getBackupData(), null, 2)], { type: "application/json" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup-sd3-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); toast("Backup didownload.");
+    }
+    function restoreBackup(e) {
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          const json = JSON.parse(ev.target.result);
+          if(json.app !== "SD3_ADMIN" || !json.data) throw new Error("Format invalid");
+          if(!confirm("Restore data? Data lama akan ditimpa.")) return;
+          Object.keys(json.data).forEach(k => localStorage.setItem(k, JSON.stringify(json.data[k])));
+          toast("Restore berhasil. Refreshing..."); setTimeout(() => location.reload(), 1500);
+        } catch(err) { alert("Gagal: " + err.message); }
+      };
+      reader.readAsText(file); e.target.value = "";
     }
 
     function toast(message) {
@@ -479,497 +1084,6 @@
         el.toast.classList.add("hidden");
       }, 2000);
     }
-  </script>
-  <script>
-    (function () {
-      const GEO_KEY_QR_LOC = "sd3_attendance_geo_v1";
-      const qrEl = {
-        autoWa: document.getElementById("autoWaOnScan"),
-        mode: document.getElementById("scanMode"),
-        lat: document.getElementById("schoolLatInput"),
-        lng: document.getElementById("schoolLngInput"),
-        radius: document.getElementById("schoolRadiusInput"),
-        saveGeoBtn: document.getElementById("saveGeoBtn"),
-        useCurrentPointBtn: document.getElementById("useCurrentPointBtn"),
-        checkLocationBtn: document.getElementById("checkLocationBtn"),
-        geoInfo: document.getElementById("geoInfoText"),
-        locationInfo: document.getElementById("locationInfoText"),
-        qrStatus: document.getElementById("qrStatusText"),
-        video: document.getElementById("qrVideo"),
-        canvas: document.getElementById("qrCanvas"),
-        startScanBtn: document.getElementById("startScanBtn"),
-        stopScanBtn: document.getElementById("stopScanBtn"),
-        manualInput: document.getElementById("qrManualInput"),
-        processBtn: document.getElementById("processQrBtn")
-      };
-
-      if (!qrEl.mode || typeof students === "undefined") return;
-
-      let geoConfig = loadGeoConfigQrLoc();
-      const qrScanState = {
-        stream: null,
-        frameId: null,
-        active: false,
-        processing: false,
-        lastPayload: "",
-        lastAt: 0
-      };
-
-      const qrCanvasCtx = qrEl.canvas && typeof qrEl.canvas.getContext === "function"
-        ? qrEl.canvas.getContext("2d", { willReadFrequently: true })
-        : null;
-
-      fillGeoInputValues();
-      refreshGeoInfoText();
-
-      qrEl.saveGeoBtn.addEventListener("click", saveGeoConfig);
-      qrEl.useCurrentPointBtn.addEventListener("click", setSchoolPointFromCurrentLocation);
-      qrEl.checkLocationBtn.addEventListener("click", checkMyLocation);
-      qrEl.startScanBtn.addEventListener("click", startScanCamera);
-      qrEl.stopScanBtn.addEventListener("click", function () {
-        stopScanCamera();
-        setQrStatusText("Status scan: dihentikan.");
-      });
-      qrEl.processBtn.addEventListener("click", function () {
-        processQrAttendance(qrEl.manualInput.value, "manual");
-      });
-      qrEl.manualInput.addEventListener("keydown", function (event) {
-        if (event.key !== "Enter" || event.shiftKey) return;
-        event.preventDefault();
-        processQrAttendance(qrEl.manualInput.value, "manual");
-      });
-      window.addEventListener("beforeunload", stopScanCamera);
-
-      function showToast(msg) {
-        if (typeof toast === "function") toast(msg);
-      }
-
-      function safeDateKey(d) {
-        if (typeof dateKey === "function") return dateKey(d);
-        const x = new Date(d);
-        return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
-      }
-
-      function safeUid(prefix) {
-        if (typeof uid === "function") return uid(prefix);
-        return prefix + "-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
-      }
-
-      function safeStudentName(s) {
-        if (typeof studentName === "function") return studentName(s);
-        return String((s && (s.full_name || s.name)) || "Tanpa Nama").trim();
-      }
-
-      function safeStudentNisn(s) {
-        if (typeof studentNisn === "function") return studentNisn(s);
-        return String((s && (s.nisn || s.nis)) || "").trim();
-      }
-
-      function safeStudentWa(s) {
-        if (typeof studentWa === "function") return studentWa(s);
-        return String((s && (s.parent_wa || s.wa)) || "").trim();
-      }
-
-      function safeFindRow(date, sid) {
-        if (typeof findRow === "function") return findRow(date, sid);
-        return null;
-      }
-
-      function safeUpsertRow(row) {
-        if (typeof upsertRow === "function") upsertRow(row);
-      }
-
-      function safePersistAtt() {
-        if (typeof persistAtt === "function") persistAtt();
-      }
-
-      function safeRender() {
-        if (typeof render === "function") render();
-      }
-
-      function safePushWebhook(payload) {
-        if (typeof pushToWebhook === "function") pushToWebhook(payload);
-      }
-
-      function loadGeoConfigQrLoc() {
-        try {
-          const raw = localStorage.getItem(GEO_KEY_QR_LOC);
-          if (!raw) return { lat: "", lng: "", radius: 120 };
-          const parsed = JSON.parse(raw) || {};
-          return {
-            lat: isFiniteNumber(parsed.lat) ? Number(parsed.lat) : "",
-            lng: isFiniteNumber(parsed.lng) ? Number(parsed.lng) : "",
-            radius: isFiniteNumber(parsed.radius) ? Math.max(10, Number(parsed.radius)) : 120
-          };
-        } catch (error) {
-          return { lat: "", lng: "", radius: 120 };
-        }
-      }
-
-      function isFiniteNumber(value) {
-        return typeof value === "number" && Number.isFinite(value);
-      }
-
-      function persistGeoConfig() {
-        localStorage.setItem(GEO_KEY_QR_LOC, JSON.stringify(geoConfig));
-      }
-
-      function fillGeoInputValues() {
-        qrEl.lat.value = geoConfig.lat === "" ? "" : String(geoConfig.lat);
-        qrEl.lng.value = geoConfig.lng === "" ? "" : String(geoConfig.lng);
-        qrEl.radius.value = String(geoConfig.radius || 120);
-      }
-
-      function refreshGeoInfoText() {
-        if (geoConfig.lat === "" || geoConfig.lng === "") {
-          qrEl.geoInfo.textContent = "Titik sekolah belum diatur.";
-          return;
-        }
-        qrEl.geoInfo.textContent = "Titik sekolah: " +
-          Number(geoConfig.lat).toFixed(6) + ", " +
-          Number(geoConfig.lng).toFixed(6) +
-          " (radius " + Math.round(Number(geoConfig.radius) || 120) + " m).";
-      }
-
-      function setLocationInfoText(message) {
-        qrEl.locationInfo.textContent = String(message || "");
-      }
-
-      function setQrStatusText(message) {
-        qrEl.qrStatus.textContent = String(message || "");
-      }
-
-      function saveGeoConfig() {
-        const lat = Number(qrEl.lat.value);
-        const lng = Number(qrEl.lng.value);
-        const radius = Number(qrEl.radius.value || "120");
-
-        if (!isFiniteNumber(lat) || lat < -90 || lat > 90) {
-          showToast("Latitude tidak valid.");
-          return;
-        }
-        if (!isFiniteNumber(lng) || lng < -180 || lng > 180) {
-          showToast("Longitude tidak valid.");
-          return;
-        }
-        if (!isFiniteNumber(radius) || radius < 10) {
-          showToast("Radius minimal 10 meter.");
-          return;
-        }
-
-        geoConfig = { lat: lat, lng: lng, radius: Math.round(radius) };
-        persistGeoConfig();
-        refreshGeoInfoText();
-        showToast("Titik sekolah tersimpan.");
-      }
-
-      function getCurrentLocation() {
-        return new Promise(function (resolve, reject) {
-          if (!navigator.geolocation) {
-            reject(new Error("Browser tidak mendukung geolokasi."));
-            return;
-          }
-          navigator.geolocation.getCurrentPosition(function (position) {
-            resolve({
-              lat: Number(position.coords.latitude),
-              lng: Number(position.coords.longitude),
-              accuracy: Number(position.coords.accuracy || 0)
-            });
-          }, function (error) {
-            reject(new Error(error && error.message ? error.message : "Gagal mengambil lokasi."));
-          }, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          });
-        });
-      }
-
-      async function setSchoolPointFromCurrentLocation() {
-        try {
-          const info = await getCurrentLocation();
-          geoConfig.lat = info.lat;
-          geoConfig.lng = info.lng;
-          if (!isFiniteNumber(geoConfig.radius) || geoConfig.radius < 10) geoConfig.radius = 120;
-          persistGeoConfig();
-          fillGeoInputValues();
-          refreshGeoInfoText();
-          setLocationInfoText("Status lokasi: titik sekolah diperbarui dari lokasi saat ini.");
-          showToast("Titik sekolah berhasil diambil dari lokasi saat ini.");
-        } catch (error) {
-          showToast(error.message || "Tidak bisa mengambil lokasi.");
-        }
-      }
-
-      function toRadians(value) {
-        return value * Math.PI / 180;
-      }
-
-      function calcDistanceMeters(lat1, lng1, lat2, lng2) {
-        const earth = 6371000;
-        const dLat = toRadians(lat2 - lat1);
-        const dLng = toRadians(lng2 - lng1);
-        const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-          Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return earth * c;
-      }
-
-      async function verifyLocationWithinRadius() {
-        if (!isFiniteNumber(Number(geoConfig.lat)) || !isFiniteNumber(Number(geoConfig.lng))) {
-          throw new Error("Titik sekolah belum diatur.");
-        }
-        const radius = Math.max(10, Number(geoConfig.radius) || 120);
-        const current = await getCurrentLocation();
-        const distance = calcDistanceMeters(
-          Number(current.lat),
-          Number(current.lng),
-          Number(geoConfig.lat),
-          Number(geoConfig.lng)
-        );
-        if (distance > radius) {
-          throw new Error("Di luar radius sekolah. Jarak " + Math.round(distance) + " m, batas " + Math.round(radius) + " m.");
-        }
-        return {
-          lat: Number(current.lat),
-          lng: Number(current.lng),
-          accuracy_m: Number(current.accuracy || 0),
-          distance_m: Number(distance),
-          school_lat: Number(geoConfig.lat),
-          school_lng: Number(geoConfig.lng),
-          radius_m: Number(radius),
-          checked_at: new Date().toISOString()
-        };
-      }
-
-      async function checkMyLocation() {
-        try {
-          const info = await verifyLocationWithinRadius();
-          setLocationInfoText("Status lokasi: valid (" + Math.round(info.distance_m) + " m dari titik sekolah).");
-          showToast("Lokasi valid untuk absen.");
-        } catch (error) {
-          setLocationInfoText("Status lokasi: " + (error.message || "gagal cek lokasi."));
-          showToast(error.message || "Lokasi tidak valid.");
-        }
-      }
-
-      async function startScanCamera() {
-        if (typeof jsQR === "undefined") {
-          showToast("Library scanner QR tidak tersedia.");
-          return;
-        }
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          showToast("Browser tidak mendukung kamera.");
-          return;
-        }
-        if (qrScanState.active) {
-          setQrStatusText("Status scan: kamera sudah aktif.");
-          return;
-        }
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: "environment" } },
-            audio: false
-          });
-          qrScanState.stream = stream;
-          qrScanState.active = true;
-          qrEl.video.srcObject = stream;
-          await qrEl.video.play();
-          setQrStatusText("Status scan: kamera aktif, arahkan QR ke kamera.");
-          scanFrame();
-        } catch (error) {
-          showToast("Izin kamera ditolak atau kamera tidak tersedia.");
-        }
-      }
-
-      function stopScanCamera() {
-        qrScanState.active = false;
-        if (qrScanState.frameId) {
-          cancelAnimationFrame(qrScanState.frameId);
-          qrScanState.frameId = null;
-        }
-        if (qrScanState.stream) {
-          qrScanState.stream.getTracks().forEach(function (track) { track.stop(); });
-          qrScanState.stream = null;
-        }
-        if (qrEl.video) {
-          qrEl.video.pause();
-          qrEl.video.srcObject = null;
-        }
-      }
-
-      function scanFrame() {
-        if (!qrScanState.active) return;
-        if (!qrEl.video || !qrCanvasCtx || qrEl.video.readyState < 2) {
-          qrScanState.frameId = requestAnimationFrame(scanFrame);
-          return;
-        }
-        const width = qrEl.video.videoWidth || 0;
-        const height = qrEl.video.videoHeight || 0;
-        if (!width || !height) {
-          qrScanState.frameId = requestAnimationFrame(scanFrame);
-          return;
-        }
-        qrEl.canvas.width = width;
-        qrEl.canvas.height = height;
-        qrCanvasCtx.drawImage(qrEl.video, 0, 0, width, height);
-        const imageData = qrCanvasCtx.getImageData(0, 0, width, height);
-        const result = jsQR(imageData.data, width, height);
-        if (result && result.data) {
-          const payload = String(result.data || "").trim();
-          const now = Date.now();
-          if (payload && (payload !== qrScanState.lastPayload || (now - qrScanState.lastAt) > 3000)) {
-            qrScanState.lastPayload = payload;
-            qrScanState.lastAt = now;
-            qrEl.manualInput.value = payload;
-            stopScanCamera();
-            setQrStatusText("Status scan: QR terbaca, memproses absen...");
-            processQrAttendance(payload, "kamera");
-            return;
-          }
-        }
-        qrScanState.frameId = requestAnimationFrame(scanFrame);
-      }
-
-      function decodeQrJson(rawText) {
-        const raw = String(rawText || "").trim();
-        if (!raw) return null;
-        const candidates = [raw];
-        try {
-          candidates.push(decodeURIComponent(raw));
-        } catch (error) {}
-        for (let i = 0; i < candidates.length; i += 1) {
-          const text = candidates[i];
-          if (!(text.startsWith("{") && text.endsWith("}"))) continue;
-          try {
-            const parsed = JSON.parse(text);
-            if (parsed && typeof parsed === "object") return parsed;
-          } catch (error) {}
-        }
-        return null;
-      }
-
-      function resolveStudentFromQr(rawText) {
-        const raw = String(rawText || "").trim();
-        if (!raw) return null;
-
-        const parsed = decodeQrJson(raw);
-        if (parsed) {
-          const sid = String(parsed.student_id || parsed.id || "").trim();
-          const nisn = String(parsed.nisn || parsed.student_nisn || "").trim();
-          const name = String(parsed.student_name || parsed.full_name || parsed.name || "").trim().toLowerCase();
-          if (sid) {
-            const bySid = students.find(function (s) { return s.id === sid; });
-            if (bySid) return bySid;
-          }
-          if (nisn) {
-            const byNisn = students.find(function (s) { return safeStudentNisn(s) === nisn; });
-            if (byNisn) return byNisn;
-          }
-          if (name) {
-            const byName = students.find(function (s) { return safeStudentName(s).toLowerCase() === name; });
-            if (byName) return byName;
-          }
-        }
-
-        const normalized = raw.replace(/^NISN[\s:-]*/i, "").trim();
-        return students.find(function (s) { return s.id === raw; }) ||
-          students.find(function (s) { return safeStudentNisn(s) === normalized; }) ||
-          students.find(function (s) { return safeStudentName(s).toLowerCase() === raw.toLowerCase(); }) ||
-          null;
-      }
-
-      function nowTimeString(date) {
-        const d = date || new Date();
-        return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
-      }
-
-      function mergeScanNote(existing, mode, distance) {
-        const current = String(existing || "").trim();
-        const note = "Scan " + (mode === "pulang" ? "pulang" : "masuk") + " QR+Lokasi (" + Math.round(distance) + " m)";
-        if (!current) return note;
-        if (current.includes(note)) return current;
-        return current + " | " + note;
-      }
-
-      async function processQrAttendance(rawText, source) {
-        const payload = String(rawText || "").trim();
-        if (!payload) {
-          showToast("QR kosong.");
-          return;
-        }
-        if (qrScanState.processing) {
-          showToast("Sedang memproses scan sebelumnya.");
-          return;
-        }
-        qrScanState.processing = true;
-        try {
-          const student = resolveStudentFromQr(payload);
-          if (!student) throw new Error("QR tidak cocok dengan data siswa.");
-
-          setQrStatusText("Status scan: validasi lokasi...");
-          const locationInfo = await verifyLocationWithinRadius();
-          setLocationInfoText("Status lokasi: valid (" + Math.round(locationInfo.distance_m) + " m dari titik sekolah).");
-
-          const mode = qrEl.mode.value === "pulang" ? "pulang" : "masuk";
-          const date = (typeof el !== "undefined" && el.date && el.date.value) ? el.date.value : safeDateKey(new Date());
-          const now = new Date();
-          const row = safeFindRow(date, student.id) || {
-            id: safeUid("ATT"),
-            date: date,
-            student_id: student.id,
-            student_name: safeStudentName(student),
-            nisn: safeStudentNisn(student),
-            parent_wa: safeStudentWa(student),
-            status: "Belum Absen",
-            check_in: "",
-            check_out: "",
-            notes: ""
-          };
-
-          row.status = "Hadir";
-          row.notes = mergeScanNote(row.notes, mode, locationInfo.distance_m);
-          row.updated_at = now.toISOString();
-          if (mode === "masuk") {
-            row.check_in = nowTimeString(now);
-            row.source_in = "QR+Lokasi";
-            row.location_in = locationInfo;
-          } else {
-            row.check_out = nowTimeString(now);
-            row.source_out = "QR+Lokasi";
-            row.location_out = locationInfo;
-          }
-
-          safeUpsertRow(row);
-          safePersistAtt();
-          safeRender();
-          safePushWebhook({
-            event: "attendance_qr_location",
-            source: source || "manual",
-            mode: mode,
-            qr_payload: payload,
-            student: { id: student.id, name: safeStudentName(student), nisn: safeStudentNisn(student) },
-            attendance: row,
-            location: locationInfo
-          });
-
-          if (qrEl.autoWa.checked && typeof openWhatsApp === "function") {
-            openWhatsApp(student, row, mode);
-          }
-
-          setQrStatusText("Status scan: berhasil absen " + mode + " untuk " + safeStudentName(student) + ".");
-          showToast("Absen " + mode + " berhasil: " + safeStudentName(student) + ".");
-        } catch (error) {
-          const msg = error && error.message ? error.message : "Gagal memproses scan.";
-          setQrStatusText("Status scan: gagal. " + msg);
-          showToast(msg);
-        } finally {
-          qrScanState.processing = false;
-        }
-      }
-    })();
   </script>
 </body>
 </html>

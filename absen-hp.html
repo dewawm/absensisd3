@@ -25,11 +25,13 @@
       <h2 class="font-semibold text-sm">1) Identitas Siswa</h2>
       <div>
         <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap Siswa</label>
-        <input id="studentNameInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="Nama siswa...">
+        <select id="studentNameSelect" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+          <option value="">-- Pilih Siswa --</option>
+        </select>
       </div>
       <div>
-        <label class="block text-xs font-semibold text-slate-500 mb-1">NISN (Opsional)</label>
-        <input id="studentNisnInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="Nomor NISN...">
+        <label class="block text-xs font-semibold text-slate-500 mb-1">NISN (Otomatis)</label>
+        <input id="studentNisnInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-slate-50 text-slate-600" placeholder="Nomor NISN..." readonly>
       </div>
     </section>
 
@@ -64,6 +66,13 @@
           <option value="pulang">Pulang</option>
         </select>
       </label>
+      <div id="mapContainer" class="hidden space-y-2">
+        <div class="w-full h-48 bg-slate-200 rounded-xl overflow-hidden border border-slate-200 relative">
+          <iframe id="gmapIframe" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen></iframe>
+        </div>
+        <a id="openGmapsLink" href="#" target="_blank" class="block text-center text-xs text-blue-600 font-semibold hover:underline">Buka di Google Maps App</a>
+      </div>
+      <button id="checkLocBtn" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Cek Lokasi Saya</button>
       <p id="locationInfoText" class="text-xs text-slate-600">Lokasi akan diambil otomatis saat mengirim.</p>
       <button id="submitBtn" class="w-full px-3 py-3 rounded-xl bg-emerald-600 text-white font-bold text-base">Kirim Absen</button>
     </section>
@@ -161,6 +170,7 @@
     const PENDING_KEY = "sd3_mobile_absen_pending_v1";
     const ATT_KEY = "sd3_presensi_v2"; // Shared attendance log
     const LAST_STUDENT_KEY = "sd3_last_student_v1";
+    const STUDENT_DATA_KEY = "sd3_data_siswa_v1";
 
     const el = {
       mode: document.getElementById("modeInput"),
@@ -168,9 +178,13 @@
       notes: document.getElementById("notesInput"),
       lateReasonContainer: document.getElementById("lateReasonContainer"),
       lateReasonInput: document.getElementById("lateReasonInput"),
-      studentName: document.getElementById("studentNameInput"),
+      studentName: document.getElementById("studentNameSelect"),
       studentNisn: document.getElementById("studentNisnInput"),
       locationInfoText: document.getElementById("locationInfoText"),
+      mapContainer: document.getElementById("mapContainer"),
+      gmapIframe: document.getElementById("gmapIframe"),
+      openGmapsLink: document.getElementById("openGmapsLink"),
+      checkLocBtn: document.getElementById("checkLocBtn"),
       submitBtn: document.getElementById("submitBtn"),
       historyList: document.getElementById("historyList"),
       retryPendingBtn: document.getElementById("retryPendingBtn"),
@@ -231,6 +245,7 @@
     function init() {
       // Cek apakah pengaturan penting ada, jika tidak, beri tahu pengguna.
       checkPrerequisites();
+      loadStudentsForDropdown();
       renderHistory();
       checkLateStatus();
       checkLastStudent();
@@ -245,19 +260,52 @@
       el.mode.addEventListener("change", checkLateStatus);
       el.submitBtn.addEventListener("click", submitAttendance);
       el.retryPendingBtn.addEventListener("click", retryPendingPayloads);
+      el.checkLocBtn.addEventListener("click", function() { captureLocation().catch(function(){}); });
       window.addEventListener("beforeunload", stopScanner);
       el.settings.btnSave.addEventListener("click", saveSettingsUI);
       el.settings.btnLoc.addEventListener("click", getSchoolLocUI);
       el.modal.btnCancel.addEventListener("click", hideConfirmModal);
       el.modal.btnYes.addEventListener("click", executeSubmission);
       lastStudentEl.btn.addEventListener("click", restoreLastStudent);
+      el.studentName.addEventListener("change", onStudentChange);
+    }
+
+    function loadStudentsForDropdown() {
+      let students = [];
+      try {
+        const raw = localStorage.getItem(STUDENT_DATA_KEY);
+        if (raw) {
+          students = JSON.parse(raw);
+        } else {
+          // Fallback default data jika belum ada di localStorage (sama dengan data-siswa.html)
+          students = [
+            { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", is_active: true },
+            { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", is_active: true },
+            { id: "STU-003", nisn: "1234567003", full_name: "Komang Raka Pradana", is_active: false }
+          ];
+        }
+      } catch (e) { console.error(e); }
+
+      students.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
+      
+      el.studentName.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+      students.forEach(s => {
+        if (s.is_active !== false) {
+          const option = document.createElement("option");
+          option.value = s.nisn || s.id; 
+          option.textContent = s.full_name;
+          option.dataset.name = s.full_name;
+          option.dataset.nisn = s.nisn || "";
+          el.studentName.appendChild(option);
+        }
+      });
     }
 
     function checkPrerequisites() {
       const settings = loadSettings();
       if (!settings.webhook_url || !isFiniteNumber(settings.school_lat)) {
-        showToast("Aplikasi belum dikonfigurasi oleh admin.", 5000);
-        el.submitBtn.disabled = true;
+        showToast("Konfigurasi belum lengkap (Mode Demo).", 3000);
+        // el.submitBtn.disabled = true; // Aktifkan semua tombol sesuai permintaan
       }
     }
 
@@ -317,13 +365,30 @@
       el.submitBtn.disabled = false;
     }
 
+    function onStudentChange() {
+      const sel = el.studentName;
+      const opt = sel.options[sel.selectedIndex];
+      if (opt && opt.value) {
+        el.studentNisn.value = opt.dataset.nisn || "";
+      } else {
+        el.studentNisn.value = "";
+      }
+    }
+
     function loadSavedStudent() {
       try {
         const raw = localStorage.getItem(LAST_STUDENT_KEY);
         if (raw) {
           const s = JSON.parse(raw);
-          if (s.name) el.studentName.value = s.name;
-          if (s.nisn) el.studentNisn.value = s.nisn;
+          if (s.name) {
+            // Cari opsi yang cocok dengan nama
+            const options = Array.from(el.studentName.options);
+            const found = options.find(o => o.dataset.name === s.name);
+            if (found) {
+              el.studentName.value = found.value;
+              el.studentNisn.value = found.dataset.nisn || "";
+            }
+          }
           renderStudentHistory(s);
         }
       } catch (e) {}
@@ -418,6 +483,11 @@
           within_radius: within,
           captured_at: new Date().toISOString()
         };
+
+        el.mapContainer.classList.remove("hidden");
+        el.gmapIframe.src = "https://maps.google.com/maps?q=" + current.lat + "," + current.lng + "&z=17&output=embed";
+        el.openGmapsLink.href = "https://www.google.com/maps/search/?api=1&query=" + current.lat + "," + current.lng;
+
         if (hasSchoolPoint) {
           el.locationInfoText.textContent = "Lokasi: " + current.lat.toFixed(6) + ", " + current.lng.toFixed(6) +
             " | Jarak " + Math.round(distance) + " m | " + (within ? "Di dalam radius" : "Di luar radius");
@@ -454,8 +524,11 @@
     }
 
     function buildPayload() {
+      const sel = el.studentName;
+      const opt = sel.options[sel.selectedIndex];
+      const name = opt ? opt.dataset.name : "";
       const studentData = {
-        name: el.studentName.value.trim(),
+        name: name || "",
         nisn: el.studentNisn.value.trim()
       };
       return {
@@ -673,7 +746,10 @@
       el.status.value = "Hadir";
       el.lateReasonInput.value = "";
       el.studentHistorySection.classList.add("hidden");
-      renderStudentHistory({ name: el.studentName.value.trim() });
+      
+      const sel = el.studentName;
+      const opt = sel.options[sel.selectedIndex];
+      renderStudentHistory({ name: opt ? opt.dataset.name : "" });
     }
 
     function loadArray(key) {
