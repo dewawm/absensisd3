@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Portal Absensi Orang Tua - SD3 Lukluk</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root { color-scheme: light; }
@@ -22,18 +21,12 @@
       </p>
     </header>
 
-    <div id="lastStudentBar" class="hidden bg-blue-50 border border-blue-100 rounded-2xl p-3 flex items-center justify-between shadow-sm">
-      <div class="text-xs text-blue-800">
-        <span class="block text-blue-500 mb-0.5">Siswa Terakhir:</span>
-        <span class="block font-bold text-sm" id="lastStudentNameDisplay"></span>
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
       <h2 class="font-semibold text-sm">1) Identitas Siswa</h2>
       <div>
         <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap Siswa</label>
         <input id="studentNameInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="Nama siswa...">
       </div>
-      <button id="restoreStudentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">Gunakan</button>
-    </div>
       <div>
         <label class="block text-xs font-semibold text-slate-500 mb-1">NISN (Opsional)</label>
         <input id="studentNisnInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="Nomor NISN...">
@@ -41,11 +34,6 @@
     </section>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">1) Data Absen</h2>
-      <div class="bg-slate-100 rounded-xl p-3 text-center">
-        <p class="text-xs font-semibold text-slate-500">Siswa Terpindai</p>
-        <p id="scannedStudentText" class="font-bold text-slate-800 mt-1">Belum ada</p>
-      </div>
       <h2 class="font-semibold text-sm">2) Data Absen</h2>
       <label class="block">
         <span class="text-xs font-semibold text-slate-500">Status Kehadiran</span>
@@ -68,25 +56,6 @@
     </section>
 
     <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">2) Pindai QR Siswa</h2>
-      <div class="aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
-        <video id="videoEl" autoplay playsinline muted class="w-full h-full object-cover"></video>
-      </div>
-      <canvas id="canvasEl" class="hidden"></canvas>
-      <div class="grid grid-cols-2 gap-2">
-        <button id="startScanBtn" class="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold text-sm">Mulai Kamera</button>
-        <button id="stopScanBtn" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Stop Kamera</button>
-      </div>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Isi QR Manual</span>
-        <textarea id="qrManualInput" rows="3" placeholder='contoh: {"student_id":"STU-001","nisn":"1234567001"}' class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"></textarea>
-      </label>
-      <button id="processQrBtn" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Proses Isi QR</button>
-      <p id="scanInfoText" class="text-xs text-slate-600">Status scan: belum aktif.</p>
-    </section>
-
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">3) Kirim Absensi</h2>
       <h2 class="font-semibold text-sm">3) Kirim Absensi (Lokasi)</h2>
        <label class="block">
         <span class="text-xs font-semibold text-slate-500">Mode Absen</span>
@@ -196,17 +165,9 @@
     const el = {
       mode: document.getElementById("modeInput"),
       status: document.getElementById("statusInput"),
-      scannedStudentText: document.getElementById("scannedStudentText"),
       notes: document.getElementById("notesInput"),
       lateReasonContainer: document.getElementById("lateReasonContainer"),
       lateReasonInput: document.getElementById("lateReasonInput"),
-      video: document.getElementById("videoEl"),
-      canvas: document.getElementById("canvasEl"),
-      startScanBtn: document.getElementById("startScanBtn"),
-      stopScanBtn: document.getElementById("stopScanBtn"),
-      qrManualInput: document.getElementById("qrManualInput"),
-      processQrBtn: document.getElementById("processQrBtn"),
-      scanInfoText: document.getElementById("scanInfoText"),
       studentName: document.getElementById("studentNameInput"),
       studentNisn: document.getElementById("studentNisnInput"),
       locationInfoText: document.getElementById("locationInfoText"),
@@ -356,30 +317,16 @@
       el.submitBtn.disabled = false;
     }
 
-    function checkLastStudent() {
     function loadSavedStudent() {
       try {
         const raw = localStorage.getItem(LAST_STUDENT_KEY);
         if (raw) {
           const s = JSON.parse(raw);
-          if (s && (s.name || s.nisn)) {
-            lastStudentEl.name.textContent = s.name || s.nisn;
-            lastStudentEl.bar.classList.remove("hidden");
-          }
           if (s.name) el.studentName.value = s.name;
           if (s.nisn) el.studentNisn.value = s.nisn;
           renderStudentHistory(s);
         }
       } catch (e) {}
-    }
-
-    function restoreLastStudent() {
-      const raw = localStorage.getItem(LAST_STUDENT_KEY);
-      if (raw) {
-        const s = JSON.parse(raw);
-        setScannedStudent(s);
-        showToast("Data siswa dipulihkan.");
-      }
     }
 
     function checkLateStatus() {
@@ -404,148 +351,6 @@
       } catch (e) {
         showToast("Gagal ambil lokasi.");
       }
-    }
-
-    async function startScanner() {
-      if (typeof jsQR === "undefined") {
-        showToast("Library QR tidak tersedia.");
-        return;
-      }
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showToast("Kamera tidak didukung browser.");
-        return;
-      }
-      if (scanState.active) {
-        setScanInfo("Status scan: kamera sudah aktif.");
-        return;
-      }
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
-          audio: false
-        });
-        scanState.stream = stream;
-        scanState.active = true;
-        el.video.srcObject = stream;
-        await el.video.play();
-        setScanInfo("Status scan: kamera aktif.");
-        scanLoop();
-      } catch (error) {
-        showToast("Izin kamera ditolak atau kamera tidak tersedia.");
-      }
-    }
-
-    function stopScanner() {
-      scanState.active = false;
-      if (scanState.frameId) {
-        cancelAnimationFrame(scanState.frameId);
-        scanState.frameId = null;
-      }
-      if (scanState.stream) {
-        scanState.stream.getTracks().forEach(function (track) { track.stop(); });
-        scanState.stream = null;
-      }
-      el.video.pause();
-      el.video.srcObject = null;
-    }
-
-    function scanLoop() {
-      if (!scanState.active) return;
-      if (el.video.readyState < 2) {
-        scanState.frameId = requestAnimationFrame(scanLoop);
-        return;
-      }
-      const w = el.video.videoWidth || 0;
-      const h = el.video.videoHeight || 0;
-      if (!w || !h) {
-        scanState.frameId = requestAnimationFrame(scanLoop);
-        return;
-      }
-      el.canvas.width = w;
-      el.canvas.height = h;
-      canvasCtx.drawImage(el.video, 0, 0, w, h);
-      const img = canvasCtx.getImageData(0, 0, w, h);
-      const qr = jsQR(img.data, w, h);
-      if (qr && qr.data) {
-        const payload = String(qr.data || "").trim();
-        const now = Date.now();
-        if (payload && (payload !== scanState.lastPayload || (now - scanState.lastAt) > 3000)) {
-          scanState.lastPayload = payload;
-          scanState.lastAt = now;
-          el.qrManualInput.value = payload;
-          stopScanner();
-          processQrPayload(payload);
-          return;
-        }
-      }
-      scanState.frameId = requestAnimationFrame(scanLoop);
-    }
-
-    function setScanInfo(text) {
-      el.scanInfoText.textContent = String(text || "");
-    }
-
-    function decodeQrJson(raw) {
-      const text = String(raw || "").trim();
-      if (!text) return null;
-      const candidates = [text];
-      try {
-        candidates.push(decodeURIComponent(text));
-      } catch (error) {}
-      for (let i = 0; i < candidates.length; i += 1) {
-        const c = candidates[i];
-        if (!(c.startsWith("{") && c.endsWith("}"))) continue;
-        try {
-          const parsed = JSON.parse(c);
-          if (parsed && typeof parsed === "object") return parsed;
-        } catch (error) {}
-      }
-      return null;
-    }
-
-    function processQrPayload(raw) {
-      const text = String(raw || "").trim();
-      if (!text) {
-        showToast("Isi QR kosong.");
-        return;
-      }
-
-      const parsed = decodeQrJson(text);
-      let studentId = "";
-      let nisn = "";
-      let name = "";
-
-      if (parsed) {
-        studentId = String(parsed.student_id || parsed.id || "").trim();
-        nisn = String(parsed.nisn || parsed.student_nisn || "").trim();
-        name = String(parsed.student_name || parsed.full_name || parsed.name || "").trim();
-      } else {
-        const normalized = text.replace(/^NISN[\s:-]*/i, "").trim();
-        if (/^\d{8,20}$/.test(normalized)) nisn = normalized;
-        else if (/^STU[-_]/i.test(text)) studentId = text;
-        else name = text;
-      }
-
-      const student = {
-        id: studentId,
-        nisn: nisn,
-        name: name
-      };
-      setScannedStudent(student);
-      setScanInfo("Status scan: QR terbaca.");
-    }
-
-    function setScannedStudent(student) {
-      scannedStudent = student;
-      const displayName = student.name || student.nisn || student.id;
-      el.scannedStudentText.textContent = displayName || 'Data tidak lengkap';
-      
-      if (displayName) {
-        localStorage.setItem(LAST_STUDENT_KEY, JSON.stringify(student));
-        checkLastStudent();
-      }
-      
-      renderStudentHistory();
     }
 
     function getCurrentLocation() {
@@ -659,11 +464,9 @@
         status: el.status.value,
         date: nowDateKey(),
         time: nowTimeKey(),
-        student: scannedStudent || { id: '', nisn: '', name: '' },
         student: studentData,
         notes: String(el.notes.value || "").trim(),
         late_reason: !el.lateReasonContainer.classList.contains("hidden") ? String(el.lateReasonInput.value || "").trim() : "",
-        qr_payload: String(el.qrManualInput.value || "").trim(),
         qr_payload: "",
         location: locationState,
         device: {
@@ -675,8 +478,6 @@
     }
 
     function validatePayload(payload) {
-      if (!payload.student || (!payload.student.id && !payload.student.nisn && !payload.student.name)) {
-        return "Pindai QR siswa terlebih dahulu.";
       if (!payload.student || !payload.student.name) {
         return "Nama siswa wajib diisi.";
       }
@@ -871,11 +672,7 @@
       el.notes.value = "";
       el.status.value = "Hadir";
       el.lateReasonInput.value = "";
-      el.qrManualInput.value = "";
-      scannedStudent = null;
-      el.scannedStudentText.textContent = 'Belum ada';
       el.studentHistorySection.classList.add("hidden");
-      setScanInfo("Status scan: siap.");
       renderStudentHistory({ name: el.studentName.value.trim() });
     }
 
@@ -959,15 +756,12 @@
       el.retryPendingBtn.textContent = "Kirim Ulang Pending (" + pending + ")";
     }
 
-    function renderStudentHistory() {
-      if (!scannedStudent || !scannedStudent.id) {
     function renderStudentHistory(student) {
       if (!student || !student.name) {
         el.studentHistorySection.classList.add("hidden");
         return;
       }
       const all = loadArray(ATT_KEY);
-      const studentRows = all.filter(function(a) { return a.student_id === scannedStudent.id; });
       const studentRows = all.filter(function(a) { return (a.student_name || "").toLowerCase() === student.name.toLowerCase(); });
       
       // Calculate stats
