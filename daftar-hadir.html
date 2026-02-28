@@ -56,6 +56,9 @@
       <div id="dailyActions" class="flex gap-2">
         <button id="bulkWaBtn" class="px-4 py-2 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold hover:bg-emerald-100 transition">WA Belum Absen</button>
         <button id="openBackupBtn" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Backup Data</button>
+        <button id="refreshBtn" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Refresh Data</button>
+        <button id="syncCloudBtn" class="px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Sync Cloud</button>
+        <button id="settingsBtn" class="px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition" title="Pengaturan"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></button>
         <button id="scanQrBtn" class="px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>Scan QR</button>
         <button id="holidayBtn" class="px-4 py-2 rounded-xl border border-purple-200 bg-purple-50 text-purple-700 font-semibold hover:bg-purple-100 transition">Atur Libur</button>
         <button id="printFormBtn" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition">Cetak Form</button>
@@ -273,10 +276,28 @@
     </div>
   </div>
 
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="font-bold text-slate-800">Pengaturan Cloud</h3>
+        <button id="closeSettingsModalBtn" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-4 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Google Apps Script URL</label>
+          <input type="url" id="cloudUrlInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="https://script.google.com/macros/s/...">
+          <p class="text-[10px] text-slate-400 mt-1">URL Web App yang di-deploy sebagai 'Me' dan akses 'Anyone'.</p>
+        </div>
+        <button id="saveSettingsBtn" class="w-full px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700">Simpan</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const STUDENT_KEY = "sd3_data_siswa_v1";
     const ATT_KEY = "sd3_presensi_v2";
     const HOLIDAY_KEY = "sd3_hari_libur_v1";
+    const CLOUD_URL_KEY = "sd3_cloud_url_v1";
     const defaultStudents = [
       { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", parent_wa: "081234567001", is_active: true },
       { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", parent_wa: "081234567002", is_active: true }
@@ -289,6 +310,9 @@
       dateText: document.getElementById("dateText"),
       search: document.getElementById("searchInput"),
       exportBtn: document.getElementById("exportBtn"),
+      refreshBtn: document.getElementById("refreshBtn"),
+      syncCloudBtn: document.getElementById("syncCloudBtn"),
+      settingsBtn: document.getElementById("settingsBtn"),
       scanQrBtn: document.getElementById("scanQrBtn"),
       holidayBtn: document.getElementById("holidayBtn"),
       printFormBtn: document.getElementById("printFormBtn"),
@@ -334,7 +358,11 @@
       closeScanQrModalBtn: document.getElementById("closeScanQrModalBtn"),
       qrVideo: document.getElementById("qrVideo"),
       qrCanvas: document.getElementById("qrCanvas"),
-      scanResultText: document.getElementById("scanResultText")
+      scanResultText: document.getElementById("scanResultText"),
+      settingsModal: document.getElementById("settingsModal"),
+      closeSettingsModalBtn: document.getElementById("closeSettingsModalBtn"),
+      cloudUrlInput: document.getElementById("cloudUrlInput"),
+      saveSettingsBtn: document.getElementById("saveSettingsBtn")
     };
 
     let toastTimer = null;
@@ -354,6 +382,9 @@
     el.classFilter.addEventListener("change", render);
     el.statusFilter.addEventListener("change", render);
     el.search.addEventListener("input", render);
+    el.refreshBtn.addEventListener("click", function() { attendances = loadArray(ATT_KEY, []); render(); renderMonthly(); toast("Data diperbarui."); });
+    el.syncCloudBtn.addEventListener("click", syncFromCloud);
+    el.settingsBtn.addEventListener("click", openSettingsModal);
     el.exportBtn.addEventListener("click", exportExcel);
     el.scanQrBtn.addEventListener("click", startScanner);
     el.holidayBtn.addEventListener("click", openHolidayModal);
@@ -369,6 +400,17 @@
     el.closeHolidayModalBtn.addEventListener("click", closeHolidayModal);
     el.holidayForm.addEventListener("submit", addHoliday);
     el.closeScanQrModalBtn.addEventListener("click", stopScanner);
+    el.closeSettingsModalBtn.addEventListener("click", () => el.settingsModal.classList.add("hidden"));
+    el.saveSettingsBtn.addEventListener("click", saveSettings);
+
+    // Auto-refresh jika ada perubahan di tab lain (absen-hp.html)
+    window.addEventListener('storage', function(e) {
+      if (e.key === ATT_KEY) {
+        attendances = loadArray(ATT_KEY, []);
+        render();
+        renderMonthly();
+      }
+    });
 
     // Backup Events
     document.getElementById("openBackupBtn").addEventListener("click", () => document.getElementById("backupModal").classList.remove("hidden"));
@@ -801,6 +843,86 @@
       printArea.classList.remove("hidden");
       setTimeout(() => { window.print(); }, 300);
       window.onafterprint = () => { printArea.classList.add("hidden"); printArea.innerHTML = ""; };
+    }
+
+    // --- Cloud Sync Logic ---
+    function openSettingsModal() {
+      el.cloudUrlInput.value = localStorage.getItem(CLOUD_URL_KEY) || "";
+      el.settingsModal.classList.remove("hidden");
+    }
+
+    function saveSettings() {
+      const url = el.cloudUrlInput.value.trim();
+      if (url) {
+        localStorage.setItem(CLOUD_URL_KEY, url);
+        toast("URL Cloud tersimpan.");
+        el.settingsModal.classList.add("hidden");
+      } else {
+        toast("URL tidak boleh kosong.");
+      }
+    }
+
+    async function syncFromCloud() {
+      const url = localStorage.getItem(CLOUD_URL_KEY);
+      if (!url) {
+        toast("URL Cloud belum diatur. Buka pengaturan.");
+        openSettingsModal();
+        return;
+      }
+
+      try {
+        el.syncCloudBtn.disabled = true;
+        el.syncCloudBtn.innerHTML = `<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Syncing...`;
+
+        // Asumsi: GAS doGet mengembalikan JSON { data: [...] }
+        const res = await fetch(url + "?action=get_attendance");
+        if (!res.ok) throw new Error("Gagal koneksi ke server.");
+        
+        const json = await res.json();
+        const cloudData = json.data || json.attendance || (Array.isArray(json) ? json : []);
+        
+        if (!Array.isArray(cloudData) || cloudData.length === 0) {
+          throw new Error("Tidak ada data baru di cloud.");
+        }
+
+        let count = 0;
+        cloudData.forEach(remote => {
+          // Cari siswa berdasarkan nama (karena absen-hp kirim nama)
+          const student = students.find(s => s.full_name.toLowerCase() === (remote.student_name || "").toLowerCase());
+          if (!student) return;
+
+          const dateObj = new Date(remote.timestamp);
+          const date = dateObj.getFullYear() + "-" + String(dateObj.getMonth() + 1).padStart(2, "0") + "-" + String(dateObj.getDate()).padStart(2, "0");
+          const time = String(dateObj.getHours()).padStart(2, "0") + ":" + String(dateObj.getMinutes()).padStart(2, "0");
+
+          let row = findRow(date, student.id);
+          if (!row) {
+            row = {
+              id: uid("ATT"), date: date, student_id: student.id, student_name: student.full_name,
+              nisn: student.nisn, parent_wa: student.parent_wa, status: "Belum Absen",
+              check_in: "", check_out: "", notes: "", created_at: new Date().toISOString()
+            };
+            attendances.push(row);
+          }
+
+          // Update jika data cloud valid
+          row.status = remote.status || row.status;
+          if (remote.type === "Masuk") row.check_in = time;
+          if (remote.type === "Pulang") row.check_out = time;
+          row.updated_at = new Date().toISOString();
+          count++;
+        });
+
+        persistAtt();
+        render();
+        renderMonthly();
+        toast(`Sync berhasil. ${count} data diproses.`);
+      } catch (e) {
+        toast("Sync error: " + e.message);
+      } finally {
+        el.syncCloudBtn.disabled = false;
+        el.syncCloudBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg> Sync Cloud`;
+      }
     }
 
     // --- QR Scanner Logic ---
