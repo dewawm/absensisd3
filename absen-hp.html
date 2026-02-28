@@ -9,886 +9,325 @@
   <style>
     :root { color-scheme: light; }
     body { font-family: "Plus Jakarta Sans", sans-serif; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
   <main class="max-w-md mx-auto p-4 pb-20 space-y-4">
     <header class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm text-center">
-      <h1 class="text-lg font-bold">Absensi Siswa SD No. 3 Lukluk</h1>
+      <h1 class="text-xl font-bold text-slate-800">Form Absensi Siswa</h1>
       <p class="text-xs text-slate-500 mt-1">Portal untuk orang tua/wali siswa.</p>
-      <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1 mt-3">
-        Gunakan lewat HTTPS agar kamera & lokasi aktif di HP.
-      </p>
     </header>
 
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">1) Identitas Siswa</h2>
-      <div>
-        <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap Siswa</label>
-        <select id="studentNameSelect" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
-          <option value="">-- Pilih Siswa --</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-500 mb-1">NISN (Otomatis)</label>
-        <input id="studentNisnInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-slate-50 text-slate-600" placeholder="Nomor NISN..." readonly>
-      </div>
-    </section>
-
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">2) Data Absen</h2>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Status Kehadiran</span>
-        <select id="statusInput" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <option value="Hadir">Hadir</option>
-          <option value="Sakit">Sakit</option>
-          <option value="Izin">Izin</option>
-        </select>
-      </label>
-      <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Catatan (opsional)</span>
-        <input id="notesInput" type="text" placeholder="Contoh: dijemput ayah" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-      </label>
-      <div id="lateReasonContainer" class="hidden">
-        <label class="block mt-2">
-          <span class="text-xs font-semibold text-red-500">Alasan Terlambat</span>
-          <input id="lateReasonInput" type="text" placeholder="Alasan keterlambatan..." class="mt-1 w-full px-3 py-2 rounded-xl border border-red-200 bg-red-50 text-sm text-red-700 placeholder-red-300">
-        </label>
-      </div>
-    </section>
-
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">3) Kirim Absensi (Lokasi)</h2>
-       <label class="block">
-        <span class="text-xs font-semibold text-slate-500">Mode Absen</span>
-        <select id="modeInput" class="mt-1 w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <option value="masuk">Masuk</option>
-          <option value="pulang">Pulang</option>
-        </select>
-      </label>
-      <div id="mapContainer" class="hidden space-y-2">
-        <div class="w-full h-48 bg-slate-200 rounded-xl overflow-hidden border border-slate-200 relative">
-          <iframe id="gmapIframe" width="100%" height="100%" frameborder="0" style="border:0" allowfullscreen></iframe>
+    <form id="attendanceForm" class="space-y-4">
+      <!-- 1. Dropdown Nama Siswa -->
+      <section class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="font-bold text-sm text-slate-700">1. Identitas Siswa</h2>
+          <button type="button" id="addStudentBtn" class="text-xs text-blue-600 font-semibold hover:underline">+ Tambah Siswa</button>
         </div>
-        <a id="openGmapsLink" href="#" target="_blank" class="block text-center text-xs text-blue-600 font-semibold hover:underline">Buka di Google Maps App</a>
-      </div>
-      <button id="checkLocBtn" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm">Cek Lokasi Saya</button>
-      <p id="locationInfoText" class="text-xs text-slate-600">Lokasi akan diambil otomatis saat mengirim.</p>
-      <button id="submitBtn" class="w-full px-3 py-3 rounded-xl bg-emerald-600 text-white font-bold text-base">Kirim Absen</button>
-    </section>
+        <label class="block">
+          <span class="text-xs font-semibold text-slate-500 mb-1 block">Nama Lengkap</span>
+          <select id="studentSelect" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+            <option value="">-- Pilih Nama Siswa --</option>
+          </select>
+        </label>
+      </section>
 
-    <section id="studentHistorySection" class="hidden bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <h2 class="font-semibold text-sm">Riwayat Kehadiran (Terbaru)</h2>
-      <div class="grid grid-cols-4 gap-2 text-center">
-        <div class="bg-emerald-50 rounded-xl p-2 border border-emerald-100"><div class="text-[10px] text-emerald-600 uppercase font-bold">Hadir</div><div class="font-bold text-emerald-700 text-lg" id="statHadir">0</div></div>
-        <div class="bg-blue-50 rounded-xl p-2 border border-blue-100"><div class="text-[10px] text-blue-600 uppercase font-bold">Sakit</div><div class="font-bold text-blue-700 text-lg" id="statSakit">0</div></div>
-        <div class="bg-amber-50 rounded-xl p-2 border border-amber-100"><div class="text-[10px] text-amber-600 uppercase font-bold">Izin</div><div class="font-bold text-amber-700 text-lg" id="statIzin">0</div></div>
-        <div class="bg-red-50 rounded-xl p-2 border border-red-100"><div class="text-[10px] text-red-600 uppercase font-bold">Alpha</div><div class="font-bold text-red-700 text-lg" id="statAlpha">0</div></div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs text-left">
-          <thead class="bg-slate-50 text-slate-500 font-semibold">
-            <tr>
-              <th class="px-2 py-1">Tanggal</th>
-              <th class="px-2 py-1">Status</th>
-              <th class="px-2 py-1">Masuk</th>
-              <th class="px-2 py-1">Pulang</th>
-            </tr>
-          </thead>
-          <tbody id="studentHistoryBody" class="divide-y divide-slate-100"></tbody>
-        </table>
-      </div>
-    </section>
+      <!-- 2. Keterangan Kehadiran -->
+      <section class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4">
+        <h2 class="font-bold text-sm text-slate-700">2. Data Kehadiran</h2>
+        
+        <label class="block">
+          <span class="text-xs font-semibold text-slate-500 mb-1 block">Keterangan</span>
+          <select id="statusSelect" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+            <option value="Hadir">Hadir</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Izin">Izin</option>
+            <option value="Tanpa Alasan">Tanpa Alasan</option>
+          </select>
+        </label>
 
-    <section class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-sm">Riwayat Lokal</h2>
-        <button id="retryPendingBtn" class="px-2 py-1 rounded-lg border border-slate-200 text-xs font-semibold">Kirim Ulang Pending</button>
-      </div>
-      <ul id="historyList" class="space-y-2 text-xs text-slate-600"></ul>
-    </section>
+        <!-- 3. Jika Hadir: Masuk/Pulang -->
+        <div id="attendanceTypeContainer" class="fade-in">
+          <label class="block">
+            <span class="text-xs font-semibold text-slate-500 mb-1 block">Jenis Absen</span>
+            <select id="typeSelect" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+              <option value="Masuk">Absen Masuk</option>
+              <option value="Pulang">Absen Pulang</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- 4. Jika Izin/Sakit: Upload Foto -->
+        <div id="uploadContainer" class="hidden fade-in">
+          <label class="block">
+            <span class="text-xs font-semibold text-slate-500 mb-1 block">Bukti Foto (Surat/Kondisi)</span>
+            <div class="relative">
+              <input type="file" id="proofFile" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition border border-slate-200 rounded-xl">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Maksimal 2MB. Format JPG/PNG.</p>
+          </label>
+        </div>
+      </section>
+
+      <!-- 3. Lokasi GPS -->
+      <section class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="font-bold text-sm text-slate-700">3. Lokasi Saat Ini</h2>
+          <button type="button" id="refreshLocBtn" class="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Refresh
+          </button>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
+          <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span id="locationText" class="font-mono">Menunggu GPS...</span>
+        </div>
+      </section>
+
+      <!-- 5. Tombol Simpan -->
+      <button type="submit" id="submitBtn" class="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 active:scale-95 transition flex justify-center items-center gap-2">
+        <span>Simpan Presensi</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+    </form>
 
     <details class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm group">
-      <summary class="font-bold text-sm text-slate-800 cursor-pointer list-none flex justify-between items-center">
-        <span>⚙️ Konfigurasi Aplikasi</span>
+      <summary class="font-bold text-xs text-slate-500 cursor-pointer list-none flex justify-between items-center uppercase tracking-wide">
+        <span>⚙️ Pengaturan Koneksi</span>
         <span class="transition group-open:rotate-180">▼</span>
       </summary>
       <div class="mt-4 space-y-4 border-t border-slate-100 pt-4">
-        <div class="space-y-3">
-          <h3 class="font-semibold text-xs text-slate-500 uppercase">Webhook</h3>
-          <input id="webhookUrl" type="url" placeholder="URL Webhook" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <input id="webhookKey" type="text" placeholder="Key (opsional)" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <select id="webhookMode" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-            <option value="apps_script">Google Apps Script</option>
-            <option value="standard_json">Standard JSON</option>
-          </select>
-        </div>
-        <div class="space-y-3">
-          <h3 class="font-semibold text-xs text-slate-500 uppercase">Geofence Sekolah</h3>
-          <div class="grid grid-cols-2 gap-2">
-            <input id="schoolLat" type="number" step="any" placeholder="Latitude" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-            <input id="schoolLng" type="number" step="any" placeholder="Longitude" class="px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          </div>
-          <input id="schoolRadius" type="number" placeholder="Radius (meter)" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          <label class="block mt-2">
-            <span class="text-xs font-semibold text-slate-500 uppercase">Batas Jam Masuk (Terlambat)</span>
-            <input id="lateCutoffInput" type="time" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
-          </label>
-          <div class="flex gap-2"><button id="btnGetCurLoc" class="flex-1 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold">Ambil Lokasi Ini</button><button id="btnSaveSettings" class="flex-1 px-3 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">Simpan</button></div>
-        </div>
+        <label class="block">
+          <span class="text-xs font-semibold text-slate-500 mb-1 block">Google Apps Script Webhook URL</span>
+          <input id="webhookUrl" type="url" placeholder="https://script.google.com/macros/s/..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm">
+        </label>
+        <button id="saveConfigBtn" class="w-full px-3 py-2 rounded-xl bg-slate-800 text-white text-xs font-bold">Simpan Konfigurasi</button>
       </div>
     </details>
   </main>
 
-  <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-      <div class="p-4 border-b border-slate-100">
-        <h3 class="font-bold text-lg text-slate-800">Konfirmasi Absen</h3>
-      </div>
-      <div class="p-4 space-y-3 text-sm text-slate-600">
-        <div class="flex justify-between"><span>Siswa:</span> <span id="confStudent" class="font-bold text-slate-800 text-right"></span></div>
-        <div class="flex justify-between"><span>Mode:</span> <span id="confMode" class="font-bold text-slate-800"></span></div>
-        <div class="flex justify-between"><span>Status:</span> <span id="confStatus" class="font-bold text-slate-800"></span></div>
-        <div class="flex justify-between"><span>Waktu:</span> <span id="confTime" class="font-bold text-slate-800"></span></div>
-        <div class="flex justify-between"><span>Lokasi:</span> <span id="confDist" class="font-bold text-slate-800 text-right"></span></div>
-        <div id="confLate" class="hidden p-2 bg-red-50 text-red-700 rounded-lg text-xs border border-red-100">
-          <strong>Terlambat:</strong> <span id="confLateReason"></span>
-        </div>
-      </div>
-      <div class="p-4 bg-slate-50 flex gap-3">
-        <button id="btnCancelConf" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold hover:bg-slate-100">Batal</button>
-        <button id="btnYesConf" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-lg shadow-emerald-100">Ya, Kirim</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toastEl" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-xl text-sm z-50 shadow-lg"></div>
+  <div id="toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl z-50 whitespace-nowrap"></div>
 
   <script>
-    const SETTINGS_KEY = "sd3_mobile_absen_settings_v1";
-    const HISTORY_KEY = "sd3_mobile_absen_history_v1";
-    const PENDING_KEY = "sd3_mobile_absen_pending_v1";
-    const ATT_KEY = "sd3_presensi_v2"; // Shared attendance log
-    const LAST_STUDENT_KEY = "sd3_last_student_v1";
-    const STUDENT_DATA_KEY = "sd3_data_siswa_v1";
-
+    // --- Konfigurasi & State ---
+    const STUDENT_KEY = "sd3_data_siswa_v1"; // Menggunakan key yang sama dengan admin agar sinkron jika satu device
+    const WEBHOOK_KEY = "sd3_absen_webhook_url";
+    
     const el = {
-      mode: document.getElementById("modeInput"),
-      status: document.getElementById("statusInput"),
-      notes: document.getElementById("notesInput"),
-      lateReasonContainer: document.getElementById("lateReasonContainer"),
-      lateReasonInput: document.getElementById("lateReasonInput"),
-      studentName: document.getElementById("studentNameSelect"),
-      studentNisn: document.getElementById("studentNisnInput"),
-      locationInfoText: document.getElementById("locationInfoText"),
-      mapContainer: document.getElementById("mapContainer"),
-      gmapIframe: document.getElementById("gmapIframe"),
-      openGmapsLink: document.getElementById("openGmapsLink"),
-      checkLocBtn: document.getElementById("checkLocBtn"),
+      studentSelect: document.getElementById("studentSelect"),
+      statusSelect: document.getElementById("statusSelect"),
+      typeSelect: document.getElementById("typeSelect"),
+      typeContainer: document.getElementById("attendanceTypeContainer"),
+      uploadContainer: document.getElementById("uploadContainer"),
+      proofFile: document.getElementById("proofFile"),
+      locationText: document.getElementById("locationText"),
+      refreshLocBtn: document.getElementById("refreshLocBtn"),
+      form: document.getElementById("attendanceForm"),
       submitBtn: document.getElementById("submitBtn"),
-      historyList: document.getElementById("historyList"),
-      retryPendingBtn: document.getElementById("retryPendingBtn"),
-      toast: document.getElementById("toastEl"),
-      settings: {
-        url: document.getElementById("webhookUrl"),
-        key: document.getElementById("webhookKey"),
-        mode: document.getElementById("webhookMode"),
-        lat: document.getElementById("schoolLat"),
-        lng: document.getElementById("schoolLng"),
-        radius: document.getElementById("schoolRadius"),
-        lateCutoff: document.getElementById("lateCutoffInput"),
-        btnSave: document.getElementById("btnSaveSettings"),
-        btnLoc: document.getElementById("btnGetCurLoc"),
-        studentHistorySection: document.getElementById("studentHistorySection"),
-        studentHistoryBody: document.getElementById("studentHistoryBody"),
-        stats: {
-          hadir: document.getElementById("statHadir"),
-          sakit: document.getElementById("statSakit"),
-          izin: document.getElementById("statIzin"),
-          alpha: document.getElementById("statAlpha")
-        }
-      },
-      modal: {
-        el: document.getElementById("confirmModal"),
-        student: document.getElementById("confStudent"),
-        mode: document.getElementById("confMode"),
-        status: document.getElementById("confStatus"),
-        time: document.getElementById("confTime"),
-        dist: document.getElementById("confDist"),
-        late: document.getElementById("confLate"),
-        lateReason: document.getElementById("confLateReason"),
-        btnCancel: document.getElementById("btnCancelConf"),
-        btnYes: document.getElementById("btnYesConf")
-      }
-    };
-    const lastStudentEl = {
-      bar: document.getElementById("lastStudentBar"),
-      name: document.getElementById("lastStudentNameDisplay"),
-      btn: document.getElementById("restoreStudentBtn")
+      webhookUrl: document.getElementById("webhookUrl"),
+      saveConfigBtn: document.getElementById("saveConfigBtn"),
+      addStudentBtn: document.getElementById("addStudentBtn"),
+      toast: document.getElementById("toast")
     };
 
-    const scanState = {
-      stream: null,
-      frameId: null,
-      active: false,
-      lastPayload: "",
-      lastAt: 0
-    };
-    const canvasCtx = el.canvas.getContext("2d", { willReadFrequently: true });
-    let scannedStudent = null;
-    let locationState = null;
-    let toastTimer = null;
-    let pendingPayload = null;
+    let students = [];
+    let fileBase64 = "";
+    let fileMime = "";
+    let currentLocation = null;
 
+    // --- Inisialisasi ---
     init();
 
     function init() {
-      // Cek apakah pengaturan penting ada, jika tidak, beri tahu pengguna.
-      checkPrerequisites();
-      loadStudentsForDropdown();
-      renderHistory();
-      checkLateStatus();
-      checkLastStudent();
-      setInterval(checkLateStatus, 10000);
-
-      el.startScanBtn.addEventListener("click", startScanner);
-      el.stopScanBtn.addEventListener("click", function () {
-        stopScanner();
-        setScanInfo("Status scan: dihentikan.");
-      });
-      el.processQrBtn.addEventListener("click", () => processQrPayload(el.qrManualInput.value));
-      el.mode.addEventListener("change", checkLateStatus);
-      el.submitBtn.addEventListener("click", submitAttendance);
-      el.retryPendingBtn.addEventListener("click", retryPendingPayloads);
-      el.checkLocBtn.addEventListener("click", function() { captureLocation().catch(function(){}); });
-      window.addEventListener("beforeunload", stopScanner);
-      el.settings.btnSave.addEventListener("click", saveSettingsUI);
-      el.settings.btnLoc.addEventListener("click", getSchoolLocUI);
-      el.modal.btnCancel.addEventListener("click", hideConfirmModal);
-      el.modal.btnYes.addEventListener("click", executeSubmission);
-      lastStudentEl.btn.addEventListener("click", restoreLastStudent);
-      el.studentName.addEventListener("change", onStudentChange);
-    }
-
-    function loadStudentsForDropdown() {
-      let students = [];
-      try {
-        const raw = localStorage.getItem(STUDENT_DATA_KEY);
-        if (raw) {
-          students = JSON.parse(raw);
-        } else {
-          // Fallback default data jika belum ada di localStorage (sama dengan data-siswa.html)
-          students = [
-            { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", is_active: true },
-            { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", is_active: true },
-            { id: "STU-003", nisn: "1234567003", full_name: "Komang Raka Pradana", is_active: false }
-          ];
-        }
-      } catch (e) { console.error(e); }
-
-      students.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
+      loadStudents();
+      loadConfig();
       
-      el.studentName.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-      students.forEach(s => {
-        if (s.is_active !== false) {
-          const option = document.createElement("option");
-          option.value = s.nisn || s.id; 
-          option.textContent = s.full_name;
-          option.dataset.name = s.full_name;
-          option.dataset.nisn = s.nisn || "";
-          el.studentName.appendChild(option);
-        }
-      });
+      el.statusSelect.addEventListener("change", handleStatusChange);
+      el.proofFile.addEventListener("change", handleFileSelect);
+      el.form.addEventListener("submit", handleSubmit);
+      el.saveConfigBtn.addEventListener("click", saveConfig);
+      el.addStudentBtn.addEventListener("click", addStudentManual);
+      el.refreshLocBtn.addEventListener("click", getLocation);
+      
+      // Trigger initial state
+      handleStatusChange();
+      getLocation();
     }
 
-    function checkPrerequisites() {
-      const settings = loadSettings();
-      if (!settings.webhook_url || !isFiniteNumber(settings.school_lat)) {
-        showToast("Konfigurasi belum lengkap (Mode Demo).", 3000);
-        // el.submitBtn.disabled = true; // Aktifkan semua tombol sesuai permintaan
-      }
-    }
-
-    function defaultSettings() {
-      return {
-        webhook_url: "",
-        webhook_key: "",
-        webhook_mode: "apps_script",
-        school_lat: "",
-        school_lng: "",
-        school_radius: 120,
-        late_cutoff: "07:30"
-      };
-    }
-
-    function loadSettings() {
+    // --- Logic Data Siswa ---
+    function loadStudents() {
       try {
-        const raw = localStorage.getItem(SETTINGS_KEY);
-        if (!raw) return defaultSettings();
-        const parsed = JSON.parse(raw) || {};
-        const s = {
-          webhook_url: String(parsed.webhook_url || "").trim(),
-          webhook_key: String(parsed.webhook_key || "").trim(),
-          webhook_mode: parsed.webhook_mode === "standard_json" ? "standard_json" : "apps_script",
-          school_lat: isFiniteNumber(parsed.school_lat) ? Number(parsed.school_lat) : "",
-          school_lng: isFiniteNumber(parsed.school_lng) ? Number(parsed.school_lng) : "",
-          school_radius: isFiniteNumber(parsed.school_radius) ? Math.max(10, Number(parsed.school_radius)) : 120,
-          late_cutoff: String(parsed.late_cutoff || "07:30").trim()
-        };
-        // Populate UI
-        if (el.settings.url) el.settings.url.value = s.webhook_url;
-        if (el.settings.key) el.settings.key.value = s.webhook_key;
-        if (el.settings.mode) el.settings.mode.value = s.webhook_mode;
-        if (el.settings.lat) el.settings.lat.value = s.school_lat;
-        if (el.settings.lng) el.settings.lng.value = s.school_lng;
-        if (el.settings.radius) el.settings.radius.value = s.school_radius;
-        if (el.settings.lateCutoff) el.settings.lateCutoff.value = s.late_cutoff;
-        return s;
-      } catch (error) {
-        return defaultSettings();
-      }
-    }
-
-    function saveSettingsUI() {
-      const next = {
-        webhook_url: el.settings.url.value.trim(),
-        webhook_key: el.settings.key.value.trim(),
-        webhook_mode: el.settings.mode.value,
-        school_lat: Number(el.settings.lat.value),
-        school_lng: Number(el.settings.lng.value),
-        school_radius: Number(el.settings.radius.value),
-        late_cutoff: el.settings.lateCutoff.value
-      };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
-      showToast("Pengaturan tersimpan.");
-      checkLateStatus();
-      el.submitBtn.disabled = false;
-    }
-
-    function onStudentChange() {
-      const sel = el.studentName;
-      const opt = sel.options[sel.selectedIndex];
-      if (opt && opt.value) {
-        el.studentNisn.value = opt.dataset.nisn || "";
-      } else {
-        el.studentNisn.value = "";
-      }
-    }
-
-    function loadSavedStudent() {
-      try {
-        const raw = localStorage.getItem(LAST_STUDENT_KEY);
-        if (raw) {
-          const s = JSON.parse(raw);
-          if (s.name) {
-            // Cari opsi yang cocok dengan nama
-            const options = Array.from(el.studentName.options);
-            const found = options.find(o => o.dataset.name === s.name);
-            if (found) {
-              el.studentName.value = found.value;
-              el.studentNisn.value = found.dataset.nisn || "";
-            }
-          }
-          renderStudentHistory(s);
-        }
-      } catch (e) {}
-    }
-
-    function checkLateStatus() {
-      const s = loadSettings();
-      const now = new Date();
-      const curTime = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
-      const isLate = curTime > s.late_cutoff;
-      const isMasuk = el.mode.value === "masuk";
-      if (isMasuk && isLate) {
-        el.lateReasonContainer.classList.remove("hidden");
-      } else {
-        el.lateReasonContainer.classList.add("hidden");
-      }
-    }
-
-    async function getSchoolLocUI() {
-      try {
-        const loc = await getCurrentLocation();
-        el.settings.lat.value = loc.lat;
-        el.settings.lng.value = loc.lng;
-        showToast("Lokasi diambil.");
+        const raw = localStorage.getItem(STUDENT_KEY);
+        students = raw ? JSON.parse(raw) : [];
+        renderStudentDropdown();
       } catch (e) {
-        showToast("Gagal ambil lokasi.");
+        students = [];
       }
     }
 
-    function getCurrentLocation() {
-      return new Promise(function (resolve, reject) {
-        if (!navigator.geolocation) {
-          reject(new Error("Browser tidak mendukung geolokasi."));
+    function renderStudentDropdown() {
+      el.studentSelect.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
+      students
+        .filter(s => s.is_active !== false)
+        .sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""))
+        .forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s.full_name; // Mengirim nama sebagai identifier sederhana
+          opt.textContent = s.full_name;
+          el.studentSelect.appendChild(opt);
+        });
+    }
+
+    function addStudentManual() {
+      const name = prompt("Masukkan Nama Lengkap Siswa:");
+      if (name && name.trim()) {
+        const newStudent = {
+          id: "MANUAL-" + Date.now(),
+          full_name: name.trim(),
+          is_active: true
+        };
+        students.push(newStudent);
+        localStorage.setItem(STUDENT_KEY, JSON.stringify(students));
+        renderStudentDropdown();
+        el.studentSelect.value = name.trim();
+        toast("Siswa ditambahkan ke daftar.");
+      }
+    }
+
+    // --- Logic UI Form ---
+    function handleStatusChange() {
+      const status = el.statusSelect.value;
+      
+      if (status === "Hadir") {
+        el.typeContainer.classList.remove("hidden");
+        el.uploadContainer.classList.add("hidden");
+      } else if (status === "Sakit" || status === "Izin") {
+        el.typeContainer.classList.add("hidden");
+        el.uploadContainer.classList.remove("hidden");
+      } else { // Tanpa Alasan
+        el.typeContainer.classList.add("hidden");
+        el.uploadContainer.classList.add("hidden");
+      }
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          alert("Ukuran file maksimal 2MB.");
+          el.proofFile.value = "";
           return;
         }
-        navigator.geolocation.getCurrentPosition(function (pos) {
-          resolve({
-            lat: Number(pos.coords.latitude),
-            lng: Number(pos.coords.longitude),
-            accuracy: Number(pos.coords.accuracy || 0)
-          });
-        }, function (err) {
-          reject(new Error(err && err.message ? err.message : "Gagal mengambil lokasi."));
-        }, {
-          enableHighAccuracy: true,
-          timeout: 12000,
-          maximumAge: 0
-        });
-      });
-    }
-
-    function toRad(v) {
-      return v * Math.PI / 180;
-    }
-
-    function calcDistanceMeters(lat1, lng1, lat2, lng2) {
-      const r = 6371000;
-      const dLat = toRad(lat2 - lat1);
-      const dLng = toRad(lng2 - lng1);
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return r * c;
-    }
-
-    async function captureLocation() {
-      try {
-        const current = await getCurrentLocation();
-        const settings = loadSettings();
-        const hasSchoolPoint = isFiniteNumber(Number(settings.school_lat)) && isFiniteNumber(Number(settings.school_lng));
-        let distance = null;
-        let within = null;
-        if (hasSchoolPoint) {
-          distance = calcDistanceMeters(
-            Number(current.lat),
-            Number(current.lng),
-            Number(settings.school_lat),
-            Number(settings.school_lng)
-          );
-          within = distance <= Number(settings.school_radius || 120);
-        }
-        locationState = {
-          lat: Number(current.lat),
-          lng: Number(current.lng),
-          accuracy_m: Number(current.accuracy || 0),
-          school_lat: hasSchoolPoint ? Number(settings.school_lat) : null,
-          school_lng: hasSchoolPoint ? Number(settings.school_lng) : null,
-          radius_m: hasSchoolPoint ? Number(settings.school_radius || 120) : null,
-          distance_m: distance,
-          within_radius: within,
-          captured_at: new Date().toISOString()
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          // Ambil base64 murni tanpa prefix data:image/...
+          fileBase64 = ev.target.result.split(',')[1];
+          fileMime = file.type;
         };
-
-        el.mapContainer.classList.remove("hidden");
-        el.gmapIframe.src = "https://maps.google.com/maps?q=" + current.lat + "," + current.lng + "&z=17&output=embed";
-        el.openGmapsLink.href = "https://www.google.com/maps/search/?api=1&query=" + current.lat + "," + current.lng;
-
-        if (hasSchoolPoint) {
-          el.locationInfoText.textContent = "Lokasi: " + current.lat.toFixed(6) + ", " + current.lng.toFixed(6) +
-            " | Jarak " + Math.round(distance) + " m | " + (within ? "Di dalam radius" : "Di luar radius");
-        } else {
-          el.locationInfoText.textContent = "Lokasi: " + current.lat.toFixed(6) + ", " + current.lng.toFixed(6) +
-            " | Geofence belum diatur.";
-        }
-        showToast("Lokasi berhasil diambil.");
-      } catch (error) {
-        showToast(error.message || "Gagal mengambil lokasi.");
-        throw error;
+        reader.readAsDataURL(file);
+      } else {
+        fileBase64 = "";
+        fileMime = "";
       }
     }
 
-    function buildWebhookUrl() {
-      const settings = loadSettings();
-      let url = String(settings.webhook_url || "").trim();
-      if (!url) return "";
-      const key = String(settings.webhook_key || "").trim();
-      if (key) {
-        url += (url.includes("?") ? "&" : "?") + "key=" + encodeURIComponent(key);
+    // --- Logic Lokasi ---
+    function getLocation() {
+      el.locationText.textContent = "Mencari koordinat GPS...";
+      if (!navigator.geolocation) {
+        el.locationText.textContent = "Browser tidak mendukung GPS.";
+        return;
       }
-      return url;
-    }
-
-    function nowDateKey() {
-      const d = new Date();
-      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-    }
-
-    function nowTimeKey() {
-      const d = new Date();
-      return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + ":" + String(d.getSeconds()).padStart(2, "0");
-    }
-
-    function buildPayload() {
-      const sel = el.studentName;
-      const opt = sel.options[sel.selectedIndex];
-      const name = opt ? opt.dataset.name : "";
-      const studentData = {
-        name: name || "",
-        nisn: el.studentNisn.value.trim()
-      };
-      return {
-        event: "mobile_attendance",
-        mode: el.mode.value === "pulang" ? "pulang" : "masuk",
-        status: el.status.value,
-        date: nowDateKey(),
-        time: nowTimeKey(),
-        student: studentData,
-        notes: String(el.notes.value || "").trim(),
-        late_reason: !el.lateReasonContainer.classList.contains("hidden") ? String(el.lateReasonInput.value || "").trim() : "",
-        qr_payload: "",
-        location: locationState,
-        device: {
-          ua: navigator.userAgent || "",
-          language: navigator.language || ""
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          currentLocation = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          };
+          el.locationText.textContent = `${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`;
         },
-        sent_at: new Date().toISOString()
+        (err) => {
+          el.locationText.textContent = "Gagal ambil lokasi. Pastikan izin aktif.";
+          currentLocation = null;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    // --- Logic Submit ---
+    async function handleSubmit(e) {
+      e.preventDefault();
+      
+      const studentName = el.studentSelect.value;
+      if (!studentName) return toast("Pilih nama siswa dulu.");
+      
+      const webhookUrl = localStorage.getItem(WEBHOOK_KEY);
+      if (!webhookUrl) return toast("Webhook URL belum disetting (lihat bawah).");
+
+      const status = el.statusSelect.value;
+      const type = (status === "Hadir") ? el.typeSelect.value : "";
+      
+      // Validasi foto jika sakit/izin
+      if ((status === "Sakit" || status === "Izin") && !fileBase64) {
+        if (!confirm("Anda belum upload foto bukti. Lanjutkan tanpa foto?")) return;
+      }
+
+      el.submitBtn.disabled = true;
+      el.submitBtn.innerHTML = "Mengirim...";
+
+      const payload = {
+        action: "insert_attendance",
+        student_name: studentName,
+        status: status,
+        type: type, // Masuk/Pulang atau kosong
+        file_base64: fileBase64,
+        file_mime: fileMime,
+        timestamp: new Date().toISOString(),
+        location: currentLocation
       };
-    }
 
-    function validatePayload(payload) {
-      if (!payload.student || !payload.student.name) {
-        return "Nama siswa wajib diisi.";
-      }
-      if (!payload.location) {
-        return "Lokasi belum diambil. Proses akan mengambil otomatis.";
-      }
-      if (payload.location.within_radius === false) {
-        return "Lokasi di luar radius sekolah.";
-      }
-      if (!buildWebhookUrl()) {
-        return "Webhook URL belum diisi.";
-      }
-      return "";
-    }
-
-    async function sendToWebhook(payload) {
-      const settings = loadSettings();
-      const url = buildWebhookUrl();
-      if (!url) throw new Error("Webhook URL tidak ditemukan.");
-
-      if (settings.webhook_mode === "apps_script") {
-        await fetch(url, {
+      try {
+        // Kirim ke Google Apps Script (no-cors karena biasanya GAS Web App)
+        await fetch(webhookUrl, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        return { ok: true, no_cors: true };
-      }
 
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      let body = "";
-      try { body = await res.text(); } catch (error) {}
-      return { ok: true, body: body };
-    }
-
-    async function submitAttendance() {
-      el.submitBtn.disabled = true;
-      el.submitBtn.textContent = "Memproses...";
-
-      try {
-        // Step 1: Ensure location is available
-        if (!locationState) {
-          el.submitBtn.textContent = "Mengambil lokasi...";
-          await captureLocation();
-        }
-
-        // Step 2: Validate payload
-        const payload = buildPayload();
-        const validationMsg = validatePayload(payload);
-        if (validationMsg) {
-          showToast(validationMsg);
-          el.submitBtn.disabled = false;
-          el.submitBtn.textContent = "Kirim Absen";
-          return;
-        }
-
-        // Step 3: Show confirmation modal
-        pendingPayload = payload;
-        showConfirmModal(payload);
-        
-        // Reset button state (modal is now handling the flow)
-        el.submitBtn.disabled = false;
-        el.submitBtn.textContent = "Kirim Absen";
-
-      } catch (locationError) {
-        // This only catches errors from captureLocation()
-        // The toast is already shown inside captureLocation
-        el.submitBtn.disabled = false;
-        el.submitBtn.textContent = "Kirim Absen";
-      }
-    }
-
-    function showConfirmModal(payload) {
-      const s = payload.student;
-      const loc = payload.location;
-      const dist = loc && loc.distance_m ? Math.round(loc.distance_m) + " m" : "N/A";
-      
-      el.modal.student.textContent = s.name || s.nisn || s.id;
-      el.modal.mode.textContent = payload.mode === "masuk" ? "Masuk" : "Pulang";
-      el.modal.status.textContent = payload.status || "Hadir";
-      el.modal.time.textContent = payload.time;
-      el.modal.dist.textContent = dist;
-
-      if (payload.late_reason) {
-        el.modal.lateReason.textContent = payload.late_reason;
-        el.modal.late.classList.remove("hidden");
-      } else {
-        el.modal.late.classList.add("hidden");
-      }
-
-      el.modal.el.classList.remove("hidden");
-    }
-
-    function hideConfirmModal() {
-      el.modal.el.classList.add("hidden");
-      pendingPayload = null;
-    }
-
-    async function executeSubmission() {
-      if (!pendingPayload) return;
-      hideConfirmModal();
-      
-      el.submitBtn.disabled = true;
-      el.submitBtn.textContent = "Mengirim...";
-      const payload = pendingPayload;
-
-      try {
-        const result = await sendToWebhook(payload);
-        appendHistory({
-          at: new Date().toISOString(),
-          status: "sent",
-          mode: payload.mode,
-          student: payload.student,
-          no_cors: !!result.no_cors
-        });
-        updateSharedAttendanceLog(payload);
-        showToast(result.no_cors ? "Absen terkirim (mode Apps Script)." : "Absen berhasil dikirim.");
-        localStorage.setItem(LAST_STUDENT_KEY, JSON.stringify(payload.student));
-        clearFormAfterSubmit();
-      } catch (sendError) {
-        // This is a network/send error, so save to pending
-        pushPending(payload);
-        appendHistory({
-          at: new Date().toISOString(),
-          status: "pending",
-          mode: payload.mode,
-          student: payload.student,
-          error: String(sendError && sendError.message ? sendError.message : "gagal")
-        });
-        showToast("Gagal kirim. Data masuk antrean pending.");
+        toast("Data presensi terkirim!");
+        el.form.reset();
+        fileBase64 = "";
+        handleStatusChange(); // Reset UI state
+      } catch (err) {
+        toast("Gagal mengirim: " + err.message);
       } finally {
         el.submitBtn.disabled = false;
-        el.submitBtn.textContent = "Kirim Absen";
-        pendingPayload = null;
+        el.submitBtn.innerHTML = `<span>Simpan Presensi</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
       }
     }
 
-    function updateSharedAttendanceLog(payload) {
-      try {
-        const attendances = loadArray(ATT_KEY);
-        const student = payload.student;
-        const existingIndex = attendances.findIndex(function (a) {
-          return a.date === payload.date && a.student_id === student.id;
-        });
-
-        let record;
-        if (existingIndex > -1) {
-          record = attendances[existingIndex];
-        } else {
-          record = {
-            id: "ATT-" + Date.now(),
-            date: payload.date,
-            student_id: student.id,
-            student_name: student.name,
-            nisn: student.nisn,
-            status: 'Belum Absen',
-            check_in: '',
-            check_out: '',
-            notes: ''
-          };
-        }
-
-        record.status = payload.status || 'Hadir';
-        record.updated_at = new Date().toISOString();
-
-        if (payload.mode === 'masuk') {
-          record.check_in = payload.time;
-          record.source_in = 'Mobile App';
-          record.location_in = payload.location;
-          if (payload.notes) record.notes = payload.notes;
-          if (payload.late_reason) {
-            record.notes = (record.notes ? record.notes + " | " : "") + "Terlambat: " + payload.late_reason;
-          }
-        } else { // 'pulang'
-          record.check_out = payload.time;
-          record.source_out = 'Mobile App';
-          record.location_out = payload.location;
-          if (payload.notes) record.notes = (record.notes ? record.notes + ' | ' : '') + `Pulang: ${payload.notes}`;
-        }
-        if (existingIndex > -1) attendances[existingIndex] = record; else attendances.push(record);
-        saveArray(ATT_KEY, attendances);
-      } catch(e) { /* Fails silently, main function is not affected */ }
+    // --- Config ---
+    function loadConfig() {
+      const url = localStorage.getItem(WEBHOOK_KEY);
+      if (url) el.webhookUrl.value = url;
     }
 
-    function clearFormAfterSubmit() {
-      el.notes.value = "";
-      el.status.value = "Hadir";
-      el.lateReasonInput.value = "";
-      el.studentHistorySection.classList.add("hidden");
-      
-      const sel = el.studentName;
-      const opt = sel.options[sel.selectedIndex];
-      renderStudentHistory({ name: opt ? opt.dataset.name : "" });
-    }
-
-    function loadArray(key) {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
-      } catch (error) {
-        return [];
+    function saveConfig() {
+      const url = el.webhookUrl.value.trim();
+      if (url) {
+        localStorage.setItem(WEBHOOK_KEY, url);
+        toast("Konfigurasi tersimpan.");
       }
     }
 
-    function saveArray(key, list) {
-      localStorage.setItem(key, JSON.stringify(list || []));
-    }
-
-    function appendHistory(item) {
-      const list = loadArray(HISTORY_KEY);
-      list.unshift(item);
-      saveArray(HISTORY_KEY, list.slice(0, 30));
-      renderHistory();
-    }
-
-    function pushPending(payload) {
-      const list = loadArray(PENDING_KEY);
-      list.push({
-        id: "PEND-" + Date.now().toString(36).toUpperCase(),
-        payload: payload,
-        created_at: new Date().toISOString()
-      });
-      saveArray(PENDING_KEY, list.slice(-50));
-    }
-
-    async function retryPendingPayloads() {
-      const list = loadArray(PENDING_KEY);
-      if (!list.length) {
-        showToast("Tidak ada data pending.");
-        return;
-      }
-      let sent = 0;
-      const remain = [];
-      for (let i = 0; i < list.length; i += 1) {
-        const item = list[i];
-        try {
-          await sendToWebhook(item.payload);
-          sent += 1;
-        } catch (error) {
-          remain.push(item);
-        }
-      }
-      saveArray(PENDING_KEY, remain);
-      showToast(sent + " pending berhasil dikirim ulang.");
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const history = loadArray(HISTORY_KEY);
-      const pending = loadArray(PENDING_KEY).length;
-      if (!history.length) {
-        el.historyList.innerHTML = '<li class="text-slate-400">Belum ada riwayat.</li>';
-        el.retryPendingBtn.textContent = "Kirim Ulang Pending (" + pending + ")";
-        return;
-      }
-      el.historyList.innerHTML = history.map(function (item) {
-        const d = new Date(item.at || Date.now());
-        const time = d.toLocaleString("id-ID");
-        const name = String((item.student && (item.student.name || item.student.nisn || item.student.id)) || "-");
-        const badge = item.status === "sent"
-          ? '<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">SENT</span>'
-          : '<span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">PENDING</span>';
-        return '<li class="border border-slate-100 rounded-lg px-2 py-2 bg-slate-50">' +
-          '<div class="flex items-center justify-between gap-2">' +
-          '<span class="font-semibold">' + badge + "</span>" +
-          '<span class="text-[11px] text-slate-500">' + esc(time) + "</span>" +
-          "</div>" +
-          '<div class="mt-1">Mode: ' + esc(item.mode || "-") + " | Siswa: " + esc(name) + "</div>" +
-          "</li>";
-      }).join("");
-      el.retryPendingBtn.textContent = "Kirim Ulang Pending (" + pending + ")";
-    }
-
-    function renderStudentHistory(student) {
-      if (!student || !student.name) {
-        el.studentHistorySection.classList.add("hidden");
-        return;
-      }
-      const all = loadArray(ATT_KEY);
-      const studentRows = all.filter(function(a) { return (a.student_name || "").toLowerCase() === student.name.toLowerCase(); });
-      
-      // Calculate stats
-      const stats = { Hadir: 0, Sakit: 0, Izin: 0, Alpha: 0 };
-      studentRows.forEach(function(r) {
-        if (stats[r.status] !== undefined) stats[r.status]++;
-      });
-      el.stats.hadir.textContent = stats.Hadir;
-      el.stats.sakit.textContent = stats.Sakit;
-      el.stats.izin.textContent = stats.Izin;
-      el.stats.alpha.textContent = stats.Alpha;
-
-      const history = studentRows
-        .sort(function(a, b) { return String(b.date).localeCompare(String(a.date)); })
-        .slice(0, 5);
-
-      if (history.length === 0) {
-         el.studentHistoryBody.innerHTML = '<tr><td colspan="4" class="px-2 py-2 text-center text-slate-400">Belum ada data.</td></tr>';
-      } else {
-         el.studentHistoryBody.innerHTML = history.map(function(h) {
-           return '<tr>' +
-             '<td class="px-2 py-2">' + esc(h.date) + '</td>' +
-             '<td class="px-2 py-2">' + esc(h.status) + '</td>' +
-             '<td class="px-2 py-2">' + esc(h.check_in || "-") + '</td>' +
-             '<td class="px-2 py-2">' + esc(h.check_out || "-") + '</td>' +
-           '</tr>';
-         }).join("");
-      }
-      el.studentHistorySection.classList.remove("hidden");
-    }
-
-    function esc(v) {
-      return String(v || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    function isFiniteNumber(v) {
-      return typeof v === "number" && Number.isFinite(v);
-    }
-
-    function showToast(message, duration = 2200) {
-      el.toast.textContent = String(message || "");
+    function toast(msg) {
+      el.toast.textContent = msg;
       el.toast.classList.remove("hidden");
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(function () {
-        el.toast.classList.add("hidden");
-      }, duration);
+      setTimeout(() => el.toast.classList.add("hidden"), 3000);
     }
   </script>
 </body>
