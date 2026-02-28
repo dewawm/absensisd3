@@ -19,14 +19,16 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex">
-
-    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
-        <div class="flex items-center space-x-3 mb-10">
-            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
-            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+<body class="bg-slate-50 min-h-screen flex flex-col md:flex-row">
+    <aside class="w-full md:w-72 bg-white h-auto md:min-h-screen shadow-xl relative md:sticky top-0 p-4 md:p-6 flex flex-col z-10">
+        <div class="flex items-center justify-between mb-4 md:mb-10">
+            <div class="flex items-center space-x-3">
+                <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+                <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+            </div>
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 rounded-lg hover:bg-slate-100 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
         </div>
-  <nav class="flex-1 px-4 space-y-1">
+  <nav id="sidebarNav" class="hidden md:block flex-1 px-4 space-y-1">
     <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
     
     <a href="dashboard.html" class="sidebar-item flex items-center space-x-3 p-3 rounded-xl transition font-medium">
@@ -78,7 +80,7 @@
 </nav>
     </aside>
 
-    <main class="flex-1 p-10">
+    <main class="flex-1 p-4 md:p-10 w-full max-w-full">
         <header class="mb-8 space-y-5">
             <div class="flex flex-wrap gap-4 items-start justify-between">
                 <div>
@@ -260,6 +262,10 @@
 
     let modules = loadModules();
     let toastTimer = null;
+
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+        document.getElementById('sidebarNav').classList.toggle('hidden');
+    });
 
     moduleSearch.addEventListener("input", renderModules);
     subjectFilter.addEventListener("change", renderModules);
