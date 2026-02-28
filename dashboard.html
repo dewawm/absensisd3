@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - SD No. 3 Lukluk</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -13,13 +14,16 @@
         .sidebar-active { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background-color: #eff6ff; color: #2563eb; border-radius: 0.75rem; font-weight: 600; border-right: 4px solid #2563eb; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex">
-    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
-        <div class="flex items-center space-x-3 mb-10">
-            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
-            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+<body class="bg-slate-50 min-h-screen flex flex-col md:flex-row">
+    <aside class="w-full md:w-72 bg-white h-auto md:min-h-screen shadow-xl relative md:sticky top-0 p-4 md:p-6 flex flex-col z-10">
+        <div class="flex items-center justify-between mb-4 md:mb-10">
+            <div class="flex items-center space-x-3">
+                <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+                <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+            </div>
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 rounded-lg hover:bg-slate-100 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
         </div>
-        <nav class="flex-1 px-4 space-y-1">
+        <nav id="sidebarNav" class="hidden md:block flex-1 px-4 space-y-1">
             <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
             <a href="dashboard.html" class="sidebar-active">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -61,7 +65,7 @@
         </nav>
     </aside>
 
-    <main class="flex-1 p-10">
+    <main class="flex-1 p-4 md:p-10 w-full max-w-full">
         <header class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">Dashboard Sekolah</h1>
@@ -72,6 +76,31 @@
                 <p id="clockText" class="font-bold text-slate-700">-</p>
             </div>
         </header>
+
+        <section class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="font-bold text-slate-800">Backup & Restore Data</h2>
+                    <p class="text-sm text-slate-500 mt-1">Amankan data aplikasi ke file lokal (JSON).</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <input type="file" id="restoreInput" accept=".json" class="hidden">
+                    <button id="localRestoreBtn" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition">Restore File</button>
+                    <button id="localBackupBtn" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition">Download Backup</button>
+                </div>
+            </div>
+        </section>
+
+        <div id="absenceAlert" class="hidden bg-red-50 border border-red-100 rounded-3xl p-4 mb-6 flex items-start gap-4 shadow-sm">
+            <div class="p-3 bg-red-100 rounded-2xl text-red-600 shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <div>
+                <h3 class="font-bold text-red-800 text-lg">Perhatian: Absensi Siswa</h3>
+                <p class="text-sm text-red-600 mb-2">Siswa berikut tidak hadir selama 3 hari aktif terakhir berturut-turut:</p>
+                <ul id="absenceAlertList" class="text-sm text-red-700 list-disc list-inside font-medium space-y-1"></ul>
+            </div>
+        </div>
 
         <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
             <article class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
@@ -90,6 +119,13 @@
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Modul Tersedia</p>
                 <p id="metricModulesTotal" class="mt-2 text-3xl font-bold text-blue-600">0</p>
             </article>
+        </section>
+
+        <section class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm mb-6">
+            <h2 class="font-bold text-slate-800 mb-4">Statistik Kehadiran Bulan Ini</h2>
+            <div class="h-64 w-full">
+                <canvas id="attendanceChart"></canvas>
+            </div>
         </section>
 
         <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -115,6 +151,19 @@
             </div>
 
             <div class="space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-bold text-slate-800">Kalender Akademik</h2>
+                        <div class="flex gap-1">
+                            <button id="prevMonthBtn" class="p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                            <span id="calMonthYear" class="text-xs font-bold text-slate-600 self-center px-2"></span>
+                            <button id="nextMonthBtn" class="p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] uppercase tracking-wide text-slate-400 font-bold mb-2"><div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div></div>
+                    <div id="calDays" class="grid grid-cols-7 gap-1 text-center text-sm text-slate-600"></div>
+                </div>
+
                 <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
                     <h2 class="font-bold text-slate-800 mb-4">Distribusi User</h2>
                     <div class="space-y-3">
@@ -145,10 +194,19 @@
         </section>
     </main>
 
+    <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+
     <script>
         const STUDENTS_KEY = "sd3_data_siswa_v1";
         const USERS_KEY = "sd3_data_user_v1";
         const MODULES_KEY = "sd3_modul_ajar_v1";
+        const ATTENDANCE_KEY = "sd3_presensi_v2";
+        const GRADE_KEY = "sd3_nilai_harian_v1";
+        const JOURNAL_KEY = "sd3_jurnal_mengajar_v1";
+        const COUNSEL_KEY = "sd3_buku_konseling_v1";
+        const TP_KEY = "sd3_tp_master_v1";
+
+        const ALL_KEYS = [STUDENTS_KEY, USERS_KEY, MODULES_KEY, ATTENDANCE_KEY, GRADE_KEY, JOURNAL_KEY, COUNSEL_KEY, TP_KEY];
 
         const defaultStudents = [
             { id: "STU-001", full_name: "Putu Ayu Lestari", nisn: "1234567001", class_name: "4A", is_active: true, created_at: "2026-01-10T07:00:00.000Z" },
@@ -168,11 +226,33 @@
         const students = loadArray(STUDENTS_KEY, defaultStudents);
         const users = loadArray(USERS_KEY, defaultUsers);
         const modules = loadArray(MODULES_KEY, defaultModules);
+        const attendances = loadArray(ATTENDANCE_KEY, []);
+
+        let currentCalDate = new Date();
+        let toastTimer = null;
 
         renderClock();
         setInterval(renderClock, 1000);
         renderMetrics();
         renderStudentPreview();
+        renderChart();
+        renderCalendar();
+        checkConsecutiveAbsences();
+
+        document.getElementById("prevMonthBtn").addEventListener("click", function() {
+            currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById("nextMonthBtn").addEventListener("click", function() {
+            currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        // Backup Restore Events
+        document.getElementById("localBackupBtn").addEventListener("click", downloadBackup);
+        document.getElementById("localRestoreBtn").addEventListener("click", () => document.getElementById("restoreInput").click());
+        document.getElementById("restoreInput").addEventListener("change", restoreBackup);
 
         function loadArray(key, fallback) {
             try {
@@ -194,6 +274,64 @@
                 year: "numeric"
             }) + " - " + now.toLocaleTimeString("id-ID");
             document.getElementById("clockText").textContent = text;
+        }
+
+        function renderCalendar() {
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            document.getElementById("calMonthYear").textContent = new Date(year, month).toLocaleDateString("id-ID", { month: 'long', year: 'numeric' });
+            
+            const daysContainer = document.getElementById("calDays");
+            daysContainer.innerHTML = "";
+            
+            for (let i = 0; i < firstDay; i++) {
+                daysContainer.innerHTML += `<div></div>`;
+            }
+            
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const isToday = isCurrentMonth && i === today.getDate();
+                const classes = isToday ? "w-8 h-8 flex items-center justify-center rounded-full bg-blue-600 text-white font-bold mx-auto shadow-md shadow-blue-200" : "w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-50 mx-auto cursor-pointer transition text-slate-600";
+                daysContainer.innerHTML += `<div class="${classes}">${i}</div>`;
+            }
+        }
+
+        function checkConsecutiveAbsences() {
+            const dates = [...new Set(attendances.map(function(a) { return a.date; }))].sort().reverse();
+            
+            if (dates.length < 3) return;
+
+            const last3Days = dates.slice(0, 3);
+            const alerts = [];
+
+            students.forEach(function(s) {
+                if (s.is_active === false) return;
+
+                const records = last3Days.map(function(date) {
+                    return attendances.find(function(a) { return a.date === date && a.student_id === s.id; });
+                });
+
+                const isAbsent3Days = records.every(function(r) {
+                    return r && r.status !== 'Hadir';
+                });
+
+                if (isAbsent3Days) {
+                    alerts.push(s.full_name);
+                }
+            });
+
+            if (alerts.length > 0) {
+                const alertBox = document.getElementById("absenceAlert");
+                const alertList = document.getElementById("absenceAlertList");
+                alertList.innerHTML = alerts.map(function(name) { return "<li>" + esc(name) + "</li>"; }).join("");
+                alertBox.classList.remove("hidden");
+            }
         }
 
         function renderMetrics() {
@@ -244,6 +382,123 @@
             }).join("");
         }
 
+        function renderChart() {
+            const ctx = document.getElementById('attendanceChart');
+            if (!ctx) return;
+
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+            const dataHadir = new Array(daysInMonth).fill(0);
+            const dataSakit = new Array(daysInMonth).fill(0);
+            const dataIzin = new Array(daysInMonth).fill(0);
+            const dataAlpha = new Array(daysInMonth).fill(0);
+
+            attendances.forEach(function(a) {
+                const d = new Date(a.date);
+                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                    const day = d.getDate() - 1;
+                    if (a.status === 'Hadir') dataHadir[day]++;
+                    else if (a.status === 'Sakit') dataSakit[day]++;
+                    else if (a.status === 'Izin') dataIzin[day]++;
+                    else if (a.status === 'Alpha') dataAlpha[day]++;
+                }
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Hadir', data: dataHadir, backgroundColor: '#10b981', borderRadius: 4 },
+                        { label: 'Sakit', data: dataSakit, backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'Izin', data: dataIzin, backgroundColor: '#eab308', borderRadius: 4 },
+                        { label: 'Alpha', data: dataAlpha, backgroundColor: '#ef4444', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // --- Backup & Restore Logic ---
+
+        function getBackupData() {
+            const data = {};
+            ALL_KEYS.forEach(key => {
+                const val = localStorage.getItem(key);
+                if (val) data[key] = JSON.parse(val);
+            });
+            return {
+                timestamp: new Date().toISOString(),
+                app: "SD3_ADMIN",
+                version: "1.0",
+                data: data
+            };
+        }
+
+        function downloadBackup() {
+            const data = getBackupData();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `backup-sd3-${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            toast("Backup berhasil didownload.");
+        }
+
+        function restoreBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if (json.app !== "SD3_ADMIN" || !json.data) throw new Error("Format file tidak valid.");
+                    
+                    if (!confirm(`Restore data dari tanggal ${new Date(json.timestamp).toLocaleString()}? Data saat ini akan ditimpa.`)) return;
+
+                    Object.keys(json.data).forEach(key => {
+                        localStorage.setItem(key, JSON.stringify(json.data[key]));
+                    });
+                    toast("Data berhasil direstore. Refreshing...");
+                    setTimeout(() => location.reload(), 1500);
+                } catch (err) {
+                    alert("Gagal restore: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = "";
+        }
+
+        function toast(message) {
+            const el = document.getElementById("toast");
+            if (!el) return;
+            el.textContent = message;
+            el.classList.remove("hidden");
+            el.classList.add("toast-enter");
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+                el.classList.add("hidden");
+                el.classList.remove("toast-enter");
+            }, 2500);
+        }
+
         function esc(value) {
             return String(value || "")
                 .replace(/&/g, "&amp;")
@@ -252,6 +507,10 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#39;");
         }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('sidebarNav').classList.toggle('hidden');
+        });
     </script>
 </body>
 </html>

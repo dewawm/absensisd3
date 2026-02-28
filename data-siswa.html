@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa - SD No. 3 Lukluk</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -17,15 +19,24 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+            @page { size: A4; margin: 10mm; }
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex">
-    <aside class="w-72 bg-white min-h-screen shadow-xl sticky top-0 p-6 flex flex-col">
-        <div class="flex items-center space-x-3 mb-10">
-            <img src="images/logo.png" alt="Logo" class="w-10 h-10">
-            <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+<body class="bg-slate-50 min-h-screen flex flex-col md:flex-row">
+    <aside class="w-full md:w-72 bg-white h-auto md:min-h-screen shadow-xl relative md:sticky top-0 p-4 md:p-6 flex flex-col z-10">
+        <div class="flex items-center justify-between mb-4 md:mb-10">
+            <div class="flex items-center space-x-3">
+                <img src="images/logo.png" alt="Logo" class="w-10 h-10">
+                <span class="font-bold text-gray-800 uppercase tracking-tight">SISTEM ADMINISTRASI KELAS SD3</span>
+            </div>
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 rounded-lg hover:bg-slate-100 focus:outline-none"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
         </div>
-        <nav class="flex-1 px-4 space-y-1">
+        <nav id="sidebarNav" class="hidden md:block flex-1 px-4 space-y-1">
             <p class="px-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Menu Utama</p>
             <a href="dashboard.html" class="sidebar-item">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -67,17 +78,25 @@
         </nav>
     </aside>
 
-    <main class="flex-1 p-10">
+    <main class="flex-1 p-4 md:p-10 w-full max-w-full">
         <header class="mb-8 space-y-5">
             <div class="flex flex-wrap gap-4 items-start justify-between">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">Kelola Data Siswa</h1>
                     <p class="text-gray-500 text-sm">Manajemen profil siswa kelas 4</p>
                 </div>
-                <button id="openStudentModalBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-100 transition flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Tambah Siswa
-                </button>
+                <div class="flex gap-3">
+                    <button id="openBackupBtn" type="button" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl font-bold transition">Backup Data</button>
+                    <button id="importExcelBtn" type="button" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-xl font-bold transition">Import Excel</button>
+                    <button id="printQrBtn" type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-emerald-100 transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Cetak Kartu
+                    </button>
+                    <button id="openStudentModalBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-100 transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Siswa
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
@@ -141,6 +160,22 @@
 
                 <form id="studentForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input id="studentId" name="id" type="hidden">
+                    
+                    <div class="md:col-span-2 flex gap-4 items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="w-20 h-24 bg-white rounded-lg border border-slate-200 flex items-center justify-center overflow-hidden relative shrink-0">
+                            <img id="studentPhotoPreview" class="w-full h-full object-cover hidden">
+                            <div id="studentPhotoPlaceholder" class="text-slate-300 text-xs text-center p-1">
+                                <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Foto
+                            </div>
+                        </div>
+                        <label class="flex-1 cursor-pointer">
+                            <span class="text-sm font-semibold text-slate-700 block mb-1">Upload Foto Profil</span>
+                            <input id="studentPhotoInput" type="file" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 transition">
+                            <p class="text-[10px] text-slate-400 mt-1">Format JPG/PNG. Maks 2MB. Otomatis dikompres.</p>
+                        </label>
+                    </div>
+
                     <label>
                         <span class="text-sm font-semibold text-slate-700">NISN</span>
                         <input id="studentNisn" name="nisn" type="text" class="mt-1 w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" placeholder="Contoh: 1234567890">
@@ -182,7 +217,41 @@
         </div>
     </div>
 
+    <div id="backupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800">Backup & Restore Data</h3>
+                <button id="closeBackupBtn" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-slate-500">Kelola data aplikasi (Siswa, Presensi, Nilai, dll).</p>
+                <div class="grid grid-cols-1 gap-3">
+                    <button id="localBackupBtn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition">Download Backup (JSON)</button>
+                    <button id="localRestoreBtn" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">Restore dari File</button>
+                </div>
+                <input type="file" id="restoreInput" accept=".json" class="hidden">
+            </div>
+        </div>
+    </div>
+
+    <div id="qrModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden text-center p-6">
+            <h3 class="font-bold text-slate-800 text-lg mb-1">QR Code Siswa</h3>
+            <p id="qrModalName" class="text-sm text-slate-500 mb-4"></p>
+            <div class="flex justify-center mb-4 bg-white p-2 rounded-xl border border-slate-100">
+                <canvas id="qrModalCanvas"></canvas>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">Gunakan untuk presensi harian.</p>
+            <div class="flex justify-center gap-2">
+                <button id="closeQrModalBtn" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition">Tutup</button>
+                <button id="printQrOnlyBtn" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition">Cetak QR</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importExcelInput" accept=".xlsx, .xls" class="hidden">
     <div id="toast" class="hidden fixed bottom-5 right-5 z-[60] bg-slate-900 text-white text-sm px-4 py-2 rounded-xl shadow-xl"></div>
+    <div id="printArea" class="hidden bg-white p-4"></div>
 
     <script>
         const STORAGE_KEY = "sd3_data_siswa_v1";
@@ -199,6 +268,9 @@
         const classFilter = document.getElementById("classFilter");
         const resetFilterBtn = document.getElementById("resetFilterBtn");
 
+        const importExcelBtn = document.getElementById("importExcelBtn");
+        const importExcelInput = document.getElementById("importExcelInput");
+        const printQrBtn = document.getElementById("printQrBtn");
         const openStudentModalBtn = document.getElementById("openStudentModalBtn");
         const studentModal = document.getElementById("studentModal");
         const closeStudentModalBtn = document.getElementById("closeStudentModalBtn");
@@ -209,6 +281,29 @@
 
         let students = loadStudents();
         let toastTimer = null;
+        let currentEditingPhoto = "";
+
+        const studentPhotoInput = document.getElementById("studentPhotoInput");
+        const studentPhotoPreview = document.getElementById("studentPhotoPreview");
+        const studentPhotoPlaceholder = document.getElementById("studentPhotoPlaceholder");
+
+        const qrModal = document.getElementById("qrModal");
+        const qrModalName = document.getElementById("qrModalName");
+        const qrModalCanvas = document.getElementById("qrModalCanvas");
+        let currentQrStudent = null;
+
+        // Backup Events
+        document.getElementById("openBackupBtn").addEventListener("click", () => document.getElementById("backupModal").classList.remove("hidden"));
+        document.getElementById("closeBackupBtn").addEventListener("click", () => document.getElementById("backupModal").classList.add("hidden"));
+        document.getElementById("localBackupBtn").addEventListener("click", downloadBackup);
+        document.getElementById("localRestoreBtn").addEventListener("click", () => document.getElementById("restoreInput").click());
+        document.getElementById("restoreInput").addEventListener("change", restoreBackup);
+
+        document.getElementById("closeQrModalBtn").addEventListener("click", () => qrModal.classList.add("hidden"));
+        document.getElementById("printQrOnlyBtn").addEventListener("click", printQrOnly);
+        document.getElementById("mobileMenuBtn").addEventListener("click", function() {
+            document.getElementById("sidebarNav").classList.toggle("hidden");
+        });
 
         studentSearch.addEventListener("input", renderStudents);
         classFilter.addEventListener("change", renderStudents);
@@ -218,6 +313,9 @@
             renderStudents();
         });
 
+        importExcelBtn.addEventListener("click", () => importExcelInput.click());
+        importExcelInput.addEventListener("change", handleImportExcel);
+        printQrBtn.addEventListener("click", printQrCodes);
         openStudentModalBtn.addEventListener("click", function () {
             openStudentModal();
         });
@@ -234,7 +332,24 @@
             }
         });
 
-        studentForm.addEventListener("submit", function (event) {
+        studentPhotoInput.addEventListener("change", async function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("Ukuran foto terlalu besar (Maksimal 2MB).");
+                    this.value = "";
+                    return;
+                }
+                try {
+                    const base64 = await compressImage(file);
+                    studentPhotoPreview.src = base64;
+                    studentPhotoPreview.classList.remove("hidden");
+                    studentPhotoPlaceholder.classList.add("hidden");
+                } catch (e) { alert("Gagal memproses gambar."); }
+            }
+        });
+
+        studentForm.addEventListener("submit", async function (event) {
             event.preventDefault();
             const id = String(document.getElementById("studentId").value || "").trim();
             const nisn = String(document.getElementById("studentNisn").value || "").trim();
@@ -244,6 +359,19 @@
             const parentName = String(document.getElementById("parentName").value || "").trim();
             const parentWa = normalizePhone(document.getElementById("parentWa").value || "");
             const isActive = !!document.getElementById("studentActive").checked;
+
+            let photoData = currentEditingPhoto;
+            if (studentPhotoInput.files.length > 0) {
+                const file = studentPhotoInput.files[0];
+                if (file.size > 2 * 1024 * 1024) {
+                    return alert("Ukuran foto terlalu besar (Maksimal 2MB).");
+                }
+                try {
+                    photoData = await compressImage(file);
+                } catch (e) {
+                    return alert("Gagal menyimpan foto.");
+                }
+            }
 
             if (!fullName) {
                 alert("Nama siswa wajib diisi.");
@@ -275,7 +403,8 @@
                         gender: gender,
                         parent_name: parentName,
                         parent_wa: parentWa,
-                        is_active: isActive
+                        is_active: isActive,
+                        photo_data: photoData
                     };
                 });
                 toast("Data siswa diperbarui.");
@@ -289,7 +418,8 @@
                     parent_name: parentName,
                     parent_wa: parentWa,
                     is_active: isActive,
-                    created_at: new Date().toISOString()
+                    created_at: new Date().toISOString(),
+                    photo_data: photoData
                 });
                 toast("Siswa baru ditambahkan.");
             }
@@ -300,8 +430,84 @@
             closeStudentModal();
         });
 
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 150; // Resize to small thumbnail
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
         refreshClassFilterOptions();
         renderStudents();
+
+        function handleImportExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (json.length === 0) return toast("File Excel kosong.");
+
+                    let count = 0;
+                    json.forEach(row => {
+                        const nisn = String(row['NISN'] || row['nisn'] || "").trim();
+                        const name = String(row['Nama'] || row['nama'] || row['Nama Siswa'] || "").trim();
+                        
+                        // Cek duplikasi NISN jika ada, atau tambahkan jika nama ada
+                        if (name && !students.some(s => s.nisn === nisn && nisn !== "")) {
+                            students.unshift({
+                                id: uid("STU"),
+                                nisn: nisn,
+                                full_name: name,
+                                class_name: String(row['Kelas'] || row['kelas'] || "4A").trim(),
+                                gender: String(row['JK'] || row['jk'] || "").trim().toUpperCase(),
+                                parent_name: String(row['Orang Tua'] || row['orang tua'] || "").trim(),
+                                parent_wa: normalizePhone(row['WA'] || row['wa'] || ""),
+                                is_active: true,
+                                created_at: new Date().toISOString()
+                            });
+                            count++;
+                        }
+                    });
+                    
+                    if (count > 0) {
+                        saveStudents(students);
+                        refreshClassFilterOptions();
+                        renderStudents();
+                        toast(`Berhasil import ${count} siswa.`);
+                    } else {
+                        toast("Tidak ada data baru atau NISN duplikat.");
+                    }
+                } catch (err) {
+                    alert("Gagal membaca file Excel: " + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            e.target.value = "";
+        }
 
         function loadStudents() {
             try {
@@ -319,7 +525,8 @@
                         parent_name: String(item.parent_name || "").trim(),
                         parent_wa: normalizePhone(item.parent_wa || ""),
                         is_active: item.is_active !== false,
-                        created_at: String(item.created_at || new Date().toISOString())
+                        created_at: String(item.created_at || new Date().toISOString()),
+                        photo_data: item.photo_data || ""
                     };
                 });
             } catch (error) {
@@ -383,6 +590,8 @@
                         <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full ${statusClass}">${statusText}</span></td>
                         <td class="px-4 py-3 text-right">
                             <div class="inline-flex items-center gap-3">
+                                <button type="button" data-id="${esc(item.id)}" class="print-btn text-emerald-600 font-semibold text-xs hover:underline">Kartu</button>
+                                <button type="button" data-id="${esc(item.id)}" class="qr-btn text-purple-600 font-semibold text-xs hover:underline">QR</button>
                                 <button type="button" data-id="${esc(item.id)}" class="edit-btn text-blue-600 font-semibold text-xs hover:underline">Edit</button>
                                 <button type="button" data-id="${esc(item.id)}" class="delete-btn text-red-500 font-semibold text-xs hover:underline">Hapus</button>
                             </div>
@@ -394,7 +603,149 @@
             bindTableActions();
         }
 
+        async function printQrCodes(targetStudents) {
+            if (typeof QRCode === "undefined") {
+                const loaded = await ensureQrLibrary();
+                if (!loaded) return alert("Gagal memuat library QR Code. Periksa koneksi internet.");
+            }
+
+            let filtered = [];
+            
+            if (Array.isArray(targetStudents)) {
+                filtered = targetStudents;
+            } else {
+                const query = studentSearch.value.trim().toLowerCase();
+                const className = classFilter.value;
+
+                filtered = students.filter(function (item) {
+                    const matchQuery =
+                        item.full_name.toLowerCase().includes(query) ||
+                        String(item.nisn || "").toLowerCase().includes(query);
+                    const matchClass = className === "all" || item.class_name === className;
+                    return matchQuery && matchClass;
+                }).sort(function (a, b) {
+                    return String(a.full_name).localeCompare(String(b.full_name), "id");
+                });
+            }
+
+            if (filtered.length === 0) {
+                alert("Tidak ada data siswa untuk dicetak.");
+                return;
+            }
+
+            const printArea = document.getElementById("printArea");
+            printArea.innerHTML = "";
+            printArea.classList.remove("hidden"); // Tampilkan agar canvas bisa dirender
+            
+            const container = document.createElement("div");
+            container.className = "flex flex-wrap gap-4 justify-center";
+            printArea.appendChild(container);
+
+            for (const s of filtered) {
+                const card = document.createElement("div");
+                card.style.width = "85.6mm";
+                card.style.height = "53.98mm";
+                card.className = "relative border border-slate-300 bg-white rounded-lg overflow-hidden shadow-sm break-inside-avoid flex flex-col print:border-slate-400";
+                
+                // Header
+                const header = document.createElement("div");
+                header.style.height = "12mm";
+                header.className = "bg-blue-700 text-white p-2 flex items-center gap-2 print:bg-blue-700 print:text-white";
+                header.innerHTML = `
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shrink-0">
+                        <img src="images/logo.png" class="w-6 h-6 object-contain">
+                    </div>
+                    <div class="leading-none">
+                        <h1 class="text-[10px] font-bold uppercase tracking-wider">SD No. 3 Lukluk</h1>
+                        <p class="text-[7px] opacity-90">Kartu Tanda Pelajar</p>
+                    </div>
+                `;
+                
+                // Body
+                const body = document.createElement("div");
+                body.className = "flex-1 p-3 flex gap-2 items-center";
+                
+                const photoDiv = document.createElement("div");
+                photoDiv.className = "w-[20mm] h-[25mm] bg-slate-100 rounded overflow-hidden border border-slate-200 shrink-0";
+                const img = document.createElement("img");
+                img.src = s.photo_data || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.full_name)}&background=random&color=fff`;
+                img.className = "w-full h-full object-cover";
+                photoDiv.appendChild(img);
+
+                const info = document.createElement("div");
+                info.className = "flex-1 space-y-1.5";
+                info.innerHTML = `
+                    <div>
+                        <p class="text-[7px] text-slate-400 uppercase font-bold tracking-wide">Nama Siswa</p>
+                        <p class="text-[11px] font-bold text-slate-800 leading-tight line-clamp-2">${esc(s.full_name)}</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div>
+                            <p class="text-[7px] text-slate-400 uppercase font-bold tracking-wide">NISN</p>
+                            <p class="text-[10px] font-semibold text-slate-700">${esc(s.nisn || "-")}</p>
+                        </div>
+                        <div>
+                            <p class="text-[7px] text-slate-400 uppercase font-bold tracking-wide">Kelas</p>
+                            <p class="text-[10px] font-semibold text-slate-700">${esc(s.class_name || "-")}</p>
+                        </div>
+                    </div>
+                `;
+
+                const qrContainer = document.createElement("div");
+                qrContainer.className = "flex flex-col items-center justify-center";
+                const canvas = document.createElement("canvas");
+                
+                qrContainer.appendChild(canvas);
+                body.appendChild(photoDiv);
+                body.appendChild(info);
+                body.appendChild(qrContainer);
+                
+                // Footer
+                const footer = document.createElement("div");
+                footer.className = "h-1.5 bg-yellow-400 w-full print:bg-yellow-400";
+
+                card.appendChild(header);
+                card.appendChild(body);
+                card.appendChild(footer);
+                container.appendChild(card);
+
+                const payload = JSON.stringify({ id: s.id, nisn: s.nisn });
+                try {
+                    await QRCode.toCanvas(canvas, payload, { width: 80, margin: 0 });
+                } catch (e) {
+                    console.error("Gagal generate QR", e);
+                }
+            }
+            
+            setTimeout(() => {
+                window.print();
+            }, 500);
+
+            window.onafterprint = function() {
+                printArea.classList.add("hidden");
+                printArea.innerHTML = "";
+            };
+        }
+
         function bindTableActions() {
+            const printButtons = studentsTableBody.querySelectorAll(".print-btn");
+            printButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = String(btn.getAttribute("data-id") || "");
+                    const data = students.find(function (item) { return item.id === id; });
+                    if (data) printQrCodes([data]);
+                });
+            });
+
+            const qrButtons = studentsTableBody.querySelectorAll(".qr-btn");
+            qrButtons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const id = String(btn.getAttribute("data-id") || "");
+                    const data = students.find(function (item) { return item.id === id; });
+                    if (data) showQrModal(data);
+                });
+            });
+
             const editButtons = studentsTableBody.querySelectorAll(".edit-btn");
             editButtons.forEach(function (btn) {
                 btn.addEventListener("click", function () {
@@ -420,10 +771,65 @@
             });
         }
 
+        async function showQrModal(student) {
+            if (typeof QRCode === "undefined") {
+                const loaded = await ensureQrLibrary();
+                if (!loaded) return alert("Gagal memuat library QR Code. Periksa koneksi internet.");
+            }
+            currentQrStudent = student;
+            qrModalName.textContent = student.full_name + " (" + (student.nisn || "-") + ")";
+            qrModal.classList.remove("hidden");
+            
+            const payload = JSON.stringify({ id: student.id, nisn: student.nisn });
+            setTimeout(() => {
+                QRCode.toCanvas(qrModalCanvas, payload, { width: 200, margin: 1 }, function (error) {
+                    if (error) console.error(error);
+                });
+            }, 100);
+        }
+
+        function printQrOnly() {
+            if (!currentQrStudent) return;
+            const printArea = document.getElementById("printArea");
+            printArea.innerHTML = "";
+            printArea.classList.remove("hidden");
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "flex flex-col items-center justify-center h-full p-10 text-center";
+            wrapper.innerHTML = `
+                <h2 class="text-2xl font-bold mb-2">${esc(currentQrStudent.full_name)}</h2>
+                <p class="text-lg text-slate-600 mb-6">${esc(currentQrStudent.nisn || "")}</p>
+            `;
+            const img = document.createElement("img");
+            img.src = qrModalCanvas.toDataURL();
+            img.className = "w-64 h-64 border-4 border-black rounded-xl";
+            wrapper.appendChild(img);
+            printArea.appendChild(wrapper);
+
+            setTimeout(() => { window.print(); }, 300);
+            window.onafterprint = function() { printArea.classList.add("hidden"); printArea.innerHTML = ""; };
+        }
+
+        async function ensureQrLibrary() {
+            if (typeof QRCode !== "undefined") return true;
+            toast("Memuat library QR Code...");
+            return new Promise(resolve => {
+                const script = document.createElement("script");
+                script.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"; // Fallback CDN
+                script.onload = () => resolve(true);
+                script.onerror = () => resolve(false);
+                document.head.appendChild(script);
+            });
+        }
+
         function openStudentModal(data) {
             studentForm.reset();
             document.getElementById("studentId").value = "";
             document.getElementById("studentActive").checked = true;
+            studentPhotoInput.value = "";
+            studentPhotoPreview.classList.add("hidden");
+            studentPhotoPlaceholder.classList.remove("hidden");
+            currentEditingPhoto = "";
             studentModalTitle.textContent = "Tambah Data Siswa";
 
             if (data) {
@@ -435,6 +841,12 @@
                 document.getElementById("parentName").value = data.parent_name || "";
                 document.getElementById("parentWa").value = data.parent_wa || "";
                 document.getElementById("studentActive").checked = data.is_active !== false;
+                if (data.photo_data) {
+                    currentEditingPhoto = data.photo_data;
+                    studentPhotoPreview.src = data.photo_data;
+                    studentPhotoPreview.classList.remove("hidden");
+                    studentPhotoPlaceholder.classList.add("hidden");
+                }
                 studentModalTitle.textContent = "Edit Data Siswa";
             }
 
@@ -467,6 +879,34 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#39;");
+        }
+
+        // --- Backup Logic ---
+        const BACKUP_KEYS = ["sd3_data_siswa_v1", "sd3_data_user_v1", "sd3_modul_ajar_v1", "sd3_presensi_v2", "sd3_nilai_harian_v1", "sd3_jurnal_mengajar_v1", "sd3_buku_konseling_v1", "sd3_tp_master_v1", "sd3_backup_settings_v1", "sd3_last_backup_v1"];
+
+        function getBackupData() {
+            const data = {};
+            BACKUP_KEYS.forEach(key => { const val = localStorage.getItem(key); if(val) data[key] = JSON.parse(val); });
+            return { timestamp: new Date().toISOString(), app: "SD3_ADMIN", version: "1.0", data };
+        }
+        function downloadBackup() {
+            const blob = new Blob([JSON.stringify(getBackupData(), null, 2)], { type: "application/json" });
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `backup-sd3-${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); toast("Backup didownload.");
+        }
+        function restoreBackup(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const json = JSON.parse(ev.target.result);
+                    if(json.app !== "SD3_ADMIN" || !json.data) throw new Error("Format invalid");
+                    if(!confirm("Restore data? Data lama akan ditimpa.")) return;
+                    Object.keys(json.data).forEach(k => localStorage.setItem(k, JSON.stringify(json.data[k])));
+                    toast("Restore berhasil. Refreshing..."); setTimeout(() => location.reload(), 1500);
+                } catch(err) { alert("Gagal: " + err.message); }
+            };
+            reader.readAsText(file); e.target.value = "";
         }
 
         function toast(message) {
