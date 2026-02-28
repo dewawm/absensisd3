@@ -888,6 +888,7 @@
         if (row && row.status === "Hadir") {
             el.scanResultText.textContent = `${studentName(student)} sudah absen.`;
             el.scanResultText.className = "text-yellow-600 font-bold text-lg";
+            playBeep();
         } else {
             if(!row) row = { id: uid("ATT"), date: date, student_id: student.id, student_name: studentName(student), nisn: studentNisn(student), parent_wa: studentWa(student), created_at: new Date().toISOString() };
             row.status = "Hadir";
@@ -896,6 +897,7 @@
             upsertRow(row);
             persistAtt();
             render();
+            playBeep();
             el.scanResultText.textContent = `Berhasil: ${studentName(student)}`;
             el.scanResultText.className = "text-emerald-600 font-bold text-lg";
             toast(`Presensi ${studentName(student)} tercatat.`);
