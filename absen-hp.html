@@ -115,6 +115,7 @@
     // --- Konfigurasi & State ---
     const STUDENT_KEY = "sd3_data_siswa_v1"; // Menggunakan key yang sama dengan admin agar sinkron jika satu device
     const WEBHOOK_KEY = "sd3_absen_webhook_url";
+    const ATT_KEY = "sd3_presensi_v2"; // Key database yang digunakan daftar-hadir.html
     
     const el = {
       studentSelect: document.getElementById("studentSelect"),
@@ -298,6 +299,9 @@
           body: JSON.stringify(payload)
         });
 
+        // Simpan ke LocalStorage agar terhubung dengan daftar-hadir.html
+        saveToLocalAttendance(studentName, status, type, currentLocation);
+
         toast("Data presensi terkirim!");
         el.form.reset();
         fileBase64 = "";
@@ -308,6 +312,57 @@
         el.submitBtn.disabled = false;
         el.submitBtn.innerHTML = `<span>Simpan Presensi</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
       }
+    }
+
+    // --- Logic Local Storage (Sinkronisasi ke Admin) ---
+    function saveToLocalAttendance(name, status, type, loc) {
+      const student = students.find(s => s.full_name === name);
+      if (!student) return;
+
+      const now = new Date();
+      const date = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+      const time = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+
+      let data = [];
+      try {
+        const raw = localStorage.getItem(ATT_KEY);
+        data = raw ? JSON.parse(raw) : [];
+      } catch (e) { data = []; }
+
+      // Cari data hari ini untuk siswa tersebut
+      let row = data.find(x => x.date === date && x.student_id === student.id);
+      
+      if (!row) {
+        row = {
+          id: "ATT-" + Date.now(),
+          date: date,
+          student_id: student.id,
+          student_name: student.full_name,
+          nisn: student.nisn,
+          parent_wa: student.parent_wa,
+          status: "Belum Absen",
+          check_in: "",
+          check_out: "",
+          notes: "",
+          created_at: new Date().toISOString()
+        };
+        data.push(row);
+      }
+
+      row.status = status;
+      row.updated_at = new Date().toISOString();
+
+      if (status === "Hadir") {
+        if (type === "Masuk") row.check_in = time;
+        if (type === "Pulang") row.check_out = time;
+      }
+
+      if (loc) {
+        const locStr = `GPS: ${loc.lat.toFixed(5)},${loc.lng.toFixed(5)}`;
+        if (!row.notes.includes("GPS:")) row.notes = row.notes ? row.notes + " | " + locStr : locStr;
+      }
+
+      localStorage.setItem(ATT_KEY, JSON.stringify(data));
     }
 
     // --- Config ---
