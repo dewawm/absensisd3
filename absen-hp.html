@@ -25,13 +25,11 @@
       <h2 class="font-semibold text-sm">1) Identitas Siswa</h2>
       <div>
         <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap Siswa</label>
-        <select id="studentNameSelect" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
-          <option value="">-- Pilih Siswa --</option>
-        </select>
+        <input id="studentNameInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="Nama siswa...">
       </div>
       <div>
-        <label class="block text-xs font-semibold text-slate-500 mb-1">NISN (Otomatis)</label>
-        <input id="studentNisnInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-slate-50 text-slate-600" placeholder="Nomor NISN..." readonly>
+        <label class="block text-xs font-semibold text-slate-500 mb-1">NISN (Opsional)</label>
+        <input id="studentNisnInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" placeholder="Nomor NISN...">
       </div>
     </section>
 
@@ -170,7 +168,6 @@
     const PENDING_KEY = "sd3_mobile_absen_pending_v1";
     const ATT_KEY = "sd3_presensi_v2"; // Shared attendance log
     const LAST_STUDENT_KEY = "sd3_last_student_v1";
-    const STUDENT_DATA_KEY = "sd3_data_siswa_v1";
 
     const el = {
       mode: document.getElementById("modeInput"),
@@ -178,7 +175,7 @@
       notes: document.getElementById("notesInput"),
       lateReasonContainer: document.getElementById("lateReasonContainer"),
       lateReasonInput: document.getElementById("lateReasonInput"),
-      studentName: document.getElementById("studentNameSelect"),
+      studentName: document.getElementById("studentNameInput"),
       studentNisn: document.getElementById("studentNisnInput"),
       locationInfoText: document.getElementById("locationInfoText"),
       mapContainer: document.getElementById("mapContainer"),
@@ -245,7 +242,6 @@
     function init() {
       // Cek apakah pengaturan penting ada, jika tidak, beri tahu pengguna.
       checkPrerequisites();
-      loadStudentsForDropdown();
       renderHistory();
       checkLateStatus();
       checkLastStudent();
@@ -267,45 +263,13 @@
       el.modal.btnCancel.addEventListener("click", hideConfirmModal);
       el.modal.btnYes.addEventListener("click", executeSubmission);
       lastStudentEl.btn.addEventListener("click", restoreLastStudent);
-      el.studentName.addEventListener("change", onStudentChange);
-    }
-
-    function loadStudentsForDropdown() {
-      let students = [];
-      try {
-        const raw = localStorage.getItem(STUDENT_DATA_KEY);
-        if (raw) {
-          students = JSON.parse(raw);
-        } else {
-          // Fallback default data jika belum ada di localStorage (sama dengan data-siswa.html)
-          students = [
-            { id: "STU-001", nisn: "1234567001", full_name: "Putu Ayu Lestari", is_active: true },
-            { id: "STU-002", nisn: "1234567002", full_name: "Kadek Budi Santosa", is_active: true },
-            { id: "STU-003", nisn: "1234567003", full_name: "Komang Raka Pradana", is_active: false }
-          ];
-        }
-      } catch (e) { console.error(e); }
-
-      students.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
-      
-      el.studentName.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-      students.forEach(s => {
-        if (s.is_active !== false) {
-          const option = document.createElement("option");
-          option.value = s.nisn || s.id; 
-          option.textContent = s.full_name;
-          option.dataset.name = s.full_name;
-          option.dataset.nisn = s.nisn || "";
-          el.studentName.appendChild(option);
-        }
-      });
     }
 
     function checkPrerequisites() {
       const settings = loadSettings();
       if (!settings.webhook_url || !isFiniteNumber(settings.school_lat)) {
-        showToast("Konfigurasi belum lengkap (Mode Demo).", 3000);
-        // el.submitBtn.disabled = true; // Aktifkan semua tombol sesuai permintaan
+        showToast("Aplikasi belum dikonfigurasi oleh admin.", 5000);
+        el.submitBtn.disabled = true;
       }
     }
 
@@ -380,15 +344,8 @@
         const raw = localStorage.getItem(LAST_STUDENT_KEY);
         if (raw) {
           const s = JSON.parse(raw);
-          if (s.name) {
-            // Cari opsi yang cocok dengan nama
-            const options = Array.from(el.studentName.options);
-            const found = options.find(o => o.dataset.name === s.name);
-            if (found) {
-              el.studentName.value = found.value;
-              el.studentNisn.value = found.dataset.nisn || "";
-            }
-          }
+          if (s.name) el.studentName.value = s.name;
+          if (s.nisn) el.studentNisn.value = s.nisn;
           renderStudentHistory(s);
         }
       } catch (e) {}
@@ -524,11 +481,8 @@
     }
 
     function buildPayload() {
-      const sel = el.studentName;
-      const opt = sel.options[sel.selectedIndex];
-      const name = opt ? opt.dataset.name : "";
       const studentData = {
-        name: name || "",
+        name: el.studentName.value.trim(),
         nisn: el.studentNisn.value.trim()
       };
       return {
@@ -746,10 +700,7 @@
       el.status.value = "Hadir";
       el.lateReasonInput.value = "";
       el.studentHistorySection.classList.add("hidden");
-      
-      const sel = el.studentName;
-      const opt = sel.options[sel.selectedIndex];
-      renderStudentHistory({ name: opt ? opt.dataset.name : "" });
+      renderStudentHistory({ name: el.studentName.value.trim() });
     }
 
     function loadArray(key) {
