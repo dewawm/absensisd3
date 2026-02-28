@@ -865,37 +865,44 @@
       lastScanData = data;
       lastScanTime = now;
 
+      let sid = null;
+      let nisn = null;
+
       try {
         const parsed = JSON.parse(data);
-        const sid = parsed.id;
-        const student = students.find(s => s.id === sid);
-        
-        if (student) {
-          const date = el.date.value || dateKey(new Date());
-          const nowTime = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
-          let row = findRow(date, sid);
-          
-          if (row && row.status === "Hadir") {
-             el.scanResultText.textContent = `${studentName(student)} sudah absen.`;
-             el.scanResultText.className = "text-yellow-600 font-bold text-lg";
-          } else {
-             if(!row) row = { id: uid("ATT"), date: date, student_id: sid, student_name: studentName(student), nisn: studentNisn(student), parent_wa: studentWa(student), created_at: new Date().toISOString() };
-             row.status = "Hadir";
-             row.check_in = nowTime;
-             row.updated_at = new Date().toISOString();
-             upsertRow(row);
-             persistAtt();
-             render();
-             el.scanResultText.textContent = `Berhasil: ${studentName(student)}`;
-             el.scanResultText.className = "text-emerald-600 font-bold text-lg";
-             toast(`Presensi ${studentName(student)} tercatat.`);
-          }
-        } else {
-          el.scanResultText.textContent = "QR Code tidak dikenali.";
-          el.scanResultText.className = "text-red-500 font-bold";
-        }
+        sid = parsed.id;
+        nisn = parsed.nisn;
       } catch (e) {
-        // Ignore invalid JSON
+        // Fallback jika QR bukan JSON (misal raw text ID/NISN)
+        sid = data;
+        nisn = data;
+      }
+
+      const student = students.find(s => s.id === sid || s.nisn === nisn);
+
+      if (student) {
+        const date = el.date.value || dateKey(new Date());
+        const nowTime = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
+        let row = findRow(date, student.id);
+        
+        if (row && row.status === "Hadir") {
+            el.scanResultText.textContent = `${studentName(student)} sudah absen.`;
+            el.scanResultText.className = "text-yellow-600 font-bold text-lg";
+        } else {
+            if(!row) row = { id: uid("ATT"), date: date, student_id: student.id, student_name: studentName(student), nisn: studentNisn(student), parent_wa: studentWa(student), created_at: new Date().toISOString() };
+            row.status = "Hadir";
+            row.check_in = nowTime;
+            row.updated_at = new Date().toISOString();
+            upsertRow(row);
+            persistAtt();
+            render();
+            el.scanResultText.textContent = `Berhasil: ${studentName(student)}`;
+            el.scanResultText.className = "text-emerald-600 font-bold text-lg";
+            toast(`Presensi ${studentName(student)} tercatat.`);
+        }
+      } else {
+        el.scanResultText.textContent = "QR Code tidak dikenali.";
+        el.scanResultText.className = "text-red-500 font-bold";
       }
     }
 
